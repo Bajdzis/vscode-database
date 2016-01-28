@@ -1,0 +1,30 @@
+{
+	"name": "DATABASE",
+	"displayName": "DATABASE",
+	"description": "Open and edit SQL database",
+	"version": "0.0.1",
+	"publisher": "Bajdzis",
+	"engines": {
+		"vscode": "^0.10.1"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"*"
+	],
+	"main": "./extension",
+	"contributes": {
+		"commands": [{
+			"command": "extension.connectSQL",
+			"title": "SQL: Connect to SQL server"
+		},
+        {
+			"command": "extension.changeDB",
+			"title": "SQL: Change database"
+		}]
+	},
+	"devDependencies": {
+		"vscode": "0.10.x"
+	}
+}
