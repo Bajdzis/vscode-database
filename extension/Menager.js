@@ -1,4 +1,4 @@
-var mysql = require('mysql');
+
 var vscode = require('vscode');
 var asciiTable = require('./AsciiTable.js');
 
@@ -43,11 +43,12 @@ module.exports = function Menager()
     
     this.connect = function(type, host, user, password){
         if(type == 'mysql'){
-            this.currentDatabase = null;
-            this.currentServer = new MySQLType();
-            this.currentServer.setOutput(this.OutputChannel);
-            this.currentServer.connect(host, user, password);
-            this.server.push(this.currentServer);
+            
+            var newServer = new MySQLType();
+            newServer.setOutput(this.OutputChannel);
+            newServer.connect(host, user, password, this);
+
+            
         }else{
             
         }
@@ -56,7 +57,11 @@ module.exports = function Menager()
     
     this.query = function(sql, func){
         this.outputMsg(sql);
-        this.currentServer.query(sql, func);
+        if(this.currentServer === null){
+            vscode.window.showErrorMessage('Server not selected');
+        }else{
+            this.currentServer.query(sql, func);
+        }
     };
     
     this.changeDatabase = function(name){
@@ -64,6 +69,20 @@ module.exports = function Menager()
         this.currentDatabase = name;
         vscode.window.showInformationMessage('Database changed');
         this.showStatus();
+    };
+    
+    this.changeServer = function(server){
+        this.currentDatabase = null;
+        this.currentServer = server;
+        vscode.window.showInformationMessage('Server changed');
+        this.showStatus();
+        
+    };
+    
+    this.registerNewServer = function(obj){
+        console.log(this);
+        this.server.push(obj);
+        this.changeServer(obj);
     };
     
     this.queryOutput = function(data){

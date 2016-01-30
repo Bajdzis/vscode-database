@@ -3,16 +3,28 @@ var vscode = require('vscode');
 
 module.exports = function MySQLType()
 {
-    this.conection = null;
+    this.connection = null;
     this.name = "Noname";
     this.OutputChannel = null;
-    this.connect = function(host, user, password){
+
+    this.connect = function(host, user, password, menager){
         this.name = host;
-        this.conection = mysql.createConnection({
+        this.connection = mysql.createConnection({
             'host'     : host,
             'user'     : user,
             'password' : password
         });
+        var instancja = this;
+        this.connection.connect(function(err) {
+            if(err){
+                var errMsg = 'MySQL Error: ' + err.stack;
+                vscode.window.showErrorMessage(errMsg);
+                menager.outputMsg(errMsg);
+                return;
+            }
+            menager.registerNewServer(instancja);
+        });
+
     };
     
     this.setOutput = function(OutputChannel){
@@ -20,14 +32,18 @@ module.exports = function MySQLType()
     };
     
     this.outputMsg = function(msg){
-        this.OutputChannel.appendLine(msg);
+        if(this.OutputChannel !== null){
+            this.OutputChannel.appendLine(msg);
+        }
     };
     
     this.query = function(sql, func, vsOutput){
-        this.conection.query(sql,function(err,rows){
+        var instancja = this;
+        this.connection.query(sql,function(err,rows){
             if(err){
-                vscode.window.showErrorMessage('MySQL Error: ' + err.stack);
-                this.outputMsg('MySQL Error: ' + err.stack);
+                var errMsg = 'MySQL Error: ' + err.stack;
+                vscode.window.showErrorMessage(errMsg);
+                instancja.outputMsg(errMsg);
                 return;
             }
             if(func !== null){
