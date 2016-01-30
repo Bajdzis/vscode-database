@@ -1,13 +1,13 @@
-# README
-## This is the README for your extension "DATABASE" 
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+# VS Code database
+### Extension for Visual Studio Code 
 
-* Split the editor (`Cmd+\` on OSX or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on OSX or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (OSX) to see a list of Markdown snippets
+## Usage
+![how use](./readme/v0.1.gif)
 
-### For more information
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-** Enjoy!**
+## Install
+* Press `Shift+Ctrl+P` 
+* Pick `Extensions: Install Extension`
+* Find vscode-database
+ 
+## License
+MIT © [Bajdzis](https://github.com/Bajdzis)
