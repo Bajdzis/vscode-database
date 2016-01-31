@@ -10,6 +10,7 @@ module.exports = function MySQLType()
     this.user = "Empty";
     this.password = "Empty";
     this.OutputChannel = null;
+    this.onConnectSetDB = null;
 
     this.connect = function(host, user, password, menager){
         this.name = host + " (mysql)";
@@ -26,10 +27,16 @@ module.exports = function MySQLType()
             if(err){
                 var errMsg = 'MySQL Error: ' + err.stack;
                 vscode.window.showErrorMessage(errMsg);
-                menager.outputMsg(errMsg);
+                instancja.outputMsg(errMsg);
                 return;
             }
             menager.registerNewServer(instancja);
+            if(instancja.onConnectSetDB !== null){
+                instancja.query("USE " + instancja.onConnectSetDB, null);
+                menager.currentDatabase = instancja.onConnectSetDB;
+                vscode.window.showInformationMessage('Database changed');
+                menager.showStatus();
+            }
         });
 
     };
@@ -44,7 +51,7 @@ module.exports = function MySQLType()
         }
     };
     
-    this.query = function(sql, func, vsOutput){
+    this.query = function(sql, func){
         var instancja = this;
         this.connection.query(sql,function(err,rows){
             if(err){

@@ -1,8 +1,8 @@
 {
   "name": "vscode-database",
   "displayName": "vscode-database",
-  "description": "Open and edit SQL database (mysql, mssql)",
-  "version": "0.0.3",
+  "description": "Support SQL database (mysql)",
+  "version": "0.1.0",
   "publisher": "bajdzis",
   "icon": "icon.png",
   "engines": {
@@ -41,6 +41,9 @@
         "command": "extension.saveConfig",
         "title": "SQL: Save current server"
       }
+    ],
+    "keybindings": [
+        { "key": "Ctrl+q", "command": "extension.querySQL" }
     ]
   },
   "dependencies": {

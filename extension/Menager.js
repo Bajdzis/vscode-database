@@ -41,18 +41,16 @@ module.exports = function Menager()
         this.OutputChannel.appendLine(msg);
     };
     
-    this.connect = function(type, host, user, password){
+    this.connect = function(type, host, user, password, onConnectSetDB){
         if(type == 'mysql'){
-            
             var newServer = new MySQLType();
             newServer.setOutput(this.OutputChannel);
+            newServer.onConnectSetDB = onConnectSetDB;
             newServer.connect(host, user, password, this);
-
-            
-        }else{
-            
+            this.showStatus();
+            return newServer;
         }
-        this.showStatus();
+        
     };
     
     this.query = function(sql, func){
@@ -80,7 +78,6 @@ module.exports = function Menager()
     };
     
     this.registerNewServer = function(obj){
-        console.log(this);
         this.server.push(obj);
         this.changeServer(obj);
     };
@@ -95,5 +92,14 @@ module.exports = function Menager()
         if(this.OutputChannel !== null){
             this.OutputChannel.show();
         }
+    };
+    
+    this.changeServerAlias = function(server){
+        if(this.currentServer === null){
+            return false;
+        }
+        this.currentServer.name = server;
+        this.showStatus();
+        
     };
 }

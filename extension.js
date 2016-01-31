@@ -24,7 +24,13 @@ function activate(context) {
                 }
                 var databases = config['extension.databases'];
                 for(var index in databases){
-                    menager.connect(databases[index].type, databases[index].host, databases[index].user, databases[index].password);
+                    var database = null;
+                    if(typeof databases[index].database !== "undefined"){
+                        database = databases[index].database;
+                    }
+                    var server = menager.connect(databases[index].type, databases[index].host, databases[index].user, databases[index].password, database);
+                    server.name = databases[index].name;
+                    menager.showStatus();
                 }
             });
 
@@ -70,7 +76,8 @@ function activate(context) {
                 name:menager.currentServer.name,
                 host:menager.currentServer.host,
                 user:menager.currentServer.user,
-                password:menager.currentServer.password
+                password:menager.currentServer.password,
+                database:menager.currentDatabase
             }); 
             var jsonStr = JSON.stringify(config, null, "\t");
             
@@ -150,7 +157,7 @@ function activate(context) {
                 vscode.window.showInputBox({value:"", prompt: "", placeHolder: "Password", password: true}).then(function(output){
                     
                     password = output;
-                    menager.connect('mysql', host, user, password);
+                    menager.connect('mysql', host, user, password, null);
                 });
 
             });
