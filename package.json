@@ -1,7 +1,7 @@
 {
-  "name": "DATABASE",
-  "displayName": "DATABASE",
-  "description": "Open and edit SQL database",
+  "name": "vscode-database",
+  "displayName": "vscode-database",
+  "description": "Open and edit SQL database (mysql, mssql)",
   "version": "0.0.1",
   "publisher": "Bajdzis",
   "engines": {
@@ -17,21 +17,34 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.connectSQL",
+        "command": "extension.connectMySQL",
         "title": "SQL: Connect to MySQL server"
       },
       {
         "command": "extension.changeDB",
-        "title": "SQL: Change database"
+        "title": "SQL: Select database"
+      },
+      {
+        "command": "extension.changeServer",
+        "title": "SQL: Change connected server"
       },
       {
         "command": "extension.querySQL",
         "title": "SQL: Query"
+      },
+      {
+        "command": "extension.saveConfig",
+        "title": "SQL: Save current server"
       }
     ]
   },
-  "devDependencies": {
+  "dependencies": {
+    "fs": "0.0.2",
+    "mssql": "^3.0.0",
     "mysql": "^2.10.2",
+    "strip-comments": "^0.4.3"
+  },
+  "devDependencies": {
     "vscode": "0.10.x"
   }
 }

@@ -5,10 +5,17 @@ module.exports = function MySQLType()
 {
     this.connection = null;
     this.name = "Noname";
+    this.type = "mysql";
+    this.host = "Empty";
+    this.user = "Empty";
+    this.password = "Empty";
     this.OutputChannel = null;
 
     this.connect = function(host, user, password, menager){
-        this.name = host;
+        this.name = host + " (mysql)";
+        this.host = host;
+        this.user = user;
+        this.password = password;
         this.connection = mysql.createConnection({
             'host'     : host,
             'user'     : user,
