@@ -2,9 +2,9 @@
   "name": "vscode-database",
   "displayName": "vscode-database",
   "description": "Open and edit SQL database (mysql, mssql)",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "bajdzis",
-  "icon": "http://budzis.pl/css/g/logo.png",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^0.10.1"
   },
