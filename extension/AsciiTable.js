@@ -7,12 +7,12 @@ module.exports = function AsciiTable(json)
         var buffer = '';
 
         for (var key in keys) {
-            width[keys[key]] = keys[key].length;
+            width[keys[key]] = String(keys[key]).length;
         }
-            console.log(width);
+
         for (var row in json) {
             for (var data in json[row]) {
-                width[data] = Math.max(width[data], json[row][data].length);
+                width[data] = Math.max(width[data], String(json[row][data]).length);
             }
         }
 
@@ -20,7 +20,7 @@ module.exports = function AsciiTable(json)
         buffer += this.line(width);
         buffer += "\n | "
         for (var key in keys) {
-            buffer += keys[key] + ( ' '.repeat(width[keys[key]] - keys[key].length) ) + " | ";
+            buffer += keys[key] + ( ' '.repeat(width[keys[key]] - String(keys[key]).length) ) + " | ";
         }
             
         buffer += this.line(width); 
@@ -30,8 +30,8 @@ module.exports = function AsciiTable(json)
             buffer += "\n | ";
             for (var data in json[row]) {
 
-                buffer += json[row][data] + ( ' '.repeat(width[data] - json[row][data].length) ) + " | ";
-                width[data] = Math.max(width[data], json[row][data].length);
+                buffer += String(json[row][data]) + ( ' '.repeat(width[data] - String(json[row][data]).length) ) + " | ";
+
             }
         }
         

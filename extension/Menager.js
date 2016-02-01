@@ -83,11 +83,13 @@ module.exports = function Menager()
     };
     
     this.queryOutput = function(data){
-        if(typeof data === 'object'){
+        if(typeof data.message !== 'undefined'){
+            this.outputMsg(data.message);
+        }else if(typeof data === 'object'){
             var table = asciiTable(data);
             this.outputMsg(table);
         }else{
-            this.outputMsg(String(data));
+            this.outputMsg("ok");
         }
         if(this.OutputChannel !== null){
             this.OutputChannel.show();
