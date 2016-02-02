@@ -84,7 +84,16 @@ module.exports = function Menager()
     
     this.queryOutput = function(data){
         if(typeof data.message !== 'undefined'){
+            var table = asciiTable([{
+                fieldCount: data.fieldCount,
+                affectedRows: data.affectedRows,
+                insertId: data.insertId,
+                serverStatus: data.serverStatus,
+                warningCount: data.warningCount,
+                changedRows: data.changedRows
+            }]);
             this.outputMsg(data.message);
+            this.outputMsg(table);
         }else if(typeof data === 'object'){
             var table = asciiTable(data);
             this.outputMsg(table);
