@@ -74,7 +74,7 @@ function activate(context) {
             config['extension.databases'].push({
                 type:menager.currentServer.type,
                 name:menager.currentServer.name,
-                host:menager.currentServer.host,
+                host:menager.currentServer.host + ":" + menager.currentServer.port,
                 user:menager.currentServer.user,
                 password:menager.currentServer.password,
                 database:menager.currentDatabase
