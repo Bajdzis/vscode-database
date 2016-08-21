@@ -49,8 +49,7 @@
   "dependencies": {
     "fs": "0.0.2",
     "mssql": "^3.0.0",
-    "mysql": "^2.10.2",
-    "strip-comments": "^0.4.3"
+    "mysql": "^2.10.2"
   },
   "devDependencies": {
     "vscode": "0.10.x"

@@ -1,7 +1,6 @@
 
 var vscode = require('vscode');
 var fs = require('fs');
-var strip = require('strip-comments');
 var Menager = require('./extension/Menager.js');
 var menager = new Menager();
 
@@ -16,9 +15,8 @@ function activate(context) {
                     vscode.window.showErrorMessage('Failed read file /.vscode/database.json');
                     return;
                 }
-
-                var json = strip(data.toString('ascii'));
-                var config =  JSON.parse(json);
+                var json = data.toString('ascii');
+                var config =  eval('(' + json + ')');
                 if(typeof config['extension.databases'] === "undefined"){
                     return;
                 }
@@ -65,8 +63,8 @@ function activate(context) {
                 return;
             }
 
-            var json = strip(data.toString('ascii'));
-            var config =  JSON.parse(json);
+            var json = data.toString('ascii');
+            var config =  eval('(' + json + ')');
             
             if(typeof config['extension.databases'] === "undefined"){
                 config['extension.databases'] = [];
