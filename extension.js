@@ -4,8 +4,33 @@ var fs = require('fs');
 var Menager = require('./extension/Menager.js');
 var menager = new Menager();
 
+function buildQuery() {
+
+    var pathTempFile = vscode.workspace.rootPath + '/.vscode/temp.sql';
+    var textDocumentTemp = null;
+
+    //if(fs.existsSync(pathTempFile) === false){
+        fs.writeFileSync(pathTempFile, "");
+    //}
+
+    vscode.workspace.openTextDocument(vscode.Uri.file(pathTempFile)).then(function(document){
+        textDocumentTemp = document;
+        vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
+    });
+
+    vscode.workspace.onDidSaveTextDocument( function (document) {
+        if(textDocumentTemp === document){
+            console.log("event", document);
+
+            menager.query(document.getText(), function(data){
+                menager.queryOutput(data);
+            });
+        }
+    }, this);
+
+}
 function activate(context) {
-    
+
     var root = vscode.workspace.rootPath;
     if(typeof root !== 'undefined'){
         var exists = fs.existsSync(root + '/.vscode/database.json');
@@ -34,8 +59,8 @@ function activate(context) {
 
         }
     }
-            //menager.connect('mysql', 'localhost', 'root', '');
-            //menager.connect('mysql', '127.0.0.1', 'root', '');
+
+    addCommand(context, 'extension.queryBuild', buildQuery);
 
     addCommand(context, 'extension.saveConfig', function () {
         if(menager.currentServer === null){
@@ -99,15 +124,11 @@ function activate(context) {
             for (var i = 0; i < results.length; i++) {
                 allDatabase.push(results[i].Database);
             }
-            vscode.window.showQuickPick(allDatabase,{matchOnDescription:false, placeHolder:"Choice database"}).then(
-                function(object){
-
-                    if(typeof object !== 'undefined'){
-                        menager.changeDatabase(object);
-                    }
+            vscode.window.showQuickPick(allDatabase,{matchOnDescription:false, placeHolder:"Choice database"}).then(function(object){
+                if(typeof object !== 'undefined'){
+                    menager.changeDatabase(object);
                 }
-                
-            );
+            });
 
         });
 

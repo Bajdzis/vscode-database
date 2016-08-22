@@ -12,13 +12,18 @@ module.exports = function AsciiTable(json)
         for (var key in _this.keys) {
             _this.width[_this.keys[key]] = String(_this.keys[key]).length;
         }
-        var counterWidth = 0;
+
         for (var row in json) {
             for (var data in json[row]) {
                 _this.width[data] = Math.max(_this.width[data], String(json[row][data]).length);
-                counterWidth += _this.width[data];
             }
         }
+
+        var counterWidth = 0;
+        for (var size in this.width) {
+            counterWidth +=  this.width[size];
+        }
+
         if(counterWidth > MAX_CHARACTERS_IN_LINE){
             return asciiTableBig(json);
         }

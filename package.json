@@ -2,7 +2,7 @@
   "name": "vscode-database",
   "displayName": "vscode-database",
   "description": "Support SQL database (mysql)",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "publisher": "bajdzis",
   "icon": "icon.png",
   "engines": {
@@ -38,12 +38,17 @@
         "title": "SQL: Query"
       },
       {
+        "command": "extension.queryBuild",
+        "title": "SQL: Query Advancer Build"
+      },
+      {
         "command": "extension.saveConfig",
         "title": "SQL: Save current server"
       }
     ],
     "keybindings": [
-        { "key": "Ctrl+q", "command": "extension.querySQL" }
+        { "key": "Ctrl+q", "command": "extension.querySQL" },
+        { "key": "Ctrl+Alt+q", "command": "extension.queryBuild" }
     ]
   },
   "dependencies": {
