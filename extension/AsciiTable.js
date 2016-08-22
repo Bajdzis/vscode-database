@@ -1,7 +1,9 @@
+var asciiTableBig = require('./AsciiTableBig.js');
+
 module.exports = function AsciiTable(json)
 {
     var _this = this;
-    var MAX_CHARACTERS_IN_LINE = 230;
+    var MAX_CHARACTERS_IN_LINE = 180;
     this.keys = Object.keys(json[0]);
     this.width = {};
 
@@ -10,11 +12,15 @@ module.exports = function AsciiTable(json)
         for (var key in _this.keys) {
             _this.width[_this.keys[key]] = String(_this.keys[key]).length;
         }
-
+        var counterWidth = 0;
         for (var row in json) {
             for (var data in json[row]) {
                 _this.width[data] = Math.max(_this.width[data], String(json[row][data]).length);
+                counterWidth += _this.width[data];
             }
+        }
+        if(counterWidth > MAX_CHARACTERS_IN_LINE){
+            return asciiTableBig(json);
         }
 
         return _this.draw();
