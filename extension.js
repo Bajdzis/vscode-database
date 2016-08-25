@@ -3,25 +3,28 @@ var vscode = require('vscode');
 var fs = require('fs');
 var Menager = require('./extension/Menager.js');
 var menager = new Menager();
-
+var buildQueryFirstRun = true;
 function buildQuery() {
 
     var pathTempFile = vscode.workspace.rootPath + '/.vscode/temp.sql';
     var textDocumentTemp = null;
 
-    //if(fs.existsSync(pathTempFile) === false){
+    if(fs.existsSync(pathTempFile) === false){
         fs.writeFileSync(pathTempFile, "");
-    //}
+    }
 
     vscode.workspace.openTextDocument(vscode.Uri.file(pathTempFile)).then(function(document){
         textDocumentTemp = document;
         vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
     });
 
+    if(buildQueryFirstRun === false){
+        return;
+    }
+    buildQueryFirstRun = false;
+
     vscode.workspace.onDidSaveTextDocument( function (document) {
         if(textDocumentTemp === document){
-            console.log("event", document);
-
             menager.query(document.getText(), function(data){
                 menager.queryOutput(data);
             });
@@ -30,6 +33,20 @@ function buildQuery() {
 
 }
 function activate(context) {
+
+
+    var keyWords = vscode.languages.registerCompletionItemProvider('sql',{
+        
+        provideCompletionItems(document, position, token) {
+            return menager.getCompletionItem();
+        },
+        resolveCompletionItem(item, token) {
+            return item;
+        }
+        
+    },' ');
+
+    context.subscriptions.push(keyWords);
 
     var root = vscode.workspace.rootPath;
     if(typeof root !== 'undefined'){

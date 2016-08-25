@@ -1,0 +1,34 @@
+{
+    "SELECT": {
+        "prefix": "SELECT",
+        "body": "SELECT ${*} FROM `${table}` ${as ${nameAlias}} ${WHERE ${condition}}",
+        "text": "SELECT * FROM table as nameAlias WHERE condition",
+        "description": ""
+    },
+    "DELETE": {
+        "prefix": "DELETE",
+        "body": "DELETE  FROM `${table}` ${WHERE ${condition}}",
+        "text": "DELETE FROM table WHERE condition",
+        "description": ""
+    },
+    "GROUP BY": {
+        "prefix": "GROUP BY",
+        "body": "GROUP BY ${column}",
+        "text": "GROUP BY column",
+        "description": ""
+    },
+    "LIMIT": {
+        "prefix": "LIMIT",
+        "body": "LIMIT ${rowsNumber} ${OFFSET ${number}}",
+        "text": "LIMIT",
+        "description": ""
+    },
+    "WHERE": {
+        "prefix": "WHERE",
+        "body": "WHERE ${condition}",
+        "text": "WHERE",
+        "description": ""
+    }
+
+
+}

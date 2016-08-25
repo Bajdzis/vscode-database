@@ -2,7 +2,7 @@
   "name": "vscode-database",
   "displayName": "vscode-database",
   "description": "Support SQL database (mysql)",
-  "version": "0.2.0",
+  "version": "0.9.0",
   "publisher": "bajdzis",
   "icon": "icon.png",
   "engines": {
@@ -49,6 +49,12 @@
     "keybindings": [
         { "key": "Ctrl+q", "command": "extension.querySQL" },
         { "key": "Ctrl+Alt+q", "command": "extension.queryBuild" }
+    ],
+    "snippets": [
+			{
+				"language": "sql",
+				"path": "./snippets/main.json"
+			}
     ]
   },
   "dependencies": {
