@@ -3,6 +3,7 @@ var vscode = require('vscode');
 var asciiTable = require('./AsciiTable.js');
 
 var MySQLType = require('./engine/mysql.js');
+var PostgreSQLType = require('./engine/postgresql.js');
 module.exports = function Menager()
 {
     var _this = this;
@@ -52,7 +53,14 @@ module.exports = function Menager()
             this.showStatus();
             return newServer;
         }
-        
+        if(type == 'postgres'){
+            var newServer = new PostgreSQLType();
+            newServer.setOutput(this.OutputChannel);
+            newServer.onConnectSetDB = onConnectSetDB;
+            newServer.connect(host, user, password, this);
+            this.showStatus();
+            return newServer;
+        }
     };
     
     this.query = function(sql, func){

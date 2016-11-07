@@ -26,6 +26,10 @@
         "title": "SQL: Connect to MySQL server"
       },
       {
+        "command": "extension.connectPostgreSQL",
+        "title": "SQL: Connect to PostgreSQL server"
+      },
+      {
         "command": "extension.changeDB",
         "title": "SQL: Select database"
       },
@@ -60,7 +64,8 @@
   "dependencies": {
     "fs": "0.0.2",
     "mssql": "^3.0.0",
-    "mysql": "^2.10.2"
+    "mysql": "^2.10.2",
+    "pg": "^6.1.0"
   },
   "devDependencies": {
     "vscode": "0.10.x"

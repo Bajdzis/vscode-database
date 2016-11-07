@@ -202,6 +202,33 @@ function activate(context) {
 
 	});
     
+    addCommand(context,'extension.connectPostgreSQL', function () {
+        var host, user, password;
+        vscode.window.showInputBox({value:"localhost", prompt: "e.g 127.0.0.1", placeHolder: "Host", password: false}).then(function(output){
+
+            host = output;
+
+            if(typeof host === 'undefined'){
+                return;
+            }
+            vscode.window.showInputBox({value:"postgres", prompt: "e.g postgres", placeHolder: "Username", password: false}).then(function(output){
+
+                user = output;
+                if(typeof user === 'undefined'){
+                    return;
+                }
+                vscode.window.showInputBox({value:"", prompt: "", placeHolder: "Password", password: true}).then(function(output){
+
+                    password = output;
+                    menager.connect('postgres', host, user, password, null);
+                });
+
+            });
+
+        });
+
+    });
+
     addCommand(context,'extension.querySQL', function () {
 
         vscode.window.showInputBox({value:"", prompt: "e.g SELECT * FROM table", placeHolder: "Query", password: false}).then(function(output){
