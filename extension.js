@@ -203,24 +203,33 @@ function activate(context) {
 	});
     
     addCommand(context,'extension.connectPostgreSQL', function () {
-        var host, user, password;
-        vscode.window.showInputBox({value:"localhost", prompt: "e.g 127.0.0.1", placeHolder: "Host", password: false}).then(function(output){
+        var host, onConnectSetDB, user, password;
+        vscode.window.showInputBox({value:"localhost", prompt: "e.g host", placeHolder: "Host", password: false}).then(function(output){
 
             host = output;
 
             if(typeof host === 'undefined'){
                 return;
             }
-            vscode.window.showInputBox({value:"postgres", prompt: "e.g postgres", placeHolder: "Username", password: false}).then(function(output){
+            vscode.window.showInputBox({value:"postgres", prompt: "e.g database", placeHolder: "Database", password: false}).then(function(output){
 
-                user = output;
-                if(typeof user === 'undefined'){
+                onConnectSetDB = output;
+
+                if(typeof onConnectSetDB === 'undefined'){
                     return;
                 }
-                vscode.window.showInputBox({value:"", prompt: "", placeHolder: "Password", password: true}).then(function(output){
+                vscode.window.showInputBox({value:"root", prompt: "e.g user", placeHolder: "Username", password: false}).then(function(output){
 
-                    password = output;
-                    menager.connect('postgres', host, user, password, null);
+                    user = output;
+                    if(typeof user === 'undefined'){
+                        return;
+                    }
+                    vscode.window.showInputBox({value:"", prompt: "e.g password", placeHolder: "Password", password: true}).then(function(output){
+
+                        password = output;
+                        menager.connect('postgres', host, user, password, onConnectSetDB);
+                    });
+
                 });
 
             });
