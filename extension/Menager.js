@@ -63,12 +63,12 @@ module.exports = function Menager()
         }
     };
     
-    this.query = function(sql, func){
+    this.query = function(sql, func, params){
         this.outputMsg(sql);
         if(this.currentServer === null){
             vscode.window.showErrorMessage('Server not selected');
         }else{
-            this.currentServer.query(sql, func);
+            this.currentServer.query(sql, func, params);
         }
     };
     

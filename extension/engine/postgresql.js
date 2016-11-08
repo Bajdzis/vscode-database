@@ -64,19 +64,21 @@ module.exports = function PostgreSQLType() {
             menager.refrestStructureDataBase = function () {
                 this.currentStructure = {};
                 const that = this;
-                const selectTables = getSelectTableSql(that.currentServer.schema);
+                const selectTables = getSelectTableSql();
+                const params = [that.currentServer.schema];
                 this.query(selectTables, function (results) {
                     for (var i = 0; i < results.length; i++) {
                         const key = Object.keys(results[i])[0];
                         const tableName = results[i][key];
                         const selectColumns = getSelectColumnsSql(tableName);
+                        const params = [tableName, tableName];
                         that.query(selectColumns, (function (tableName) {
                             return function (columnStructure) {
                                 that.currentStructure[tableName] = columnStructure;
                             }
-                        })(tableName));
+                        })(tableName), params);
                     }
-                });
+                }, params);
 
             }
 
@@ -102,9 +104,9 @@ module.exports = function PostgreSQLType() {
 
     };
 
-    this.query = function (sql, func) {
+    this.query = function (sql, func, params) {
         var instancja = this;
-        this.connection.query(sql, [], function (err, rows) {
+        this.connection.query(sql, params, function (err, rows) {
             if (err) {
                 var errMsg = 'PostgreSQL Error: ' + err.stack;
                 vscode.window.showErrorMessage(errMsg);
@@ -117,15 +119,15 @@ module.exports = function PostgreSQLType() {
         });
     };
 
-    const getSelectTableSql = (schema) =>
+    const getSelectTableSql = () =>
 `
 SELECT 
   table_name
 FROM information_schema.tables
-WHERE table_schema = '` + schema + `' 
+WHERE table_schema = $1::text
 `;
 
-    const getSelectColumnsSql = (tableName) =>
+    const getSelectColumnsSql = () =>
 `
 SELECT
   col.column_name                                                   AS "Field",
@@ -134,9 +136,6 @@ SELECT
     THEN col.udt_name
   ELSE col.udt_name || '(' || col.character_maximum_length || ')'
   END                                                               AS "Type",
---   col.character_maximum_length                                      AS data_length,
---   coalesce(col.numeric_precision, col.datetime_precision)           AS data_precision,
---   col.numeric_scale                                                 AS data_scale,
   col.is_nullable                                                   AS "Null",
   CASE
   WHEN keycol.constraint_type IS NULL
@@ -148,8 +147,7 @@ SELECT
     THEN ''
   ELSE col.column_default
   END                                                               AS "Default",
-  col_description(col.table_name :: REGCLASS, col.ordinal_position) AS "Extra",
-  *
+  col_description(col.table_name :: REGCLASS, col.ordinal_position) AS "Extra"
 FROM
   information_schema.columns col
   -- Key
@@ -166,11 +164,11 @@ FROM
                      AND tc.table_schema = col.table_schema
                      AND tc.table_name = col.table_name
                      AND ccu.column_name = col.column_name
-              WHERE tc.table_name = '` + tableName + `'
+              WHERE tc.table_name = $1::text
             ) AS keycol
     ON keycol.column_name = col.column_name
 WHERE
-  col.table_name = '` + tableName + `'
+  col.table_name = $2::text
 ORDER BY
   col.table_name
   , col.ordinal_position
