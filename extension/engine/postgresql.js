@@ -13,6 +13,7 @@ module.exports = function PostgreSQLType() {
     this.OutputChannel = null;
     this.onConnectSetDB = null;
     this.currentStructure = null;
+    this.release = null;
 
     this.setOutput = function (OutputChannel) {
         this.OutputChannel = OutputChannel;
@@ -42,7 +43,9 @@ module.exports = function PostgreSQLType() {
             schema: this.schema,
         });
         var instancja = this;
-        this.connection.connect(function (err, client, done) {
+        this.connection.connect(function (err, client, release) {
+            instancja.release = release;
+            instancja.release();
             if (err) {
                 var errMsg = 'PostgreSQL Error: ' + err.stack;
                 vscode.window.showErrorMessage(errMsg);
@@ -54,7 +57,6 @@ module.exports = function PostgreSQLType() {
 
             // @Override
             menager.changeDatabase = function (name) {
-                //this.connect(this.host, this.user, this.password, )
                 this.currentDatabase = name;
                 vscode.window.showInformationMessage('Database changed');
                 this.showStatus();
@@ -107,6 +109,7 @@ module.exports = function PostgreSQLType() {
     this.query = function (sql, func, params) {
         var instancja = this;
         this.connection.query(sql, params, function (err, rows) {
+            instancja.release();
             if (err) {
                 var errMsg = 'PostgreSQL Error: ' + err.stack;
                 vscode.window.showErrorMessage(errMsg);
