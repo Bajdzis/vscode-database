@@ -71,9 +71,13 @@ module.exports = function Menager()
             this.currentServer.query(sql, func, params);
         }
     };
-    
+
+    this.getShowDatabaseSql = function(){
+        return this.currentServer.getShowDatabaseSql();
+    }
+
     this.changeDatabase = function(name){
-        this.query("USE " + name, null);
+        this.currentServer.changeDatabase(name);
         this.currentDatabase = name;
         vscode.window.showInformationMessage('Database changed');
         this.showStatus();
@@ -81,16 +85,7 @@ module.exports = function Menager()
 
     this.refrestStructureDataBase = function(){
         _this.currentStructure = {};
-        _this.query("SHOW tables ", function(results){
-            for (var i = 0; i < results.length; i++) {
-                var key = Object.keys(results[i])[0];
-                var tableName = results[i][key];
-                _this.query("SHOW COLUMNS FROM " + tableName, (function (tableName) { return function (columnStructure) {
-                    _this.currentStructure[tableName] = columnStructure;
-                }})(tableName) );
-            }
-        });
-        
+        this.currentServer.refrestStructureDataBase(_this.currentStructure);
     }
 
     this.getStructure = function(){
@@ -127,8 +122,9 @@ module.exports = function Menager()
     }
     
     this.changeServer = function(server){
-        this.currentDatabase = null;
+        this.currentDatabase = server.onConnectSetDB;
         this.currentServer = server;
+        _this.currentStructure = {};
         vscode.window.showInformationMessage('Server changed');
         this.showStatus();
         

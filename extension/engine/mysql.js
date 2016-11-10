@@ -69,5 +69,26 @@ module.exports = function MySQLType()
             }
         });
     };
-    
+
+    this.getShowDatabaseSql = function(){
+        return `SHOW DATABASES`;
+    };
+
+    this.changeDatabase = function(name){
+        this.query("USE " + name, null);
+    };
+
+    this.refrestStructureDataBase = function(currentStructure){
+        const that = this;
+        this.query("SHOW tables ", function(results){
+            for (var i = 0; i < results.length; i++) {
+                var key = Object.keys(results[i])[0];
+                var tableName = results[i][key];
+                that.query("SHOW COLUMNS FROM " + tableName, (function (tableName) { return function (columnStructure) {
+                    currentStructure[tableName] = columnStructure;
+                }})(tableName) );
+            }
+        });
+    }
+
 }

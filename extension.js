@@ -135,7 +135,7 @@ function activate(context) {
     
     addCommand(context, 'extension.changeDB', function () {
 
-        menager.query('SHOW DATABASES', function(results){
+        menager.query(menager.getShowDatabaseSql(), function(results){
             var allDatabase = [];
             
             for (var i = 0; i < results.length; i++) {
@@ -218,7 +218,7 @@ function activate(context) {
                 if(typeof onConnectSetDB === 'undefined'){
                     return;
                 }
-                vscode.window.showInputBox({value:"root", prompt: "e.g user", placeHolder: "Username", password: false}).then(function(output){
+                vscode.window.showInputBox({value:"postgres", prompt: "e.g user", placeHolder: "Username", password: false}).then(function(output){
 
                     user = output;
                     if(typeof user === 'undefined'){

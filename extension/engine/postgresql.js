@@ -12,7 +12,6 @@ module.exports = function PostgreSQLType() {
     this.schema = "public";
     this.OutputChannel = null;
     this.onConnectSetDB = null;
-    this.currentStructure = null;
     this.release = null;
 
     this.setOutput = function (OutputChannel) {
@@ -55,40 +54,6 @@ module.exports = function PostgreSQLType() {
 
             menager.registerNewServer(instancja);
 
-            // @Override
-            menager.changeDatabase = function (name) {
-                this.currentDatabase = name;
-                vscode.window.showInformationMessage('Database changed');
-                this.showStatus();
-            };
-
-            // @Override
-            menager.refrestStructureDataBase = function () {
-                this.currentStructure = {};
-                const that = this;
-                const selectTables = getSelectTableSql();
-                const params = [that.currentServer.schema];
-                this.query(selectTables, function (results) {
-                    for (var i = 0; i < results.length; i++) {
-                        const key = Object.keys(results[i])[0];
-                        const tableName = results[i][key];
-                        const selectColumns = getSelectColumnsSql(tableName);
-                        const params = [tableName, tableName];
-                        that.query(selectColumns, (function (tableName) {
-                            return function (columnStructure) {
-                                that.currentStructure[tableName] = columnStructure;
-                            }
-                        })(tableName), params);
-                    }
-                }, params);
-
-            }
-
-            // @Override
-            menager.getStructure = function () {
-                return this.currentStructure;
-            }
-
             if (instancja.onConnectSetDB !== null) {
                 menager.currentDatabase = instancja.onConnectSetDB;
                 vscode.window.showInformationMessage('Database changed');
@@ -121,6 +86,41 @@ module.exports = function PostgreSQLType() {
             }
         });
     };
+
+    this.getShowDatabaseSql = function(){
+        return getSelectSchemaSql();
+    };
+
+    this.changeDatabase = function (name) {
+        this.query("SET search_path to " + name, null);
+    };
+
+    this.refrestStructureDataBase = function (currentStructure) {
+        const that = this;
+        const selectTables = getSelectTableSql();
+        const tableParams = [that.schema];
+        this.query(selectTables, function (results) {
+            for (var i = 0; i < results.length; i++) {
+                const key = Object.keys(results[i])[0];
+                const tableName = results[i][key];
+                const selectColumns = getSelectColumnsSql(tableName);
+                const columnParams = [tableName, tableName];
+                that.query(selectColumns, (function (tableName) {
+                    return function (columnStructure) {
+                        currentStructure[tableName] = columnStructure;
+                    }
+                })(tableName), columnParams);
+            }
+        }, tableParams);
+
+    }
+
+    const getSelectSchemaSql = () =>
+`
+SELECT
+  schema_name AS "Database"
+FROM information_schema.schemata
+`;
 
     const getSelectTableSql = () =>
 `
