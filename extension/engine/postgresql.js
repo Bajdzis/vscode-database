@@ -1,119 +1,7 @@
 var pg = require('pg');
 var vscode = require('vscode');
+var AbstractServer = require('./AbstractServer.js');
 
-module.exports = function PostgreSQLType() {
-    this.connection = null;
-    this.name = "Noname";
-    this.type = "postgres";
-    this.host = "Empty";
-    this.port = "5432";
-    this.user = "Empty";
-    this.password = "Empty";
-    this.schema = "public";
-    this.OutputChannel = null;
-    this.onConnectSetDB = null;
-    this.release = null;
-
-    this.setOutput = function (OutputChannel) {
-        this.OutputChannel = OutputChannel;
-    };
-
-    this.outputMsg = function (msg) {
-        if (this.OutputChannel !== null) {
-            this.OutputChannel.appendLine(msg);
-        }
-    };
-
-    this.connect = function (host, user, password, menager) {
-        this.name = this.onConnectSetDB + "@" + host + " (postgres)";
-        var hostAndPort = host.split(":");
-        this.host = hostAndPort[0];
-        this.port = hostAndPort[1] || "5432";
-        this.user = user;
-        this.password = password;
-        this.connection = new pg.Pool({
-            user: user,
-            database: this.onConnectSetDB,
-            password: password,
-            host: this.host,
-            port: this.port,
-            max: 10,
-            idleTimeoutMillis: 30000,
-            schema: this.schema,
-        });
-        var instancja = this;
-        this.connection.connect(function (err, client, release) {
-            instancja.release = release;
-            instancja.release();
-            if (err) {
-                var errMsg = 'PostgreSQL Error: ' + err.stack;
-                vscode.window.showErrorMessage(errMsg);
-                instancja.outputMsg(errMsg);
-                return;
-            }
-
-            menager.registerNewServer(instancja);
-
-            if (instancja.onConnectSetDB !== null) {
-                menager.currentDatabase = instancja.onConnectSetDB;
-                vscode.window.showInformationMessage('Database changed');
-                menager.showStatus();
-            }
-
-        });
-
-        this.connection.on('error', function (err, client) {
-            var errMsg = 'PostgreSQL Error: ' + err.stack;
-            vscode.window.showErrorMessage(errMsg);
-            instancja.outputMsg(errMsg);
-            return;
-        })
-
-    };
-
-    this.query = function (sql, func, params) {
-        var instancja = this;
-        this.connection.query(sql, params, function (err, rows) {
-            instancja.release();
-            if (err) {
-                var errMsg = 'PostgreSQL Error: ' + err.stack;
-                vscode.window.showErrorMessage(errMsg);
-                instancja.outputMsg(errMsg);
-                return;
-            }
-            if (func !== null) {
-                func(rows.rows);
-            }
-        });
-    };
-
-    this.getShowDatabaseSql = function(){
-        return getSelectSchemaSql();
-    };
-
-    this.changeDatabase = function (name) {
-        this.query("SET search_path to " + name, null);
-    };
-
-    this.refrestStructureDataBase = function (currentStructure) {
-        const that = this;
-        const selectTables = getSelectTableSql();
-        const tableParams = [that.schema];
-        this.query(selectTables, function (results) {
-            for (var i = 0; i < results.length; i++) {
-                const key = Object.keys(results[i])[0];
-                const tableName = results[i][key];
-                const selectColumns = getSelectColumnsSql(tableName);
-                const columnParams = [tableName, tableName];
-                that.query(selectColumns, (function (tableName) {
-                    return function (columnStructure) {
-                        currentStructure[tableName] = columnStructure;
-                    }
-                })(tableName), columnParams);
-            }
-        }, tableParams);
-
-    }
 
     const getSelectSchemaSql = () =>
 `
@@ -176,6 +64,112 @@ ORDER BY
   col.table_name
   , col.ordinal_position
 `;
+
+
+module.exports = class PostgreSQLType extends AbstractServer{
+
+    constructor() {
+        super();
+        this.type = "postgres";
+        this.host = "Empty";
+        this.port = "5432";
+        this.user = "Empty";
+        this.password = "Empty";
+        this.schema = "public";
+        this.onConnectSetDB = null;
+        this.release = null;
+    }
+
+    connect (host, user, password, menager) {
+        this.name = this.onConnectSetDB + "@" + host + " (postgres)";
+        var hostAndPort = host.split(":");
+        this.host = hostAndPort[0];
+        this.port = hostAndPort[1] || "5432";
+        this.user = user;
+        this.password = password;
+        this.connection = new pg.Pool({
+            user: user,
+            database: this.onConnectSetDB,
+            password: password,
+            host: this.host,
+            port: this.port,
+            max: 10,
+            idleTimeoutMillis: 30000,
+            schema: this.schema,
+        });
+        var _this = this;
+        this.connection.connect(function (err, client, release) {
+            _this.release = release;
+            _this.release();
+            if (err) {
+                var errMsg = 'PostgreSQL Error: ' + err.stack;
+                vscode.window.showErrorMessage(errMsg);
+                _this.outputMsg(errMsg);
+                return;
+            }
+
+            menager.registerNewServer(_this);
+
+            if (_this.onConnectSetDB !== null) {
+                menager.currentDatabase = _this.onConnectSetDB;
+                vscode.window.showInformationMessage('Database changed');
+                menager.showStatus();
+            }
+
+        });
+
+        this.connection.on('error', function (err, client) {
+            var errMsg = 'PostgreSQL Error: ' + err.stack;
+            vscode.window.showErrorMessage(errMsg);
+            _this.outputMsg(errMsg);
+            return;
+        })
+
+    };
+
+    query (sql, func, params) {
+        var _this = this;
+        this.connection.query(sql, params, function (err, rows) {
+            _this.release();
+            if (err) {
+                var errMsg = 'PostgreSQL Error: ' + err.stack;
+                vscode.window.showErrorMessage(errMsg);
+                _this.outputMsg(errMsg);
+                return;
+            }
+            if (func !== null) {
+                func(rows.rows);
+            }
+        });
+    };
+
+    getShowDatabaseSql (){
+        return getSelectSchemaSql();
+    };
+
+    changeDatabase (name) {
+        this.query("SET search_path to " + name, null);
+    };
+
+    refrestStructureDataBase (currentStructure) {
+        const that = this;
+        const selectTables = getSelectTableSql();
+        const tableParams = [that.schema];
+        this.query(selectTables, function (results) {
+            for (var i = 0; i < results.length; i++) {
+                const key = Object.keys(results[i])[0];
+                const tableName = results[i][key];
+                const selectColumns = getSelectColumnsSql(tableName);
+                const columnParams = [tableName, tableName];
+                that.query(selectColumns, (function (tableName) {
+                    return function (columnStructure) {
+                        currentStructure[tableName] = columnStructure;
+                    }
+                })(tableName), columnParams);
+            }
+        }, tableParams);
+
+    }
 
 }
 

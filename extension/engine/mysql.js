@@ -1,19 +1,19 @@
 var mysql = require('mysql');
 var vscode = require('vscode');
+var AbstractServer = require('./AbstractServer.js');
 
-module.exports = function MySQLType()
+module.exports = class MySQLType extends AbstractServer
 {
-    this.connection = null;
-    this.name = "Noname";
-    this.type = "mysql";
-    this.host = "Empty";
-    this.port = "3306";
-    this.user = "Empty";
-    this.password = "Empty";
-    this.OutputChannel = null;
-    this.onConnectSetDB = null;
-
-    this.connect = function(host, user, password, menager){
+    constructor() {
+        super();
+        this.type = "mysql";
+        this.host = "Empty";
+        this.port = "3306";
+        this.user = "Empty";
+        this.password = "Empty";
+        this.onConnectSetDB = null;
+    }
+    connect (host, user, password, menager){
         this.name = host + " (mysql)";
         var hostAndPort = host.split(":");
         this.host = hostAndPort[0];
@@ -26,18 +26,18 @@ module.exports = function MySQLType()
             'user'     : user,
             'password' : password
         });
-        var instancja = this;
+        var _this = this;
         this.connection.connect(function(err) {
             if(err){
                 var errMsg = 'MySQL Error: ' + err.stack;
                 vscode.window.showErrorMessage(errMsg);
-                instancja.outputMsg(errMsg);
+                _this.outputMsg(errMsg);
                 return;
             }
-            menager.registerNewServer(instancja);
-            if(instancja.onConnectSetDB !== null){
-                instancja.query("USE " + instancja.onConnectSetDB, null);
-                menager.currentDatabase = instancja.onConnectSetDB;
+            menager.registerNewServer(_this);
+            if(_this.onConnectSetDB !== null){
+                _this.query("USE " + _this.onConnectSetDB, null);
+                menager.currentDatabase = _this.onConnectSetDB;
                 vscode.window.showInformationMessage('Database changed');
                 menager.showStatus();
             }
@@ -45,23 +45,15 @@ module.exports = function MySQLType()
 
     };
     
-    this.setOutput = function(OutputChannel){
-        this.OutputChannel = OutputChannel;
-    };
+
     
-    this.outputMsg = function(msg){
-        if(this.OutputChannel !== null){
-            this.OutputChannel.appendLine(msg);
-        }
-    };
-    
-    this.query = function(sql, func){
-        var instancja = this;
+    query (sql, func){
+        var _this = this;
         this.connection.query(sql,function(err,rows){
             if(err){
                 var errMsg = 'MySQL Error: ' + err.stack;
                 vscode.window.showErrorMessage(errMsg);
-                instancja.outputMsg(errMsg);
+                _this.outputMsg(errMsg);
                 return;
             }
             if(func !== null){
@@ -70,15 +62,15 @@ module.exports = function MySQLType()
         });
     };
 
-    this.getShowDatabaseSql = function(){
+    getShowDatabaseSql (){
         return `SHOW DATABASES`;
     };
 
-    this.changeDatabase = function(name){
+    changeDatabase (name){
         this.query("USE " + name, null);
     };
 
-    this.refrestStructureDataBase = function(currentStructure){
+    refrestStructureDataBase (currentStructure){
         const that = this;
         this.query("SHOW tables ", function(results){
             for (var i = 0; i < results.length; i++) {
