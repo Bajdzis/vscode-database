@@ -47,20 +47,14 @@ module.exports = function Menager()
     this.connect = function(type, host, user, password, onConnectSetDB){
         if(type == 'mysql'){
             var newServer = new MySQLType();
-            newServer.setOutput(this.OutputChannel);
-            newServer.onConnectSetDB = onConnectSetDB;
-            newServer.connect(host, user, password, this);
-            this.showStatus();
-            return newServer;
-        }
-        if(type == 'postgres'){
+        }else if(type == 'postgres'){
             var newServer = new PostgreSQLType();
-            newServer.setOutput(this.OutputChannel);
-            newServer.onConnectSetDB = onConnectSetDB;
-            newServer.connect(host, user, password, this);
-            this.showStatus();
-            return newServer;
         }
+        newServer.setOutput(this.OutputChannel);
+        newServer.onConnectSetDB = onConnectSetDB;
+        newServer.connect(host, user, password, this);
+        this.showStatus();
+        return newServer;
     };
     
     this.query = function(sql, func, params){

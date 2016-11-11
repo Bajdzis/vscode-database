@@ -32,6 +32,39 @@ function buildQuery() {
     }, this);
 
 }
+function getDataToConnect() {
+    var host, user;
+    return new Promise( (resolve, reject) => {
+        vscode.window.showInputBox({ value: "localhost", prompt: "e.g host, 127.0.0.1", placeHolder: "Host", password: false }).then( (output) => {
+            if (output === undefined) {
+                resolve(undefined);
+                return Promise.reject();
+            }
+            host = output;
+            return vscode.window.showInputBox({ value: "root", prompt: "e.g root/user", placeHolder: "Username", password: false });
+
+        }).then( (output) => {
+            if (output === undefined) {
+                resolve(undefined);
+                return Promise.reject();
+            }
+            user = output;
+            return vscode.window.showInputBox({ value: "", prompt: "e.g password", placeHolder: "Password", password: true });
+
+        }).then((password) => {
+            if (password === undefined) {
+                resolve(undefined);
+                return;
+            }
+            resolve({
+                host: host,
+                user: user,
+                password: password
+            });
+
+        })
+    });
+}
 function activate(context) {
 
 
@@ -148,7 +181,6 @@ function activate(context) {
             });
 
         });
-
         
 	});
     
@@ -175,67 +207,26 @@ function activate(context) {
         
 	});
     
-    addCommand(context,'extension.connectMySQL', function () {
-        var host, user, password;
-        vscode.window.showInputBox({value:"localhost", prompt: "e.g 127.0.0.1", placeHolder: "Host", password: false}).then(function(output){
-            
-            host = output;
-        
-            if(typeof host === 'undefined'){
+    addCommand(context, 'extension.connectMySQL', function () {
+        getDataToConnect().then((data) => {
+            if (data === undefined) {
                 return;
             }
-            vscode.window.showInputBox({value:"root", prompt: "e.g root", placeHolder: "Username", password: false}).then(function(output){
-                
-                user = output;
-                if(typeof user === 'undefined'){
-                    return;
-                }
-                vscode.window.showInputBox({value:"", prompt: "", placeHolder: "Password", password: true}).then(function(output){
-                    
-                    password = output;
-                    menager.connect('mysql', host, user, password, null);
-                });
-
-            });
-
+            menager.connect('mysql', data.host, data.user, data.password, null);
         });
+    });
 
-	});
-    
-    addCommand(context,'extension.connectPostgreSQL', function () {
-        var host, onConnectSetDB, user, password;
-        vscode.window.showInputBox({value:"localhost", prompt: "e.g host", placeHolder: "Host", password: false}).then(function(output){
-
-            host = output;
-
-            if(typeof host === 'undefined'){
-                return;
-            }
-            vscode.window.showInputBox({value:"postgres", prompt: "e.g database", placeHolder: "Database", password: false}).then(function(output){
-
+    addCommand(context, 'extension.connectPostgreSQL', function () {
+        var onConnectSetDB;
+        getDataToConnect().then((data) => {
+            vscode.window.showInputBox({ value: "postgres", prompt: "e.g database", placeHolder: "Database", password: false }).then(function (output) {
                 onConnectSetDB = output;
-
-                if(typeof onConnectSetDB === 'undefined'){
+                if (typeof onConnectSetDB === 'undefined') {
                     return;
                 }
-                vscode.window.showInputBox({value:"postgres", prompt: "e.g user", placeHolder: "Username", password: false}).then(function(output){
-
-                    user = output;
-                    if(typeof user === 'undefined'){
-                        return;
-                    }
-                    vscode.window.showInputBox({value:"", prompt: "e.g password", placeHolder: "Password", password: true}).then(function(output){
-
-                        password = output;
-                        menager.connect('postgres', host, user, password, onConnectSetDB);
-                    });
-
-                });
-
+                menager.connect('postgres', data.host, data.user, data.password, onConnectSetDB);
             });
-
         });
-
     });
 
     addCommand(context,'extension.querySQL', function () {
