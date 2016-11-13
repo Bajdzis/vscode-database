@@ -15,4 +15,8 @@ module.exports = class AbstractServer
             this.OutputChannel.appendLine(msg);
         }
     };
+
+    connectPromise(host, user, password){
+        return Promise.reject("No implement connectPromise");
+    };
 }

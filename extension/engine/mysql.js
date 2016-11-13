@@ -13,6 +13,7 @@ module.exports = class MySQLType extends AbstractServer
         this.password = "Empty";
         this.onConnectSetDB = null;
     }
+    
     connect (host, user, password, menager){
         this.name = host + " (mysql)";
         var hostAndPort = host.split(":");
@@ -44,7 +45,30 @@ module.exports = class MySQLType extends AbstractServer
         });
 
     };
-    
+
+    connectPromise(host, user, password) {
+        this.name = host + " (mysql)";
+        var hostAndPort = host.split(":");
+        this.host = hostAndPort[0];
+        this.port = hostAndPort[1] || "3306";
+        this.user = user;
+        this.password = password;
+        this.connection = mysql.createConnection({
+            'host': this.host,
+            'port': this.port,
+            'user': user,
+            'password': password
+        });
+        return new Promise((resolve, reject) => {
+            this.connection.connect(function (err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    };
 
     
     query (sql, func){

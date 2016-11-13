@@ -166,8 +166,8 @@ function activate(context) {
         
 	});
     
-    addCommand(context, 'extension.changeDB', function () {
 
+    function changeDB() {
         menager.query(menager.getShowDatabaseSql(), function(results){
             var allDatabase = [];
             
@@ -181,8 +181,9 @@ function activate(context) {
             });
 
         });
-        
-	});
+	}
+
+    addCommand(context, 'extension.changeDB', changeDB);
     
     addCommand(context, 'extension.changeServer', function () {
         var allServerName = [];
@@ -212,7 +213,11 @@ function activate(context) {
             if (data === undefined) {
                 return;
             }
-            menager.connect('mysql', data.host, data.user, data.password, null);
+            menager.connectPromise('mysql', data.host, data.user, data.password).then(() => {
+                changeDB();
+            }).catch((err) => {
+                vscode.window.showErrorMessage('MySQL Error: ' + err.stack);
+            });
         });
     });
 

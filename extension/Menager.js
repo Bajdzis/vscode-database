@@ -56,6 +56,24 @@ module.exports = function Menager()
         this.showStatus();
         return newServer;
     };
+
+    this.connectPromise = function(type, host, user, password){
+        if(type == 'mysql'){
+            var newServer = new MySQLType();
+        }else if(type == 'postgres'){
+            var newServer = new PostgreSQLType();
+        }
+        var _this = this;
+        newServer.setOutput(this.OutputChannel);
+        return new Promise((resolve, reject) => {
+            newServer.connectPromise(host, user, password).then(() => {
+                resolve();
+                _this.registerNewServer(newServer);
+                _this.showStatus();
+            }).catch(reject);
+        });
+
+    };
     
     this.query = function(sql, func, params){
         this.outputMsg(sql);
