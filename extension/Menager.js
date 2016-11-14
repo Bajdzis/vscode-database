@@ -169,8 +169,13 @@ module.exports = function Menager()
             this.outputMsg(data.message);
             this.outputMsg(table);
         }else if(typeof data === 'object'){
-            var table = asciiTable(data);
-            this.outputMsg(table);
+            const noResult = data.length === 0;
+            if (noResult) {
+                this.outputMsg("");
+            } else {
+                var table = asciiTable(data);
+                this.outputMsg(table);
+            }
         }else{
             this.outputMsg("ok");
         }
