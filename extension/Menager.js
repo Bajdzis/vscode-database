@@ -171,7 +171,7 @@ module.exports = function Menager()
         }else if(typeof data === 'object'){
             const noResult = data.length === 0;
             if (noResult) {
-                this.outputMsg("");
+                this.outputMsg("Query result 0 rows!");
             } else {
                 var table = asciiTable(data);
                 this.outputMsg(table);
