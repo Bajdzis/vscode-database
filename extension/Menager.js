@@ -107,9 +107,18 @@ module.exports = function Menager()
     this.getCompletionItem = function(){
         var completionItems = [];
         var databaseScructure = _this.getStructure();
+
+        const isMySQLType      = (_this.currentServer instanceof MySQLType);
+        const isPostgreSQLType = (_this.currentServer instanceof PostgreSQLType);
+        const getIdentifiedTableName = (tableName) => {
+            if (isMySQLType)      return "`"  + tableName + "`";
+            if (isPostgreSQLType) return "\"" + tableName + "\"";
+            return tableName;
+        };
+
         for( var tableName in databaseScructure ) {
             var tableItem = new vscode.CompletionItem(tableName);
-            tableItem.insertText = "`" + tableName + "`";
+            tableItem.insertText = getIdentifiedTableName(tableName);
             tableItem.kind = vscode.CompletionItemKind.Class;
             tableItem.detail = "Table";
             tableItem.documentation = databaseScructure[tableName].length + " columns :";
@@ -160,8 +169,13 @@ module.exports = function Menager()
             this.outputMsg(data.message);
             this.outputMsg(table);
         }else if(typeof data === 'object'){
-            var table = asciiTable(data);
-            this.outputMsg(table);
+            const noResult = data.length === 0;
+            if (noResult) {
+                this.outputMsg("");
+            } else {
+                var table = asciiTable(data);
+                this.outputMsg(table);
+            }
         }else{
             this.outputMsg("ok");
         }
