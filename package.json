@@ -2,7 +2,7 @@
   "name": "vscode-database",
   "displayName": "vscode-database",
   "description": "Support SQL database (mysql and postgres)",
-  "version": "1.0.1",
+  "version": "1.0.11",
   "publisher": "bajdzis",
   "icon": "icon.png",
   "engines": {
@@ -51,20 +51,25 @@
       }
     ],
     "keybindings": [
-        { "key": "Ctrl+q", "command": "extension.querySQL" },
-        { "key": "Ctrl+Alt+q", "command": "extension.queryBuild" }
+      {
+        "key": "Ctrl+q",
+        "command": "extension.querySQL"
+      },
+      {
+        "key": "Ctrl+Alt+q",
+        "command": "extension.queryBuild"
+      }
     ],
     "snippets": [
-			{
-				"language": "sql",
-				"path": "./snippets/main.json"
-			}
+      {
+        "language": "sql",
+        "path": "./snippets/main.json"
+      }
     ]
   },
   "dependencies": {
     "fs": "0.0.2",
-    "mssql": "^3.0.0",
-    "mysql": "^2.10.2",
+    "mysql": "^2.12.0",
     "pg": "^6.1.0"
   },
   "devDependencies": {
