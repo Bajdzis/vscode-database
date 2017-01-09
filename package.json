@@ -46,6 +46,10 @@
         "title": "SQL: Query Advancer Build"
       },
       {
+        "command": "extension.runQueryBuild",
+        "title": "SQL: Run Query Advancer Build"
+      },
+      {
         "command": "extension.saveConfig",
         "title": "SQL: Save current server"
       }
@@ -58,6 +62,11 @@
       {
         "key": "Ctrl+Alt+q",
         "command": "extension.queryBuild"
+      },
+      {
+        "key": "Ctrl+enter",
+        "mac": "cmd+enter",
+        "command": "extension.runQueryBuild"
       }
     ],
     "snippets": [

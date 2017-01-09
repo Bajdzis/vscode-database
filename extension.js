@@ -6,6 +6,16 @@ var menager = new Menager();
 var buildQueryFirstRun = true;
 function buildQuery() {
 
+    const root = vscode.workspace.rootPath;
+    if(typeof root === 'undefined'){
+        vscode.window.showInformationMessage("Open folder before Query Advancer Build");
+        return;
+    }
+    const existsDIR = fs.existsSync(root + '/.vscode/');
+    if(existsDIR === false){
+        fs.mkdirSync(root + '/.vscode/');
+    }
+
     var pathTempFile = vscode.workspace.rootPath + '/.vscode/temp.sql';
     var textDocumentTemp = null;
 
@@ -23,15 +33,50 @@ function buildQuery() {
     }
     buildQueryFirstRun = false;
 
-    vscode.workspace.onDidSaveTextDocument( function (document) {
-        if(textDocumentTemp === document){
-            menager.query(document.getText(), function(data){
-                menager.queryOutput(data);
-            });
-        }
-    }, this);
-
+    const confFiles = vscode.workspace.getConfiguration("files");
+    const autoSave = confFiles.get("autoSave", "off");
+    if (autoSave === "off") {
+        vscode.workspace.onDidSaveTextDocument( function (document) {
+            if(textDocumentTemp === document){
+                execQuery(document.getText());
+            }
+        }, this);
+    }
 }
+
+function runBuildQuery() {
+    const pathTempFile = vscode.workspace.rootPath + '/.vscode/temp.sql';
+    let textDocumentTemp = null;
+
+    if(fs.existsSync(pathTempFile) === false){
+        return buildQuery();
+    }
+
+    vscode.workspace.openTextDocument(vscode.Uri.file(pathTempFile)).then(function(document){
+        textDocumentTemp = document;
+        vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
+    });
+
+    execQuery(textDocumentTemp.getText());
+}
+
+function execQuery(query) {
+    if (!query) {
+        return;
+    }
+
+    query.split(";").forEach(sql => {
+        if (sql) {
+            const notEmpty = (sql.trim().replace(/(\r\n|\n|\r)/gm, "") !== "");
+            if (notEmpty) {
+                menager.query(sql, function(data){
+                    menager.queryOutput(data);
+                });
+            }
+        }
+    });
+}
+
 function getDataToConnect() {
     var host, user;
     return new Promise( (resolve, reject) => {
@@ -111,6 +156,8 @@ function activate(context) {
     }
 
     addCommand(context, 'extension.queryBuild', buildQuery);
+
+    addCommand(context, 'extension.runQueryBuild', runBuildQuery);
 
     addCommand(context, 'extension.saveConfig', function () {
         if(menager.currentServer === null){
