@@ -97,7 +97,7 @@ module.exports = function Menager()
 
     this.refrestStructureDataBase = function(){
         _this.currentStructure = {};
-        this.currentServer.refrestStructureDataBase(_this.currentStructure);
+        this.currentServer.refrestStructureDataBase(_this.currentStructure, _this.currentDatabase);
     }
 
     this.getStructure = function(){

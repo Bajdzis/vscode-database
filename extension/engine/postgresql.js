@@ -3,14 +3,14 @@ var vscode = require('vscode');
 var AbstractServer = require('./AbstractServer.js');
 
 
-    const getSelectSchemaSql = () =>
+    const SELECT_SCHEMA_SQL = 
 `
 SELECT
   schema_name AS "Database"
 FROM information_schema.schemata
 `;
 
-    const getSelectTableSql = () =>
+    const SELECT_TABLE_SQL = 
 `
 SELECT 
   table_name
@@ -18,7 +18,7 @@ FROM information_schema.tables
 WHERE table_schema = $1::text
 `;
 
-    const getSelectColumnsSql = () =>
+    const SELECT_COLUMNS_SQL = 
 `
 SELECT
   col.column_name                                                   AS "Field",
@@ -38,7 +38,7 @@ SELECT
     THEN ''
   ELSE col.column_default
   END                                                               AS "Default",
-  col_description(col.table_name :: REGCLASS, col.ordinal_position) AS "Extra"
+  col_description(to_regclass(col.table_name), col.ordinal_position) AS "Extra"
 FROM
   information_schema.columns col
   -- Key
@@ -144,22 +144,22 @@ module.exports = class PostgreSQLType extends AbstractServer{
     };
 
     getShowDatabaseSql (){
-        return getSelectSchemaSql();
+        return SELECT_SCHEMA_SQL;
     };
 
     changeDatabase (name) {
         this.query("SET search_path to " + name, null);
     };
 
-    refrestStructureDataBase (currentStructure) {
+    refrestStructureDataBase (currentStructure, currentDatabase) {
         const that = this;
-        const selectTables = getSelectTableSql();
-        const tableParams = [that.schema];
+        const selectTables = SELECT_TABLE_SQL;
+        const selectColumns = SELECT_COLUMNS_SQL;
+        const tableParams = [currentDatabase];
         this.query(selectTables, function (results) {
             for (var i = 0; i < results.length; i++) {
                 const key = Object.keys(results[i])[0];
                 const tableName = results[i][key];
-                const selectColumns = getSelectColumnsSql(tableName);
                 const columnParams = [tableName, tableName];
                 that.query(selectColumns, (function (tableName) {
                     return function (columnStructure) {
