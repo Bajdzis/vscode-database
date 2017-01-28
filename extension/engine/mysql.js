@@ -15,26 +15,7 @@ module.exports = class MySQLType extends AbstractServer
     }
     
     connect (host, user, password, menager){
-        this.name = host + " (mysql)";
-        var hostAndPort = host.split(":");
-        this.host = hostAndPort[0];
-        this.port = hostAndPort[1] || "3306";
-        this.user = user;
-        this.password = password;
-        this.connection = mysql.createConnection({
-            'host'     : this.host,
-            'port'     : this.port,
-            'user'     : user,
-            'password' : password
-        });
-        var _this = this;
-        this.connection.connect(function(err) {
-            if(err){
-                var errMsg = 'MySQL Error: ' + err.stack;
-                vscode.window.showErrorMessage(errMsg);
-                _this.outputMsg(errMsg);
-                return;
-            }
+        connectPromise(host, user, password).then(function(){
             menager.registerNewServer(_this);
             if(_this.onConnectSetDB !== null){
                 _this.query("USE " + _this.onConnectSetDB, null);
@@ -42,8 +23,10 @@ module.exports = class MySQLType extends AbstractServer
                 vscode.window.showInformationMessage('Database changed');
                 menager.showStatus();
             }
-        });
-
+        }).catch(errMsg => {
+            vscode.window.showErrorMessage(errMsg);
+            _this.outputMsg(errMsg);
+        })
     };
 
     connectPromise(host, user, password) {
@@ -62,7 +45,7 @@ module.exports = class MySQLType extends AbstractServer
         return new Promise((resolve, reject) => {
             this.connection.connect(function (err) {
                 if (err) {
-                    reject(err);
+                    reject('MySQL Error: ' + err.stack);
                 } else {
                     resolve();
                 }
@@ -70,21 +53,24 @@ module.exports = class MySQLType extends AbstractServer
         });
     };
 
-    
     query (sql, func){
-        var _this = this;
-        this.connection.query(sql,function(err,rows){
-            if(err){
-                var errMsg = 'MySQL Error: ' + err.stack;
-                vscode.window.showErrorMessage(errMsg);
-                _this.outputMsg(errMsg);
-                return;
-            }
-            if(func !== null){
-                func(rows);
-            }
-        });
+        this.queryPromise(sql).then(func).catch(function(errMsg){
+            vscode.window.showErrorMessage(errMsg);
+            _this.outputMsg(errMsg);
+        })
     };
+
+    queryPromise(sql){
+        return new Promise((resolve, reject) => {
+            this.connection.query(sql, (err, rows) => {
+                if(err){
+                    reject('MySQL Error: ' + err.stack);
+                    return;
+                }
+                resolve(rows);
+            });
+        });
+    }
 
     getShowDatabaseSql (){
         return `SHOW DATABASES`;

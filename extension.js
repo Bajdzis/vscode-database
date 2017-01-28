@@ -263,7 +263,7 @@ function activate(context) {
             menager.connectPromise('mysql', data.host, data.user, data.password).then(() => {
                 changeDB();
             }).catch((err) => {
-                vscode.window.showErrorMessage('MySQL Error: ' + err.stack);
+                vscode.window.showErrorMessage(err);
             });
         });
     });

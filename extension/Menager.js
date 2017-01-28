@@ -43,13 +43,17 @@ module.exports = function Menager()
         }
         this.OutputChannel.appendLine(msg);
     };
+
+    this.factoryServer = function(type){
+        if(type == 'mysql'){
+            return new MySQLType();
+        }else if(type == 'postgres'){
+            return new PostgreSQLType();
+        }
+    };
     
     this.connect = function(type, host, user, password, onConnectSetDB){
-        if(type == 'mysql'){
-            var newServer = new MySQLType();
-        }else if(type == 'postgres'){
-            var newServer = new PostgreSQLType();
-        }
+        var newServer = this.factoryServer(type);
         newServer.setOutput(this.OutputChannel);
         newServer.onConnectSetDB = onConnectSetDB;
         newServer.connect(host, user, password, this);
@@ -58,11 +62,7 @@ module.exports = function Menager()
     };
 
     this.connectPromise = function(type, host, user, password){
-        if(type == 'mysql'){
-            var newServer = new MySQLType();
-        }else if(type == 'postgres'){
-            var newServer = new PostgreSQLType();
-        }
+        var newServer = this.factoryServer(type);
         var _this = this;
         newServer.setOutput(this.OutputChannel);
         return new Promise((resolve, reject) => {
