@@ -4,7 +4,11 @@ var fs = require('fs');
 var Menager = require('./extension/Menager.js');
 var menager = new Menager();
 var buildQueryFirstRun = true;
-function buildQuery() {
+var buildQueryDocument = null;
+function getBuildQueryDocument(){
+    if(buildQueryDocument !== null){
+        return Promise.resolve(buildQueryDocument);
+    }
 
     const root = vscode.workspace.rootPath;
     if(typeof root === 'undefined'){
@@ -17,47 +21,43 @@ function buildQuery() {
     }
 
     var pathTempFile = vscode.workspace.rootPath + '/.vscode/temp.sql';
-    var textDocumentTemp = null;
 
     if(fs.existsSync(pathTempFile) === false){
         fs.writeFileSync(pathTempFile, "");
     }
 
-    vscode.workspace.openTextDocument(vscode.Uri.file(pathTempFile)).then(function(document){
-        textDocumentTemp = document;
-        vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
+    return new Promise((resolve, reject) => {
+        vscode.workspace.openTextDocument(vscode.Uri.file(pathTempFile)).then(function(document){
+            buildQueryDocument = document;
+            resolve(document);
+        }).catch(reject);
     });
 
-    if(buildQueryFirstRun === false){
-        return;
-    }
-    buildQueryFirstRun = false;
+}
+function buildQuery() {
+    getBuildQueryDocument().then((textDocumentTemp) => {
+        vscode.window.showTextDocument(textDocumentTemp, vscode.ViewColumn.One, false);
+        if(buildQueryFirstRun === false){
+            return;
+        }
+        buildQueryFirstRun = false;
 
-    const confFiles = vscode.workspace.getConfiguration("files");
-    const autoSave = confFiles.get("autoSave", "off");
-    if (autoSave === "off") {
-        vscode.workspace.onDidSaveTextDocument( function (document) {
-            if(textDocumentTemp === document){
-                execQuery(document.getText());
-            }
-        }, this);
-    }
+        const confFiles = vscode.workspace.getConfiguration("files");
+        const autoSave = confFiles.get("autoSave", "off");
+        if (autoSave === "off") {
+            vscode.workspace.onDidSaveTextDocument( (document) => {
+                if(textDocumentTemp === document){
+                    execQuery(document.getText());
+                }
+            }, this);
+        }
+    });
 }
 
 function runBuildQuery() {
-    const pathTempFile = vscode.workspace.rootPath + '/.vscode/temp.sql';
-    let textDocumentTemp = null;
-
-    if(fs.existsSync(pathTempFile) === false){
-        return buildQuery();
-    }
-
-    vscode.workspace.openTextDocument(vscode.Uri.file(pathTempFile)).then(function(document){
-        textDocumentTemp = document;
-        vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
+    getBuildQueryDocument().then((document) => {
+        execQuery(document.getText());
     });
-
-    execQuery(textDocumentTemp.getText());
 }
 
 function execQuery(query) {
