@@ -9,7 +9,6 @@ module.exports = function Menager()
     var _this = this;
     this.server = [];
     this.currentServer = null;
-    this.currentDatabase = null;
     this.statusBarItem = null;
     this.OutputChannel = null;
     
@@ -26,10 +25,10 @@ module.exports = function Menager()
         }else{
             msg += this.currentServer.name  + ' > ';
         }
-        if(this.currentDatabase === null){
+        if(this.getCurrentDatabase() === null){
             msg += 'Database not selected';
         }else{
-            msg += this.currentDatabase;
+            msg += this.getCurrentDatabase();
             this.refrestStructureDataBase();
         }
         this.statusBarItem.text = msg;
@@ -89,15 +88,22 @@ module.exports = function Menager()
     }
 
     this.changeDatabase = function(name){
-        this.currentServer.changeDatabase(name);
-        this.currentDatabase = name;
-        vscode.window.showInformationMessage('Database changed');
-        this.showStatus();
+        this.currentServer.changeDatabase(name).then(() => {
+            vscode.window.showInformationMessage('Database changed');
+            this.showStatus();
+        });
+    };
+
+    this.getCurrentDatabase = function () {
+        if(this.currentServer === null){
+            return null;
+        }
+        return this.currentServer.currentDatabase;
     };
 
     this.refrestStructureDataBase = function(){
         _this.currentStructure = {};
-        this.currentServer.refrestStructureDataBase(_this.currentStructure, _this.currentDatabase);
+        this.currentServer.refrestStructureDataBase(_this.currentStructure);
     }
 
     this.getStructure = function(){
@@ -143,7 +149,6 @@ module.exports = function Menager()
     }
     
     this.changeServer = function(server){
-        this.currentDatabase = server.onConnectSetDB;
         this.currentServer = server;
         _this.currentStructure = {};
         vscode.window.showInformationMessage('Server changed');

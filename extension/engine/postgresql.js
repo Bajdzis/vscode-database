@@ -80,6 +80,15 @@ module.exports = class PostgreSQLType extends AbstractServer{
         this.release = null;
     }
 
+    /**
+     * @todo delete and create connectPromise
+     * @deprecated new implement is connectPromise
+     * @param {string} host
+     * @param {string} user
+     * @param {string} password
+     * @param {Menager} menager
+     * @return {Promise}
+     */
     connect (host, user, password, menager) {
         this.name = this.onConnectSetDB + "@" + host + " (postgres)";
         var hostAndPort = host.split(":");
@@ -111,7 +120,7 @@ module.exports = class PostgreSQLType extends AbstractServer{
             menager.registerNewServer(_this);
 
             if (_this.onConnectSetDB !== null) {
-                menager.currentDatabase = _this.onConnectSetDB;
+                _this.currentDatabase = _this.onConnectSetDB;
                 vscode.window.showInformationMessage('Database changed');
                 menager.showStatus();
             }
@@ -127,35 +136,68 @@ module.exports = class PostgreSQLType extends AbstractServer{
 
     };
 
-    query (sql, func, params) {
-        var _this = this;
-        this.connection.query(sql, params, function (err, rows) {
-            _this.release();
-            if (err) {
-                var errMsg = 'PostgreSQL Error: ' + err.stack;
-                vscode.window.showErrorMessage(errMsg);
-                _this.outputMsg(errMsg);
-                return;
-            }
-            if (func !== null) {
-                func(rows.rows);
-            }
+    /**
+     * @param {string} sql
+     * @param {object} params
+     * @return {Promise}
+     */
+    queryPromise(sql, params){
+        return new Promise((resolve, reject) => {
+            this.connection.query(sql, params, (err, rows) => {
+                this.release();
+                if (err) {
+                    reject('PostgreSQL Error: ' + err.stack);
+                    return;
+                }
+                resolve(rows.rows);
+            });
         });
+    }
+
+    /**
+     * @deprecated new implement is queryPromise
+     * @param {string} sql
+     * @param {function} func - callback
+     * @param {object} params
+     */
+    query (sql, func, params){
+        this.queryPromise(sql, params).then(func).catch(function(errMsg){
+            vscode.window.showErrorMessage(errMsg);
+            _this.outputMsg(errMsg);
+        })
     };
 
+    /**
+     * @param {object}
+     */
     getShowDatabaseSql (){
         return SELECT_SCHEMA_SQL;
     };
 
+    /**
+     * @param {string} name - name Database
+     * @return {Promise}
+     */
     changeDatabase (name) {
-        this.query("SET search_path to " + name, null);
+        return new Promise((resolve, reject) => {
+            this.queryPromise("SET search_path to " + name).then(() => {
+                this.currentDatabase = name;
+                resolve();
+            }).catch(() => {
+                this.currentDatabase = null;
+                reject();
+            });
+        });
     };
 
-    refrestStructureDataBase (currentStructure, currentDatabase) {
+    /**
+     * @param {object} currentStructure - save new structure to this params
+     */
+    refrestStructureDataBase (currentStructure) {
         const that = this;
         const selectTables = SELECT_TABLE_SQL;
         const selectColumns = SELECT_COLUMNS_SQL;
-        const tableParams = [currentDatabase];
+        const tableParams = [that.currentDatabase];
         this.query(selectTables, function (results) {
             for (var i = 0; i < results.length; i++) {
                 const key = Object.keys(results[i])[0];

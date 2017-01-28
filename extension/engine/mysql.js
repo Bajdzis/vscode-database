@@ -14,21 +14,36 @@ module.exports = class MySQLType extends AbstractServer
         this.onConnectSetDB = null;
     }
     
+    /**
+     * @todo delete and change start connect from JSON in extension.js
+     * @deprecated new implement is connectPromise
+     * @param {string} host
+     * @param {string} user
+     * @param {string} password
+     * @param {Menager} menager
+     */
     connect (host, user, password, menager){
-        connectPromise(host, user, password).then(function(){
-            menager.registerNewServer(_this);
-            if(_this.onConnectSetDB !== null){
-                _this.query("USE " + _this.onConnectSetDB, null);
-                menager.currentDatabase = _this.onConnectSetDB;
-                vscode.window.showInformationMessage('Database changed');
-                menager.showStatus();
+        this.connectPromise(host, user, password).then(() => {
+            menager.registerNewServer(this);
+            if(this.onConnectSetDB !== null){
+                this.changeDatabase(this.onConnectSetDB).then(()=>{
+                    menager.currentDatabase = this.onConnectSetDB;
+                    vscode.window.showInformationMessage('Database changed');
+                    menager.showStatus();
+                });
             }
         }).catch(errMsg => {
             vscode.window.showErrorMessage(errMsg);
-            _this.outputMsg(errMsg);
+            this.outputMsg(errMsg);
         })
     };
 
+    /**
+     * @param {string} host
+     * @param {string} user
+     * @param {string} password
+     * @return {Promise}
+     */
     connectPromise(host, user, password) {
         this.name = host + " (mysql)";
         var hostAndPort = host.split(":");
@@ -53,6 +68,11 @@ module.exports = class MySQLType extends AbstractServer
         });
     };
 
+    /**
+     * @deprecated new implement is queryPromise
+     * @param {string} sql
+     * @param {function} func - callback
+     */
     query (sql, func){
         this.queryPromise(sql).then(func).catch(function(errMsg){
             vscode.window.showErrorMessage(errMsg);
@@ -60,6 +80,10 @@ module.exports = class MySQLType extends AbstractServer
         })
     };
 
+    /**
+     * @param {string} sql
+     * @return {Promise}
+     */
     queryPromise(sql){
         return new Promise((resolve, reject) => {
             this.connection.query(sql, (err, rows) => {
@@ -72,23 +96,40 @@ module.exports = class MySQLType extends AbstractServer
         });
     }
 
+    /**
+     * @return {string}
+     */
     getShowDatabaseSql (){
         return `SHOW DATABASES`;
     };
 
+    /**
+     * @param {string} name - name Database
+     * @return {Promise}
+     */
     changeDatabase (name){
-        this.query("USE " + name, null);
+        return new Promise((resolve, reject) => {
+            this.queryPromise("USE " + name).then(() => {
+                this.currentDatabase = name;
+                resolve();
+            }).catch(() => {
+                this.currentDatabase = null;
+                reject();
+            });
+        });
     };
 
-    refrestStructureDataBase (currentStructure, currentDatabase){
-        const that = this;
-        this.query("SHOW tables ", function(results){
-            for (var i = 0; i < results.length; i++) {
-                var key = Object.keys(results[i])[0];
-                var tableName = results[i][key];
-                that.query("SHOW COLUMNS FROM " + tableName, (function (tableName) { return function (columnStructure) {
+    /**
+     * @param {object} currentStructure - save new structure to this params
+     */
+    refrestStructureDataBase (currentStructure){
+        this.queryPromise("SHOW tables").then(results => {
+            for (let i = 0; i < results.length; i++) {
+                let key = Object.keys(results[i])[0];
+                let tableName = results[i][key];
+                this.queryPromise("SHOW COLUMNS FROM " + tableName).then(columnStructure => {
                     currentStructure[tableName] = columnStructure;
-                }})(tableName) );
+                });
             }
         });
     }
