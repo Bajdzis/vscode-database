@@ -4,15 +4,16 @@ var asciiTable = require('./AsciiTable.js');
 
 var MySQLType = require('./engine/mysql.js');
 var PostgreSQLType = require('./engine/postgresql.js');
-module.exports = function Menager()
-{
-    var _this = this;
-    this.server = [];
-    this.currentServer = null;
-    this.statusBarItem = null;
-    this.OutputChannel = null;
-    
-    this.showStatus = function(){
+module.exports = class Menager {
+
+    constructor() {
+        this.server = [];
+        this.currentServer = null;
+        this.statusBarItem = null;
+        this.OutputChannel = null;
+    };
+
+    showStatus(){
         var msg = '$(database) ';
         if(this.statusBarItem === null){
             this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
@@ -35,15 +36,15 @@ module.exports = function Menager()
         this.statusBarItem.show();
         
     };
-    
-    this.outputMsg = function(msg){
+
+    outputMsg (msg){
         if(this.OutputChannel === null){
             this.OutputChannel = vscode.window.createOutputChannel("database");
         }
         this.OutputChannel.appendLine(msg);
     };
 
-    this.factoryServer = function(type){
+    factoryServer (type){
         if(type == 'mysql'){
             return new MySQLType();
         }else if(type == 'postgres'){
@@ -51,7 +52,7 @@ module.exports = function Menager()
         }
     };
     
-    this.connect = function(type, host, user, password, onConnectSetDB){
+    connect (type, host, user, password, onConnectSetDB){
         var newServer = this.factoryServer(type);
         newServer.setOutput(this.OutputChannel);
         newServer.onConnectSetDB = onConnectSetDB;
@@ -60,7 +61,7 @@ module.exports = function Menager()
         return newServer;
     };
 
-    this.connectPromise = function(type, host, user, password){
+    connectPromise (type, host, user, password){
         var newServer = this.factoryServer(type);
         var _this = this;
         newServer.setOutput(this.OutputChannel);
@@ -74,7 +75,7 @@ module.exports = function Menager()
 
     };
     
-    this.query = function(sql, func, params){
+    query (sql, func, params){
         this.outputMsg(sql);
         if(this.currentServer === null){
             vscode.window.showErrorMessage('Server not selected');
@@ -83,39 +84,39 @@ module.exports = function Menager()
         }
     };
 
-    this.getShowDatabaseSql = function(){
+    getShowDatabaseSql (){
         return this.currentServer.getShowDatabaseSql();
-    }
+    };
 
-    this.changeDatabase = function(name){
+    changeDatabase (name){
         this.currentServer.changeDatabase(name).then(() => {
             vscode.window.showInformationMessage('Database changed');
             this.showStatus();
         });
     };
 
-    this.getCurrentDatabase = function () {
+    getCurrentDatabase () {
         if(this.currentServer === null){
             return null;
         }
         return this.currentServer.currentDatabase;
     };
 
-    this.refrestStructureDataBase = function(){
-        _this.currentStructure = {};
-        this.currentServer.refrestStructureDataBase(_this.currentStructure);
-    }
+    refrestStructureDataBase (){
+        this.currentStructure = {};
+        this.currentServer.refrestStructureDataBase(this.currentStructure);
+    };
 
-    this.getStructure = function(){
-        return _this.currentStructure;
-    }
+    getStructure (){
+        return this.currentStructure;
+    };
 
-    this.getCompletionItem = function(){
+    getCompletionItem (){
         var completionItems = [];
-        var databaseScructure = _this.getStructure();
+        var databaseScructure = this.getStructure();
 
-        const isMySQLType      = (_this.currentServer instanceof MySQLType);
-        const isPostgreSQLType = (_this.currentServer instanceof PostgreSQLType);
+        const isMySQLType      = (this.currentServer instanceof MySQLType);
+        const isPostgreSQLType = (this.currentServer instanceof PostgreSQLType);
         const getIdentifiedTableName = (tableName) => {
             if (isMySQLType)      return "`"  + tableName + "`";
             if (isPostgreSQLType) return "\"" + tableName + "\"";
@@ -146,22 +147,22 @@ module.exports = function Menager()
             completionItems.push(tableItem);
         }
         return completionItems;
-    }
+    };
     
-    this.changeServer = function(server){
+    changeServer (server){
         this.currentServer = server;
-        _this.currentStructure = {};
+        this.currentStructure = {};
         vscode.window.showInformationMessage('Server changed');
         this.showStatus();
         
     };
     
-    this.registerNewServer = function(obj){
+    registerNewServer (obj){
         this.server.push(obj);
         this.changeServer(obj);
     };
     
-    this.queryOutput = function(data){
+    queryOutput (data){
         if(typeof data.message !== 'undefined'){
             var table = asciiTable([{
                 fieldCount: data.fieldCount,
@@ -189,7 +190,7 @@ module.exports = function Menager()
         }
     };
     
-    this.changeServerAlias = function(server){
+    changeServerAlias (server){
         if(this.currentServer === null){
             return false;
         }

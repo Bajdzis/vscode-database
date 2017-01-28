@@ -161,9 +161,9 @@ module.exports = class PostgreSQLType extends AbstractServer{
      * @param {object} params
      */
     query (sql, func, params){
-        this.queryPromise(sql, params).then(func).catch(function(errMsg){
+        this.queryPromise(sql, params).then(func).catch((errMsg) => {
             vscode.window.showErrorMessage(errMsg);
-            _this.outputMsg(errMsg);
+            this.outputMsg(errMsg);
         })
     };
 
