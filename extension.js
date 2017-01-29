@@ -142,13 +142,20 @@ function activate(context) {
                 }
                 var databases = config['extension.databases'];
                 for(var index in databases){
-                    var database = null;
+                    let database = null;
                     if(typeof databases[index].database !== "undefined"){
-                        database = databases[index].database;
+                       database = databases[index].database;
                     }
-                    var server = menager.connect(databases[index].type, databases[index].host, databases[index].user, databases[index].password, database);
-                    server.name = databases[index].name;
-                    menager.showStatus();
+                    menager.connectPromise(databases[index].type, databases[index].host, databases[index].user, databases[index].password).then((server) => {
+                        server.name = databases[index].name;
+                        if(database !== null){
+                            server.changeDatabase(database).then(() => {
+                                menager.showStatus();
+                            });
+                        }
+                    }).catch(function(err){
+                        console.log(err);
+                    });
                 }
             });
 
@@ -215,19 +222,15 @@ function activate(context) {
     
 
     function changeDB() {
-        menager.query(menager.getShowDatabaseSql(), function(results){
-            var allDatabase = [];
-            
-            for (var i = 0; i < results.length; i++) {
-                allDatabase.push(results[i].Database);
-            }
-            vscode.window.showQuickPick(allDatabase,{matchOnDescription:false, placeHolder:"Choice database"}).then(function(object){
+
+        menager.getDatabase().then((databaseList) => {
+            vscode.window.showQuickPick(databaseList ,{matchOnDescription:false, placeHolder:"Choice database"}).then(function(object){
                 if(typeof object !== 'undefined'){
                     menager.changeDatabase(object);
                 }
             });
+        })
 
-        });
 	}
 
     addCommand(context, 'extension.changeDB', changeDB);
@@ -269,14 +272,14 @@ function activate(context) {
     });
 
     addCommand(context, 'extension.connectPostgreSQL', function () {
-        var onConnectSetDB;
         getDataToConnect().then((data) => {
-            vscode.window.showInputBox({ value: "postgres", prompt: "e.g database", placeHolder: "Database", password: false }).then(function (output) {
-                onConnectSetDB = output;
-                if (typeof onConnectSetDB === 'undefined') {
-                    return;
-                }
-                menager.connect('postgres', data.host, data.user, data.password, onConnectSetDB);
+            if (data === undefined) {
+                return;
+            }
+            menager.connectPromise('postgres', data.host, data.user, data.password).then(() => {
+                changeDB();
+            }).catch((err) => {
+                vscode.window.showErrorMessage(err);
             });
         });
     });

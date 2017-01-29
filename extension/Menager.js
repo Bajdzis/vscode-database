@@ -67,9 +67,9 @@ module.exports = class Menager {
         newServer.setOutput(this.OutputChannel);
         return new Promise((resolve, reject) => {
             newServer.connectPromise(host, user, password).then(() => {
-                resolve();
                 _this.registerNewServer(newServer);
                 _this.showStatus();
+                resolve(newServer);
             }).catch(reject);
         });
 
@@ -84,13 +84,13 @@ module.exports = class Menager {
         }
     };
 
-    getShowDatabaseSql (){
-        return this.currentServer.getShowDatabaseSql();
+    getDatabase (){
+        return this.currentServer.getDatabase();
     };
 
     changeDatabase (name){
         this.currentServer.changeDatabase(name).then(() => {
-            vscode.window.showInformationMessage('Database changed');
+            vscode.window.showInformationMessage('Database changed : ' + name);
             this.showStatus();
         });
     };
@@ -103,8 +103,10 @@ module.exports = class Menager {
     };
 
     refrestStructureDataBase (){
-        this.currentStructure = {};
-        this.currentServer.refrestStructureDataBase(this.currentStructure);
+        this.currentServer.refrestStructureDataBase().then((structure) => {
+            this.currentStructure = structure;
+            console.log("refrestStructureDataBase", structure);
+        });
     };
 
     getStructure (){
@@ -152,7 +154,7 @@ module.exports = class Menager {
     changeServer (server){
         this.currentServer = server;
         this.currentStructure = {};
-        vscode.window.showInformationMessage('Server changed');
+        vscode.window.showInformationMessage('Server changed : '+ server.name);
         this.showStatus();
         
     };

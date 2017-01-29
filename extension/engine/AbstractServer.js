@@ -45,4 +45,11 @@ module.exports = class AbstractServer
      * @param {object} currentStructure - save new structure to this params
      */
     refrestStructureDataBase (currentStructure) { }
+
+    /**
+     * @return {Promise<string[], Error|string>}
+     */
+    getDatabase(){
+        return Promise.resolve([]);
+    }
 }
