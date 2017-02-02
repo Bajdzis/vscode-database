@@ -27,9 +27,10 @@ module.exports = class AbstractServer
      * @param {string} host
      * @param {string} user
      * @param {string} password
+     * @param {string|undefined} database
      * @return {Promise}
      */
-    connectPromise(host, user, password){
+    connectPromise(host, user, password, database){
         return Promise.reject("No implement connectPromise");
     };
 
@@ -45,4 +46,11 @@ module.exports = class AbstractServer
      * @param {object} currentStructure - save new structure to this params
      */
     refrestStructureDataBase (currentStructure) { }
+
+    /**
+     * @return {Promise<string[], Error|string>}
+     */
+    getDatabase(){
+        return Promise.resolve([]);
+    }
 }

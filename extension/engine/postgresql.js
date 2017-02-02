@@ -2,6 +2,12 @@ var pg = require('pg');
 var vscode = require('vscode');
 var AbstractServer = require('./AbstractServer.js');
 
+    const SELECT_DATABSE_SQL = 
+`
+SELECT datname AS "Database" 
+FROM pg_database 
+WHERE datistemplate = false;
+`;
 
     const SELECT_SCHEMA_SQL = 
 `
@@ -75,67 +81,66 @@ module.exports = class PostgreSQLType extends AbstractServer{
         this.port = "5432";
         this.user = "Empty";
         this.password = "Empty";
+        this.database = undefined;
         this.schema = "public";
         this.onConnectSetDB = null;
         this.release = null;
     }
 
     /**
-     * @todo delete and create connectPromise
-     * @deprecated new implement is connectPromise
      * @param {string} host
      * @param {string} user
      * @param {string} password
-     * @param {Menager} menager
+     * @param {string} [database="postgres"]
+     * @param {string} [schema="public"]
      * @return {Promise}
      */
-    connect (host, user, password, menager) {
-        this.name = this.onConnectSetDB + "@" + host + " (postgres)";
+    connectPromise(host, user, password, database, schema){
+        this.name = user + "@" + host + " (postgres)";
         var hostAndPort = host.split(":");
         this.host = hostAndPort[0];
         this.port = hostAndPort[1] || "5432";
         this.user = user;
         this.password = password;
+        this.database = database || "postgres";
+        this.schema = schema || "public";
         this.connection = new pg.Pool({
-            user: user,
-            database: this.onConnectSetDB,
-            password: password,
+            user: this.user,
+            database: this.database,
+            password: this.password,
             host: this.host,
             port: this.port,
             max: 10,
             idleTimeoutMillis: 30000,
             schema: this.schema,
         });
-        var _this = this;
-        this.connection.connect(function (err, client, release) {
-            _this.release = release;
-            _this.release();
-            if (err) {
-                var errMsg = 'PostgreSQL Error: ' + err.stack;
-                vscode.window.showErrorMessage(errMsg);
-                _this.outputMsg(errMsg);
-                return;
-            }
-
-            menager.registerNewServer(_this);
-
-            if (_this.onConnectSetDB !== null) {
-                _this.currentDatabase = _this.onConnectSetDB;
-                vscode.window.showInformationMessage('Database changed');
-                menager.showStatus();
-            }
-
+        return new Promise((resolve, reject) => {
+            this.connection.connect((err, client, release) => {
+                this.release = release;
+                this.release();
+                if (err) {
+                    reject('PostgreSQL Error: ' + err.stack);
+                    return;
+                }
+                resolve();
+            });
+            this.connection.on('error', function (err, client) {
+                reject('PostgreSQL Error: ' + err.stack);
+            });
         });
-
-        this.connection.on('error', function (err, client) {
-            var errMsg = 'PostgreSQL Error: ' + err.stack;
-            vscode.window.showErrorMessage(errMsg);
-            _this.outputMsg(errMsg);
-            return;
-        })
-
     };
 
+    /**
+     * @return {Promise}
+     */
+    closeConnect(){
+        return new Promise((resolve, reject) => {
+            this.connection.end().then(() => {
+                this.connection = null;
+                resolve();
+            }).catch(reject);
+        });
+    };
     /**
      * @param {string} sql
      * @param {object} params
@@ -168,48 +173,106 @@ module.exports = class PostgreSQLType extends AbstractServer{
     };
 
     /**
-     * @param {object}
+     * @return {Promise}
      */
-    getShowDatabaseSql (){
-        return SELECT_SCHEMA_SQL;
-    };
+    getDatabase(){
+        return new Promise((resolve, reject) => {
+            Promise.all([
+                this.queryPromise(SELECT_DATABSE_SQL),
+                this.queryPromise(SELECT_SCHEMA_SQL)
+            ]).then(results => {
+                var database = results[0];
+                var schema = results[1];
+                var allDatabase = [];
+                for (var i = 0; i < database.length; i++) {
+                    allDatabase.push(database[i].Database);
+                }
+                if(this.currentDatabase === null){
+                    resolve(allDatabase);
+                    return;
+                }
+                for (var i = 0; i < schema.length; i++) {
+                    allDatabase.push(this.currentDatabase + "." + schema[i].Database);
+                }
+                resolve(allDatabase);
+            }).catch(reject);
+        });
+    }
 
     /**
-     * @param {string} name - name Database
+     * @param {string} name - name Database or Database.schema
      * @return {Promise}
      */
     changeDatabase (name) {
+        var databaseAndSchema = name.split(".");
+        var database = databaseAndSchema[0];
+        var schema = databaseAndSchema[1] || "public";
         return new Promise((resolve, reject) => {
-            this.queryPromise("SET search_path to " + name).then(() => {
-                this.currentDatabase = name;
-                resolve();
-            }).catch(() => {
-                this.currentDatabase = null;
-                reject();
-            });
+            if(database === this.currentDatabase){
+                this.changeSchema(schema).then(resolve).catch(reject);
+            }else{
+                this.closeConnect().then(() => {
+                    this.connectPromise(this.host + ":" + this.port, this.user, this.password, database, schema).then(() =>{
+                        this.schema = schema;
+                        this.currentDatabase = database;
+                        resolve();
+                    }).catch(reject);
+                });
+            }
         });
     };
 
+    changeSchema(schema){
+        return new Promise((resolve, reject) => {
+            this.queryPromise("SET search_path to " + schema).then(() => {
+                this.schema = schema;
+                resolve();
+            }).catch(() => {
+                this.schema = null;
+                reject();
+            });
+        });
+    }
+
     /**
-     * @param {object} currentStructure - save new structure to this params
+     * @return {Promise}
      */
-    refrestStructureDataBase (currentStructure) {
-        const that = this;
-        const selectTables = SELECT_TABLE_SQL;
-        const selectColumns = SELECT_COLUMNS_SQL;
-        const tableParams = [that.currentDatabase];
-        this.query(selectTables, function (results) {
-            for (var i = 0; i < results.length; i++) {
-                const key = Object.keys(results[i])[0];
-                const tableName = results[i][key];
-                const columnParams = [tableName, tableName];
-                that.query(selectColumns, (function (tableName) {
-                    return function (columnStructure) {
+    refrestStructureDataBase () {
+        var currentStructure = {};
+        var tablePromise = [];
+        const tableParams = [this.schema];
+        return new Promise((resolve, reject) => {
+            this.queryPromise(SELECT_TABLE_SQL, tableParams).then((results) => {
+                for (var i = 0; i < results.length; i++) {
+                    let key = Object.keys(results[i])[0];
+                    let tableName =  results[i][key];
+                    let columnParams = [tableName,tableName];
+                    let promise = new Promise((resolve, reject) => {
+                        this.queryPromise(SELECT_COLUMNS_SQL, columnParams).then((column) => {
+                            var columns = [];
+                            for (var i = 0; i < column.length; i++) {
+                                var element = column[i];
+                                columns.push(element);
+                            }
+                            resolve({
+                                column : columns,
+                                tableName : tableName
+                            });
+                        }).catch(reject);
+                    });
+                    tablePromise.push(promise);
+                }
+                Promise.all(tablePromise).then(data => {
+                    for (var i = 0; i < data.length; i++) {
+                        var columnStructure = data[i].column;
+                        var tableName = data[i].tableName;
                         currentStructure[tableName] = columnStructure;
                     }
-                })(tableName), columnParams);
-            }
-        }, tableParams);
+                    resolve(currentStructure);
+                }).catch(reject);
+            });
+        });
+
 
     }
 

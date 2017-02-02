@@ -61,15 +61,15 @@ module.exports = class Menager {
         return newServer;
     };
 
-    connectPromise (type, host, user, password){
+    connectPromise (type, host, user, password, database){
         var newServer = this.factoryServer(type);
         var _this = this;
         newServer.setOutput(this.OutputChannel);
         return new Promise((resolve, reject) => {
-            newServer.connectPromise(host, user, password).then(() => {
-                resolve();
+            newServer.connectPromise(host, user, password, database).then(() => {
                 _this.registerNewServer(newServer);
                 _this.showStatus();
+                resolve(newServer);
             }).catch(reject);
         });
 
@@ -84,13 +84,13 @@ module.exports = class Menager {
         }
     };
 
-    getShowDatabaseSql (){
-        return this.currentServer.getShowDatabaseSql();
+    getDatabase (){
+        return this.currentServer.getDatabase();
     };
 
     changeDatabase (name){
         this.currentServer.changeDatabase(name).then(() => {
-            vscode.window.showInformationMessage('Database changed');
+            vscode.window.showInformationMessage('Database changed : ' + name);
             this.showStatus();
         });
     };
@@ -103,8 +103,11 @@ module.exports = class Menager {
     };
 
     refrestStructureDataBase (){
-        this.currentStructure = {};
-        this.currentServer.refrestStructureDataBase(this.currentStructure);
+        this.currentServer.refrestStructureDataBase().then((structure) => {
+            this.currentStructure = structure;
+        }).catch(function(err){
+            console.error("refrestStructureDataBase", err);
+        });
     };
 
     getStructure (){
@@ -152,7 +155,7 @@ module.exports = class Menager {
     changeServer (server){
         this.currentServer = server;
         this.currentStructure = {};
-        vscode.window.showInformationMessage('Server changed');
+        vscode.window.showInformationMessage('Server changed : '+ server.name);
         this.showStatus();
         
     };
@@ -190,11 +193,11 @@ module.exports = class Menager {
         }
     };
     
-    changeServerAlias (server){
+    changeServerAlias (newName){
         if(this.currentServer === null){
             return false;
         }
-        this.currentServer.name = server;
+        this.currentServer.name = newName;
         this.showStatus();
         
     };

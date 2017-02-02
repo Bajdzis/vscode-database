@@ -14,37 +14,15 @@ module.exports = class MySQLType extends AbstractServer
         this.onConnectSetDB = null;
     }
     
-    /**
-     * @todo delete and change start connect from JSON in extension.js
-     * @deprecated new implement is connectPromise
-     * @param {string} host
-     * @param {string} user
-     * @param {string} password
-     * @param {Menager} menager
-     */
-    connect (host, user, password, menager){
-        this.connectPromise(host, user, password).then(() => {
-            menager.registerNewServer(this);
-            if(this.onConnectSetDB !== null){
-                this.changeDatabase(this.onConnectSetDB).then(()=>{
-                    menager.currentDatabase = this.onConnectSetDB;
-                    vscode.window.showInformationMessage('Database changed');
-                    menager.showStatus();
-                });
-            }
-        }).catch(errMsg => {
-            vscode.window.showErrorMessage(errMsg);
-            this.outputMsg(errMsg);
-        })
-    };
 
     /**
      * @param {string} host
      * @param {string} user
      * @param {string} password
+     * @param {string|undefined} database
      * @return {Promise}
      */
-    connectPromise(host, user, password) {
+    connectPromise(host, user, password, database) {
         this.name = host + " (mysql)";
         var hostAndPort = host.split(":");
         this.host = hostAndPort[0];
@@ -58,11 +36,15 @@ module.exports = class MySQLType extends AbstractServer
             'password': password
         });
         return new Promise((resolve, reject) => {
-            this.connection.connect(function (err) {
+            this.connection.connect((err) => {
                 if (err) {
                     reject('MySQL Error: ' + err.stack);
                 } else {
-                    resolve();
+                    if(database === undefined){
+                        resolve();
+                    }else{
+                        this.changeDatabase(database).then(resolve).catch(reject);
+                    }
                 }
             });
         });
@@ -97,11 +79,19 @@ module.exports = class MySQLType extends AbstractServer
     }
 
     /**
-     * @return {string}
+     * @return {Promise<string[], Error>}
      */
-    getShowDatabaseSql (){
-        return `SHOW DATABASES`;
-    };
+    getDatabase(){
+        return new Promise((resolve, reject) => {
+            this.queryPromise('SHOW DATABASES').then(function(results){
+                var allDatabase = [];
+                for (var i = 0; i < results.length; i++) {
+                    allDatabase.push(results[i].Database);
+                }
+                resolve(allDatabase);
+            }).catch(reject);
+        });
+    }
 
     /**
      * @param {string} name - name Database
@@ -120,17 +110,35 @@ module.exports = class MySQLType extends AbstractServer
     };
 
     /**
-     * @param {object} currentStructure - save new structure to this params
+     * @return {Promise}
      */
-    refrestStructureDataBase (currentStructure){
-        this.queryPromise("SHOW tables").then(results => {
-            for (let i = 0; i < results.length; i++) {
-                let key = Object.keys(results[i])[0];
-                let tableName = results[i][key];
-                this.queryPromise("SHOW COLUMNS FROM " + tableName).then(columnStructure => {
-                    currentStructure[tableName] = columnStructure;
-                });
-            }
+    refrestStructureDataBase (){
+        var currentStructure = {};
+        var tablePromise = [];
+        return new Promise((resolve, reject) => {
+            this.queryPromise("SHOW tables").then(results => {
+                for (let i = 0; i < results.length; i++) {
+                    let key = Object.keys(results[i])[0];
+                    let tableName = results[i][key];
+                    let promise = new Promise((resolve, reject) => {
+                        this.queryPromise("SHOW COLUMNS FROM " + tableName).then((column) => {
+                            resolve({
+                                column : column,
+                                tableName : tableName
+                            });
+                        }).catch(reject);
+                    });
+                    tablePromise.push(promise);
+                }
+                Promise.all(tablePromise).then(data => {
+                    for (var i = 0; i < data.length; i++) {
+                        var columnStructure = data[i].column;
+                        var tableName = data[i].tableName;
+                        currentStructure[tableName] = columnStructure;
+                    }
+                    resolve(currentStructure);
+                }).catch(reject);
+            }).catch(reject);
         });
     }
 
