@@ -99,7 +99,7 @@ module.exports = class MySQLType extends AbstractServer
      */
     changeDatabase (name){
         return new Promise((resolve, reject) => {
-            this.queryPromise("USE " + name).then(() => {
+            this.queryPromise('USE "' + name + '"').then(() => {
                 this.currentDatabase = name;
                 resolve();
             }).catch(() => {
