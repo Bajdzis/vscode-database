@@ -10,6 +10,7 @@
 * Find `vscode-database`
  
 ## Changelog
+* 1.2.0 - Fixed #10, #16, #17
 * 1.1.0 - Fixed #12, #13
 * 1.0.0 - Add postgres database support
 * 0.9.0 - Snippets, Completion Item and Query Advancer Build
