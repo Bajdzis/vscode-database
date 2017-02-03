@@ -84,6 +84,14 @@ module.exports = class Menager {
         }
     };
 
+    queryPromiseMulti(sqlMulti){
+        if(this.currentServer === null){
+            vscode.window.showErrorMessage('Server not selected');
+        }else{
+            return this.currentServer.queryPromiseMulti(sqlMulti);
+        }
+    };
+    
     getDatabase (){
         return this.currentServer.getDatabase();
     };

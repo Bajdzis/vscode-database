@@ -43,6 +43,26 @@ module.exports = class AbstractServer
     };
 
     /**
+     * @param {string} sql - queries separate ;
+     * @return {Promise}
+     */
+    queryPromiseMulti(sqlMulti){
+        var queries = [];
+        sqlMulti.split(";").forEach(sql => {
+            if (!sql) {
+                return;
+            }
+            const notEmpty = (sql.trim().replace(/(\r\n|\n|\r)/gm, "") !== "");
+            if (notEmpty) {
+                queries.push(this.queryPromise(sql));
+            }
+            
+        });
+
+        return Promise.all(queries);
+    };
+
+    /**
      * @param {object} currentStructure - save new structure to this params
      */
     refrestStructureDataBase (currentStructure) { }

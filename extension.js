@@ -3,13 +3,8 @@ var vscode = require('vscode');
 var fs = require('fs');
 var Menager = require('./extension/Menager.js');
 var menager = new Menager();
-var buildQueryFirstRun = true;
-var buildQueryDocument = null;
-function getBuildQueryDocument(){
-    if(buildQueryDocument !== null){
-        return Promise.resolve(buildQueryDocument);
-    }
 
+function getBuildQueryDocument(){
     const root = vscode.workspace.rootPath;
     if(typeof root === 'undefined'){
         vscode.window.showInformationMessage("Open folder before Query Advancer Build");
@@ -21,6 +16,7 @@ function getBuildQueryDocument(){
     }
 
     var pathTempFile = vscode.workspace.rootPath + '/.vscode/temp.sql';
+    var pathLastSQLFile = vscode.workspace.rootPath + '/.vscode/last.sql';
 
     if(fs.existsSync(pathTempFile) === false){
         fs.writeFileSync(pathTempFile, "");
@@ -28,19 +24,22 @@ function getBuildQueryDocument(){
 
     return new Promise((resolve, reject) => {
         vscode.workspace.openTextDocument(vscode.Uri.file(pathTempFile)).then(function(document){
-            buildQueryDocument = document;
             resolve(document);
-        }).catch(reject);
+            vscode.workspace.onDidCloseTextDocument( closeDocument => {
+                if(closeDocument === document){
+                    if(fs.existsSync(pathLastSQLFile) === true){
+                        fs.unlinkSync(pathLastSQLFile);
+                    }
+                    fs.rename(pathTempFile, pathLastSQLFile);
+                }
+            })
+        });
     });
 
 }
 function buildQuery() {
     getBuildQueryDocument().then((textDocumentTemp) => {
         vscode.window.showTextDocument(textDocumentTemp, vscode.ViewColumn.One, false);
-        if(buildQueryFirstRun === false){
-            return;
-        }
-        buildQueryFirstRun = false;
 
         const confFiles = vscode.workspace.getConfiguration("files");
         const autoSave = confFiles.get("autoSave", "off");
@@ -65,15 +64,10 @@ function execQuery(query) {
         return;
     }
 
-    query.split(";").forEach(sql => {
-        if (sql) {
-            const notEmpty = (sql.trim().replace(/(\r\n|\n|\r)/gm, "") !== "");
-            if (notEmpty) {
-                menager.query(sql, function(data){
-                    menager.queryOutput(data);
-                });
-            }
-        }
+    menager.queryPromiseMulti(query).then(allResult => {
+        allResult.forEach(result => {
+            menager.queryOutput(result);
+        });
     });
 }
 
