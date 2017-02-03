@@ -89,7 +89,8 @@ module.exports = class Menager {
     };
 
     changeDatabase (name){
-        this.currentServer.changeDatabase(name).then(() => {
+        // to be able to use databeses that have a dash (-) in a name, surround the name with ``
+        this.currentServer.changeDatabase('`' + name + '`').then(() => {
             vscode.window.showInformationMessage('Database changed : ' + name);
             this.showStatus();
         });
