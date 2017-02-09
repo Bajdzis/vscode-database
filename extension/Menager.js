@@ -17,6 +17,7 @@ module.exports = class Menager {
         var msg = '$(database) ';
         if(this.statusBarItem === null){
             this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+            this.statusBarItem.command = "extension.changeDB";
         }
         if(this.currentServer === null){
             msg += 'Server not selected';
