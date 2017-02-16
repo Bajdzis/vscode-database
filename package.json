@@ -22,12 +22,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.connectMySQL",
-        "title": "SQL: Connect to MySQL server"
-      },
-      {
-        "command": "extension.connectPostgreSQL",
-        "title": "SQL: Connect to PostgreSQL server"
+        "command": "extension.connectToSQLServer",
+        "title": "SQL: Connect to MySQL / PostgreSQL server"
       },
       {
         "command": "extension.changeDB",

@@ -50,9 +50,7 @@ function activate(context) {
     
     addCommand(context, 'extension.changeServer');
     
-    addCommand(context, 'extension.connectMySQL');
-
-    addCommand(context, 'extension.connectPostgreSQL');
+    addCommand(context, 'extension.connectToSQLServer');
 
     addCommand(context, 'extension.querySQL');
 
