@@ -1,6 +1,7 @@
 
 var vscode = require('vscode');
 var asciiTable = require('./AsciiTable.js');
+var StatusBar = require('./StatusBar.js');
 
 var MySQLType = require('./engine/mysql.js');
 var PostgreSQLType = require('./engine/postgresql.js');
@@ -9,34 +10,21 @@ module.exports = class Menager {
     constructor() {
         this.server = [];
         this.currentServer = null;
-        this.statusBarItem = null;
+        this.statusBar = new StatusBar();
         this.OutputChannel = null;
     };
 
     showStatus(){
-        var msg = '$(database) ';
-        if(this.statusBarItem === null){
-            this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-            this.statusBarItem.command = "extension.changeDB";
-        }
-        if(this.currentServer === null){
-            msg += 'Server not selected';
-            this.statusBarItem.text = msg;
-            this.statusBarItem.show();
-            return;
-        }else{
-            msg += this.currentServer.name  + ' > ';
-        }
-        if(this.getCurrentDatabase() === null){
-            msg += 'Database not selected';
-        }else{
-            msg += this.getCurrentDatabase();
+        var databaseName = this.getCurrentDatabase();
+
+        this.statusBar.setServer(this.currentServer.name || null);
+        this.statusBar.setDatabase(databaseName);
+
+        if(databaseName !== null){
             this.refrestStructureDataBase();
         }
-        this.statusBarItem.text = msg;
-        this.statusBarItem.show();
-        
     };
+
 
     outputMsg (msg){
         if(this.OutputChannel === null){

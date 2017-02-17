@@ -7,21 +7,32 @@ module.exports = class connectPostgreSQL extends AbstractAction
     execution() {
         vscode.window.showQuickPick(this.getAllServerName(), {
             matchOnDescription:false,
-            placeHolder:"Choice connected server"
+            placeHolder:"Choice connected server or create new connection"
         }).then((object) => {
             if(typeof object !== 'undefined'){
-                var stop = object.label.indexOf(")");
-                var index = object.label.substring(0, stop);
-                this.sqlMenager.changeServer(this.sqlMenager.server[index]);
+                var index = object.number;
+                if (index !== undefined){
+                    this.sqlMenager.changeServer(this.sqlMenager.server[index]);
+                }else{
+                    vscode.commands.executeCommand('extension.connectToSQLServer');
+                }
+                
             }
         });
     };
 
     getAllServerName(){
         var allServerName = [];
+
+        allServerName.push({
+            label:"New connection",
+            description:"create new connection"
+        });
+
         for (var i = 0; i < this.sqlMenager.server.length; i++) {
             allServerName.push({
-                label:i + ") " + this.sqlMenager.server[i].name,
+                number: i,
+                label:(i+1) + ") " + this.sqlMenager.server[i].name,
                 description:this.sqlMenager.server[i].host + " " + this.sqlMenager.server[i].user + " " + ("*".repeat(this.sqlMenager.server[i].password.length))
             });
         }
