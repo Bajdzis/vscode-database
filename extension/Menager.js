@@ -5,6 +5,7 @@ var StatusBar = require('./StatusBar.js');
 
 var MySQLType = require('./engine/mysql.js');
 var PostgreSQLType = require('./engine/postgresql.js');
+var Sqlite3Type = require('./engine/sqlite3.js');
 module.exports = class Menager {
 
     constructor() {
@@ -38,6 +39,8 @@ module.exports = class Menager {
             return new MySQLType();
         }else if(type == 'postgres'){
             return new PostgreSQLType();
+        } else if (type == 'sqlite3') {
+            return new Sqlite3Type();
         }
     };
     
@@ -111,14 +114,15 @@ module.exports = class Menager {
         return this.currentStructure;
     };
 
-    getCompletionItem (){
+    getCompletionItem (){        
         var completionItems = [];
         var databaseScructure = this.getStructure();
 
         const isMySQLType      = (this.currentServer instanceof MySQLType);
         const isPostgreSQLType = (this.currentServer instanceof PostgreSQLType);
+        const isSqlite3        = (this.currentServer instanceof Sqlite3Type);
         const getIdentifiedTableName = (tableName) => {
-            if (isMySQLType)      return "`"  + tableName + "`";
+            if (isMySQLType || isSqlite3)      return "`"  + tableName + "`";
             if (isPostgreSQLType) return "\"" + tableName + "\"";
             return tableName;
         };

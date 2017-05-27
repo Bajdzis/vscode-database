@@ -1,7 +1,7 @@
 {
   "name": "vscode-database",
   "displayName": "vscode-database",
-  "description": "Support SQL database (mysql and postgres)",
+  "description": "Support SQL database (mysql, postgres and sqlite3)",
   "version": "1.2.0",
   "publisher": "bajdzis",
   "icon": "icon.png",
@@ -23,7 +23,7 @@
     "commands": [
       {
         "command": "extension.connectToSQLServer",
-        "title": "SQL: Connect to MySQL / PostgreSQL server"
+        "title": "SQL: Connect to MySQL / PostgreSQL server / Sqlite3 "
       },
       {
         "command": "extension.changeDB",
@@ -75,9 +75,14 @@
   "dependencies": {
     "fs": "0.0.2",
     "mysql": "^2.12.0",
-    "pg": "^6.1.2"
+    "pg": "^6.1.2",
+    "nan": "^2.6.2", //needed to run the rebuild for sqlite3
+    "sqlite3": "^3.1.8"
   },
   "devDependencies": {
     "vscode": "0.10.x"
+  },
+  "scripts": {
+    "rebuild-sqlite3-win": "cd node_modules/sqlite3 && npm run prepublish && node-gyp configure --module_name=node_sqlite3 --module_path=../lib/binding/node-v53-win32-ia32 && node-gyp node-gyp rebuild --target=1.6.8 --runtime=electron --arch=ia32 --target_platform=win32 --dist-url=https://atom.io/download/atom-shell --module_name=node_sqlite3 --module_path=../lib/binding/node-v53-win32-ia32"
   }
 }

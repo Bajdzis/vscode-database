@@ -7,7 +7,8 @@ module.exports = class connectMySQL extends AbstractAction{
 	execution(){
 		vscode.window.showQuickPick([
 			{label:"mysql"},
-			{label:"postgres"}
+			{label:"postgres"},
+			{label: "sqlite3"}
 		], {
             matchOnDescription:false,
             placeHolder:"Choice type"
@@ -27,6 +28,10 @@ module.exports = class connectMySQL extends AbstractAction{
 
 		if(type == 'mysql'){
 			this.connectToMySQL();
+		}
+
+		if(type == 'sqlite3') {
+			this.connectToSqlite3();
 		}
 	}
 	
@@ -57,5 +62,16 @@ module.exports = class connectMySQL extends AbstractAction{
             });
         });
     };
+
+	connectToSqlite3 () {
+		getDataToConnect().then((data) => {
+			if (data === undefined) {
+				return;
+			}
+			this.sqlMenager.connectPromise('sqlite3', data.host, data.user, data.password).catch((err) => {
+				vscode.window.showErrorMessage(err);
+			});
+		});
+	}
 
 }
