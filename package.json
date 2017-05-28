@@ -20,8 +20,7 @@
   },
   "main": "./extension",
   "contributes": {
-    "commands": [
-      {
+    "commands": [{
         "command": "extension.connectToSQLServer",
         "title": "SQL: Connect to MySQL / PostgreSQL server / Sqlite3 "
       },
@@ -50,8 +49,7 @@
         "title": "SQL: Save current server"
       }
     ],
-    "keybindings": [
-      {
+    "keybindings": [{
         "key": "Ctrl+q",
         "command": "extension.querySQL"
       },
@@ -65,18 +63,16 @@
         "command": "extension.runQueryBuild"
       }
     ],
-    "snippets": [
-      {
-        "language": "sql",
-        "path": "./snippets/main.json"
-      }
-    ]
+    "snippets": [{
+      "language": "sql",
+      "path": "./snippets/main.json"
+    }]
   },
   "dependencies": {
     "fs": "0.0.2",
     "mysql": "^2.12.0",
     "pg": "^6.1.2",
-    "nan": "^2.6.2", //needed to run the rebuild for sqlite3
+    "nan": "^2.6.2",
     "sqlite3": "^3.1.8"
   },
   "devDependencies": {

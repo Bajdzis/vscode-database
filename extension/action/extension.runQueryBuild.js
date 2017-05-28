@@ -7,7 +7,17 @@ module.exports = class runQueryBuild extends AbstractAction
     
     execution() {
         getBuildQueryDocument().then((document) => {
-            this.execQuery(document.getText());
+            var selection = vscode.window.activeTextEditor.selection;
+            var sql = "";
+            if (selection) {
+                sql = document.getText(new vscode.Range(selection.start, selection.end));
+            }
+
+            if (sql.length == 0) {
+                this.execQuery(document.getText()); 
+            } else {
+                this.execQuery(sql);
+            }
         });
     };
 
