@@ -54,16 +54,26 @@ function activate(context) {
 
     addCommand(context, 'extension.querySQL');
 
+    addTextEditorCommand(context, 'extension.querySelectedSQL');
+
 }
 exports.activate = activate;
 
-function addCommand(context, name){
+function getCommandFunction(name) {
+    const actionClass = require('./extension/action/' + name + '.js');
+    const actionObject = new actionClass(menager);
+    return actionObject.execution.bind(actionObject);
+}
 
-    var actionClass = require('./extension/action/'+name+'.js');
-    var actionObject = new actionClass(menager);
-    var func = actionObject.execution.bind(actionObject);
+function addCommand(context, name) {
+    const func = getCommandFunction(name);
+    const command = vscode.commands.registerCommand(name, func);
+    context.subscriptions.push(command);
+}
 
-    let command = vscode.commands.registerCommand(name, func);
+function addTextEditorCommand(context, name) {
+    const func = getCommandFunction(name);
+    const command = vscode.commands.registerTextEditorCommand(name, func);
     context.subscriptions.push(command);
 }
 

@@ -38,6 +38,10 @@
         "title": "SQL: Query"
       },
       {
+        "command": "extension.querySelectedSQL",
+        "title": "SQL: Run selected text as SQL query"
+      },
+      {
         "command": "extension.queryBuild",
         "title": "SQL: Query Advancer Build"
       },
@@ -50,6 +54,15 @@
         "title": "SQL: Save current server"
       }
     ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "extension.querySelectedSQL",
+          "when": "editorHasSelection && editorLangId == 'sql'",
+          "group": "10_mysql"
+        }
+      ]
+    },
     "keybindings": [
       {
         "key": "Ctrl+q",
@@ -63,6 +76,12 @@
         "key": "Ctrl+enter",
         "mac": "cmd+enter",
         "command": "extension.runQueryBuild"
+      },
+      {
+        "key": "ctrl+shift+e",
+        "mac": "cmd+shift+e",
+        "command": "extension.querySelectedSQL",
+        "when": "editorTextFocus && editorHasSelection && editorLangId == 'sql'"
       }
     ],
     "snippets": [
