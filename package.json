@@ -1,89 +1,108 @@
 {
-	"name": "vscode-database",
-	"displayName": "vscode-database",
-	"description": "Support SQL database (mysql, postgres and sqlite3)",
-	"version": "1.2.0",
-	"publisher": "bajdzis",
-	"icon": "icon.png",
-	"engines": {
-		"vscode": "^0.10.1"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"*"
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Bajdzis/vscode-database.git"
-	},
-	"main": "./extension",
-	"contributes": {
-		"commands": [
-			{
-				"command": "extension.connectToSQLServer",
-				"title": "SQL: Connect to MySQL / PostgreSQL server / Sqlite3 "
-			},
-			{
-				"command": "extension.changeDB",
-				"title": "SQL: Select database"
-			},
-			{
-				"command": "extension.changeServer",
-				"title": "SQL: Change connected server"
-			},
-			{
-				"command": "extension.querySQL",
-				"title": "SQL: Query"
-			},
-			{
-				"command": "extension.queryBuild",
-				"title": "SQL: Query Advancer Build"
-			},
-			{
-				"command": "extension.runQueryBuild",
-				"title": "SQL: Run Query Advancer Build"
-			},
-			{
-				"command": "extension.saveConfig",
-				"title": "SQL: Save current server"
-			}
-		],
-		"keybindings": [
-			{
-				"key": "Ctrl+q",
-				"command": "extension.querySQL"
-			},
-			{
-				"key": "Ctrl+Alt+q",
-				"command": "extension.queryBuild"
-			}
-		],
-		"snippets": [
-			{
-				"language": "sql",
-				"path": "./snippets/main.json"
-			}
-		]
-	},
-	"dependencies": {
-		"fs": "0.0.2",
-		"mysql": "^2.12.0",
-		"pg": "^6.1.2",
+  "name": "vscode-database",
+  "displayName": "vscode-database",
+  "description": "Support SQL database (mysql, postgres and sqlite3)",
+  "version": "1.2.0",
+  "publisher": "bajdzis",
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^0.10.1"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bajdzis/vscode-database.git"
+  },
+  "main": "./extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.connectToSQLServer",
+        "title": "SQL: Connect to MySQL / PostgreSQL server / Sqlite3 "
+      },
+      {
+        "command": "extension.changeDB",
+        "title": "SQL: Select database"
+      },
+      {
+        "command": "extension.changeServer",
+        "title": "SQL: Change connected server"
+      },
+      {
+        "command": "extension.querySQL",
+        "title": "SQL: Query"
+      },
+      {
+        "command": "extension.querySelectedSQL",
+        "title": "SQL: Run selected text as SQL query"
+      },
+      {
+        "command": "extension.queryBuild",
+        "title": "SQL: Query Advancer Build"
+      },
+      {
+        "command": "extension.runQueryBuild",
+        "title": "SQL: Run Query Advancer Build"
+      },
+      {
+        "command": "extension.saveConfig",
+        "title": "SQL: Save current server"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "extension.querySelectedSQL",
+          "when": "editorHasSelection && editorLangId == 'sql'",
+          "group": "10_mysql"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "key": "Ctrl+q",
+        "command": "extension.querySQL"
+      },
+      {
+        "key": "Ctrl+Alt+q",
+        "command": "extension.queryBuild"
+      },
+      {
+        "key": "Ctrl+enter",
+        "mac": "cmd+enter",
+        "command": "extension.runQueryBuild"
+      },
+      {
+        "key": "ctrl+shift+e",
+        "mac": "cmd+shift+e",
+        "command": "extension.querySelectedSQL",
+        "when": "editorTextFocus && editorHasSelection && editorLangId == 'sql'"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "sql",
+        "path": "./snippets/main.json"
+      }
+    ]
+  },
+  "dependencies": {
+    "fs": "0.0.2",
+    "mysql": "^2.12.0",
+    "pg": "^6.1.2",
 		"nan": "^2.6.2",
 		"sqlite3": "^3.1.8"
-	},
-	"devDependencies": {
-		"vscode": "0.10.x"
-	},
+  },
+  "devDependencies": {
+    "vscode": "0.10.x"
+  },
 	"scripts": {
 		"postinstall": "npm run rebuild-sqlite3-win",
 		"rebuild-sqlite3-win": "cd node_modules/sqlite3 && npm run prepublish && node-gyp configure --module_name=node_sqlite3 --module_path=../lib/binding/node-v54-win32-x64 && node-gyp node-gyp rebuild --target=1.7.0 --runtime=electron --arch=x64 --target_platform=win32 --dist-url=https://atom.io/download/atom-shell --module_name=node_sqlite3 --module_path=../lib/binding/node-v54-win32-x64"
-	},
-	"__metadata": {
-		"id": "70a45fa6-2772-42a0-91b0-515caafa49b5",
-		"publisherDisplayName": "Bajdzis",
-		"publisherId": "8cdbaeb1-1e01-4550-a89a-1f7a157f9e62"
 	}
 }
