@@ -3,7 +3,7 @@ var vscode = require('vscode');
 module.exports = function getDataToConnect() {
     var host, user;
     return new Promise( (resolve, reject) => {
-        vscode.window.showInputBox({ value: "localhost", prompt: "e.g host, 127.0.0.1", placeHolder: "Host", password: false }).then( (output) => {
+        vscode.window.showInputBox({ value: "localhost", prompt: "e.g host, 127.0.0.1, with port 127.0.0.1:3333", placeHolder: "Host", password: false }).then( (output) => {
             if (output === undefined) {
                 resolve(undefined);
                 return Promise.reject();
