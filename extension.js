@@ -59,12 +59,6 @@ function activate(context) {
 }
 exports.activate = activate;
 
-function getCommandFunction(name) {
-    const actionClass = require('./extension/action/' + name + '.js');
-    const actionObject = new actionClass(menager);
-    return actionObject.execution.bind(actionObject);
-}
-
 function addCommand(context, name) {
     const func = getCommandFunction(name);
     const command = vscode.commands.registerCommand(name, func);
@@ -75,6 +69,12 @@ function addTextEditorCommand(context, name) {
     const func = getCommandFunction(name);
     const command = vscode.commands.registerTextEditorCommand(name, func);
     context.subscriptions.push(command);
+}
+
+function getCommandFunction(name) {
+    const actionClass = require('./extension/action/' + name + '.js');
+    const actionObject = new actionClass(menager);
+    return actionObject.execution.bind(actionObject);
 }
 
 // this method is called when your extension is deactivated
