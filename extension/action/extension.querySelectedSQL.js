@@ -14,6 +14,9 @@ module.exports = class querySelectedSQL extends AbstractAction {
                 allResult.forEach(result => {
                     this.sqlMenager.queryOutput(result);
                 });
+            }).catch(function(errMsg){
+                vscode.window.showErrorMessage(errMsg);
+                _this.outputMsg(errMsg);
             });
         }
     }

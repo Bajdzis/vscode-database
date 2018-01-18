@@ -5,7 +5,6 @@ module.exports = class querySQL extends AbstractAction
 {
     
     execution() {
-        console.log("querySQL",this);
         vscode.window.showInputBox({
             value:"", 
             prompt: "e.g SELECT * FROM table", 
