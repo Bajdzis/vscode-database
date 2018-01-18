@@ -54,13 +54,14 @@ module.exports = class Config{
 
     saveConfig(config){
         var jsonStr = JSON.stringify(config, null, "\t");
+        var configPath = this.rootPath + '/.vscode/database.json';
             
-        fs.writeFile(this.rootPath + '/.vscode/database.json', jsonStr, function(err) {
+        fs.writeFile(configPath, jsonStr, (err) => {
             if (err) {
                 vscode.window.showErrorMessage('Failed save file /.vscode/database.json');
                 return;
             }
-            vscode.window.showInformationMessage("Saved configurations");
+            vscode.window.showInformationMessage(`Saved configurations in "${configPath}"`);
         });
     }
 };
