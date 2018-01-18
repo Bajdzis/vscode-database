@@ -10,6 +10,7 @@
 * Find `vscode-database`
  
 ## Changelog
+* 1.3.0 - Execute selected query, new status bars, additional info #25, #30
 * 1.2.0 - Fixed #10, #16, #17
 * 1.1.0 - Fixed #12, #13
 * 1.0.0 - Add postgres database support
@@ -25,6 +26,7 @@
 
 * Bajdzis - Extension
 * k--kato - Postgres integration
+* serl - Execute selected query
 
 ## License
 MIT © [Bajdzis](https://github.com/Bajdzis)
