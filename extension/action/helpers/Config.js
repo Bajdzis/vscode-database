@@ -4,64 +4,20 @@ var fs = require('fs');
 module.exports = class Config{
 
     constructor(){
-        this.rootPath = vscode.workspace.rootPath;
+        this.databaseConfig = vscode.workspace.getConfiguration('database');
     }
 
     getDatabases(){
-        return new Promise((resolve, reject) => {
-            
-            if(typeof this.rootPath === 'undefined'){
-                vscode.window.showInformationMessage("Open folder before change configurations");
-                reject();
-                return;
-            }
-            var existsDIR = fs.existsSync(this.rootPath + '/.vscode/');
-            if(existsDIR === false){
-                fs.mkdirSync(this.rootPath + '/.vscode/');
-            }
-            var exists = fs.existsSync(this.rootPath + '/.vscode/database.json');
-            if(exists === false){
-
-                fs.writeFileSync(this.rootPath + '/.vscode/database.json', "{}");
-            }
-
-            fs.readFile(this.rootPath + '/.vscode/database.json', (err, data) => {
-                if (err) {
-                    vscode.window.showErrorMessage('Failed read file /.vscode/database.json');
-                    reject();
-                    return;
-                }
-
-                var json = data.toString('ascii');
-                var config =  eval('(' + json + ')');
-                
-                if(typeof config['extension.databases'] === "undefined"){
-                    config['extension.databases'] = [];
-                }
-                resolve(config);
-            });
-        });
+        const connections = this.databaseConfig.get('connections');
+        return Promise.resolve(connections);
     }
 
-
     pushDatabase(newDatabaseConfig){
-        this.getDatabases().then((config) =>{
-            config['extension.databases'].push(newDatabaseConfig);
-            this.saveConfig(config);
+        this.getDatabases().then((connections) =>{
+            connections.push(newDatabaseConfig);
+            this.databaseConfig.update('connections',connections);
         })
         
     }
 
-    saveConfig(config){
-        var jsonStr = JSON.stringify(config, null, "\t");
-        var configPath = this.rootPath + '/.vscode/database.json';
-            
-        fs.writeFile(configPath, jsonStr, (err) => {
-            if (err) {
-                vscode.window.showErrorMessage('Failed save file /.vscode/database.json');
-                return;
-            }
-            vscode.window.showInformationMessage(`Saved configurations in "${configPath}"`);
-        });
-    }
 };
