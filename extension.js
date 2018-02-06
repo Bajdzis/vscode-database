@@ -2,11 +2,17 @@
 var vscode = require('vscode');
 var fs = require('fs');
 
+var ConnectionsProvider = require('./extension/ConnectionsProvider');
+var connectionsProvider = new ConnectionsProvider();
+
+var StructureProvider = require('./extension/StructureProvider');
+var structureProvider = new StructureProvider();
+
 var Config = require('./extension/action/helpers/Config.js');
 var config = new Config();
 
 var Menager = require('./extension/Menager.js');
-var menager = new Menager();
+var menager = new Menager(connectionsProvider, structureProvider);
 
 function activate(context) {
 
@@ -21,12 +27,8 @@ function activate(context) {
         
     },' '));
 
-    config.getDatabases().then((config) => {
+    config.getDatabases().then((databases) => {
 
-        if(typeof config['extension.databases'] === "undefined"){
-            return;
-        }
-        var databases = config['extension.databases'];
         for(let index in databases){
 
             menager.connectPromise(databases[index].type, databases[index].host, databases[index].user, databases[index].password, databases[index].database).then((server) => {
@@ -38,7 +40,10 @@ function activate(context) {
             });
         }
     });
+    
+    vscode.window.registerTreeDataProvider('Table', structureProvider);
 
+    vscode.window.registerTreeDataProvider('Connections', connectionsProvider);
 
     addCommand(context, 'extension.queryBuild');
 

@@ -4,7 +4,12 @@ var AbstractAction = require('./AbstractAction.js');
 module.exports = class connectPostgreSQL extends AbstractAction
 {
     
-    execution() {
+    execution(server = null) {
+        if(server !== null){
+            this.sqlMenager.changeServer(server);
+            return;
+        }
+
         vscode.window.showQuickPick(this.getAllServerName(), {
             matchOnDescription:false,
             placeHolder:"Choice connected server or create new connection"

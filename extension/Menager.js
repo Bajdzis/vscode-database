@@ -6,9 +6,12 @@ var StatusBar = require('./StatusBar.js');
 var MySQLType = require('./engine/mysql.js');
 var PostgreSQLType = require('./engine/postgresql.js');
 var Sqlite3Type = require('./engine/sqlite3.js');
+
 module.exports = class Menager {
 
-    constructor() {
+    constructor(connectionsProvider, structureProvider) {
+        this.connectionsProvider = connectionsProvider;
+        this.structureProvider = structureProvider;
         this.server = [];
         this.currentServer = null;
         this.statusBar = new StatusBar();
@@ -22,10 +25,11 @@ module.exports = class Menager {
         this.statusBar.setDatabase(databaseName);
 
         if(databaseName !== null){
-            this.refrestStructureDataBase();
+            this.refreshStructureDataBase();
         }
-    };
 
+        this.connectionsProvider.refreshList(this.server, this.currentServer);
+    };
 
     outputMsg (msg){
         if(this.OutputChannel === null){
@@ -102,10 +106,12 @@ module.exports = class Menager {
         return this.currentServer.currentDatabase;
     };
 
-    refrestStructureDataBase (){
+    refreshStructureDataBase (){
         this.currentServer.refrestStructureDataBase().then((structure) => {
             this.currentStructure = structure;
+            this.structureProvider.setStructure(structure);
         }).catch(function(err){
+            this.structureProvider.setStructure({});
             console.error("refrestStructureDataBase", err);
         });
     };
