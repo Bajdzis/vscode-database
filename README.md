@@ -10,6 +10,8 @@
 * Find `vscode-database`
  
 ## Changelog
+* 1.4.1 - Fixed #24, #21
+
 * 1.4.0 - Show connections and table in TreeView, Start using VSCode Setting
 
     ( if you update please copy and paste you setting from file `${projectFolder}/.vscode/database.json` to VSCode Setting `database.connections`)
