@@ -1,7 +1,10 @@
+var manager = require('../Manager');
+
 module.exports = class AbstractAction
 {
-    constructor(menager) {
-        this.sqlMenager = menager;
+    constructor() {
+        this.sqlMenager = manager;
+        this.execution = this.execution.bind(this);
     }
 
     /**

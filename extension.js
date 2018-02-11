@@ -2,44 +2,26 @@
 var vscode = require('vscode');
 var fs = require('fs');
 
-var ConnectionsProvider = require('./extension/ConnectionsProvider');
-var connectionsProvider = new ConnectionsProvider();
-
-var StructureProvider = require('./extension/StructureProvider');
-var structureProvider = new StructureProvider();
-
-var Config = require('./extension/action/helpers/Config.js');
-var config = new Config();
-
-var Menager = require('./extension/Menager.js');
-var menager = new Menager(connectionsProvider, structureProvider);
+var config = require('./extension/action/helpers/Config');
+var manager = require('./extension/Manager');
+var structureProvider = require('./extension/StructureProvider');
+var connectionsProvider = require('./extension/ConnectionsProvider');
+var completionItemsProvider = require('./extension/CompletionItemsProvider');
 
 function activate(context) {
-
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider('sql',{
-        
-        provideCompletionItems(document, position, token) {
-            return menager.getCompletionItem();
-        },
-        resolveCompletionItem(item, token) {
-            return item;
-        }
-        
-    },' '));
-
+    
     config.getDatabases().then((databases) => {
-
-        for(let index in databases){
-
-            menager.connectPromise(databases[index].type, databases[index].host, databases[index].user, databases[index].password, databases[index].database).then((server) => {
-                server.name = databases[index].name;
-                menager.showStatus();
+        databases.forEach((database) => {
+            manager.connectPromise(database.type, database.host, database.user, database.password, database.database).then((server) => {
+                server.name = database.name;
+                manager.showStatus();
             }).catch(function(err){
                 vscode.window.showErrorMessage(err);
-                console.log(err);
             });
-        }
+        });
     });
+
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider('sql', completionItemsProvider, ' '));
     
     vscode.window.registerTreeDataProvider('Table', structureProvider);
 
@@ -78,8 +60,8 @@ function addTextEditorCommand(context, name) {
 
 function getCommandFunction(name) {
     const actionClass = require('./extension/action/' + name + '.js');
-    const actionObject = new actionClass(menager);
-    return actionObject.execution.bind(actionObject);
+    const actionObject = new actionClass();
+    return actionObject.execution;
 }
 
 // this method is called when your extension is deactivated

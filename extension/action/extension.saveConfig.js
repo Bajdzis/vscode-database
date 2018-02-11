@@ -1,24 +1,24 @@
 var vscode = require('vscode');
 var AbstractAction = require('./AbstractAction.js');
-var Config = require('./helpers/Config.js');
-var config = new Config();
+var config = require('./helpers/Config');
 
 module.exports = class saveConfig extends AbstractAction
 {
     
     execution() {
-        if(this.sqlMenager.currentServer === null){
+        const server = this.sqlMenager.currentServer;
+        if(server === null){
             vscode.window.showInformationMessage("You are currently not connected to the server");
             return;
         }
 
         config.pushDatabase({
-            type:this.sqlMenager.currentServer.type,
-            name:this.sqlMenager.currentServer.name,
-            host:this.sqlMenager.currentServer.host + ":" + this.sqlMenager.currentServer.port,
-            user:this.sqlMenager.currentServer.user,
-            password:this.sqlMenager.currentServer.password,
-            database:this.sqlMenager.currentServer.currentDatabase
+            type:server.type,
+            name:server.name,
+            host:server.host + ":" + server.port,
+            user:server.user,
+            password:server.password,
+            database:server.currentDatabase
         });
     };
 }

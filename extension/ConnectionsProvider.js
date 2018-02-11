@@ -37,5 +37,6 @@ class ConnectionsProvider{
 	}
 }
 
+const connectionsProvider = new ConnectionsProvider();
 
-module.exports = ConnectionsProvider;
+module.exports = connectionsProvider;
