@@ -194,7 +194,10 @@ class Manager {
                 this.outputMsg("Query result 0 rows!");
             } else {
                 var table = asciiTable(data);
-                this.outputMsg(table);
+                const lines = table.split("\n");
+                lines.forEach((line) => {
+                    this.outputMsg(line);
+                })
             }
         }else{
             this.outputMsg("ok");
