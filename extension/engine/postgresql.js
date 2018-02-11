@@ -205,8 +205,11 @@ module.exports = class PostgreSQLType extends AbstractServer{
      */
     changeDatabase (name) {
         var databaseAndSchema = name.split(".");
-        var database = databaseAndSchema[0];
-        var schema = databaseAndSchema[1] || "public";
+        var database = databaseAndSchema.splice(0, 1)[0];
+        var schema = "public";
+        if(databaseAndSchema.length > 0){
+            schema = databaseAndSchema.join('.');
+        }
         return new Promise((resolve, reject) => {
             if(database === this.currentDatabase){
                 this.changeSchema(schema).then(resolve).catch(reject);
