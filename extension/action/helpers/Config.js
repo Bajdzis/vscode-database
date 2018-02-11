@@ -1,7 +1,7 @@
 var vscode = require('vscode');
 var fs = require('fs');
 
-module.exports = class Config{
+class Config{
 
     constructor(){
         this.databaseConfig = vscode.workspace.getConfiguration('database');
@@ -21,3 +21,7 @@ module.exports = class Config{
     }
 
 };
+
+const config = new Config();
+
+module.exports = config;

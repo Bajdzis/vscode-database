@@ -36,5 +36,6 @@ class StructureProvider{
 	}
 }
 
+const structureProvider = new StructureProvider();
 
-module.exports = StructureProvider;
+module.exports = structureProvider;

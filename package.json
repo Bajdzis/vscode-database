@@ -104,7 +104,7 @@
         "command": "extension.querySQL"
       },
       {
-        "key": "Ctrl+Alt+q",
+        "key": "Alt+q",
         "command": "extension.queryBuild"
       },
       {

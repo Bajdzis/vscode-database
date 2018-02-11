@@ -7,11 +7,12 @@ var MySQLType = require('./engine/mysql.js');
 var PostgreSQLType = require('./engine/postgresql.js');
 var Sqlite3Type = require('./engine/sqlite3.js');
 
-module.exports = class Menager {
+var structureProvider = require('./StructureProvider');
+var connectionsProvider = require('./ConnectionsProvider');
 
-    constructor(connectionsProvider, structureProvider) {
-        this.connectionsProvider = connectionsProvider;
-        this.structureProvider = structureProvider;
+class Manager {
+
+    constructor() {
         this.server = [];
         this.currentServer = null;
         this.statusBar = new StatusBar();
@@ -28,7 +29,7 @@ module.exports = class Menager {
             this.refreshStructureDataBase();
         }
 
-        this.connectionsProvider.refreshList(this.server, this.currentServer);
+        connectionsProvider.refreshList(this.server, this.currentServer);
     };
 
     outputMsg (msg){
@@ -94,7 +95,11 @@ module.exports = class Menager {
 
     changeDatabase (name){
         this.currentServer.changeDatabase(name).then(() => {
-            vscode.window.showInformationMessage('Database changed : ' + name);
+
+            const msg = `-- Database changed : ${name} --`;
+            this.outputMsg('-'.repeat(msg.length));
+            this.outputMsg(msg);
+            this.outputMsg('-'.repeat(msg.length));
             this.showStatus();
         });
     };
@@ -109,10 +114,9 @@ module.exports = class Menager {
     refreshStructureDataBase (){
         this.currentServer.refrestStructureDataBase().then((structure) => {
             this.currentStructure = structure;
-            this.structureProvider.setStructure(structure);
+            structureProvider.setStructure(structure);
         }).catch(function(err){
-            this.structureProvider.setStructure({});
-            console.error("refrestStructureDataBase", err);
+            structureProvider.setStructure({});
         });
     };
 
@@ -162,7 +166,11 @@ module.exports = class Menager {
     changeServer (server){
         this.currentServer = server;
         this.currentStructure = {};
-        vscode.window.showInformationMessage('Server changed : '+ server.name);
+        const msg = `-- Start use server : ${server.name} --`;
+        this.outputMsg('-'.repeat(msg.length));
+        this.outputMsg(msg);
+        this.outputMsg('-'.repeat(msg.length));
+
         this.showStatus();
         
     };
@@ -209,3 +217,7 @@ module.exports = class Menager {
         
     };
 }
+
+const manager = new Manager();
+
+module.exports = manager;
