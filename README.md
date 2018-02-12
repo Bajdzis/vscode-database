@@ -10,6 +10,9 @@
 * Find `vscode-database`
  
 ## Changelog
+
+* 1.5.0 - Add new command for run query from SQL files
+
 * 1.4.1 - Fixed #24, #21
 
 * 1.4.0 - Show connections and table in TreeView, Start using VSCode Setting

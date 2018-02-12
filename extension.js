@@ -41,6 +41,8 @@ function activate(context) {
 
     addCommand(context, 'extension.querySQL');
 
+    addCommand(context, 'extension.queryFileSQL');
+
     addTextEditorCommand(context, 'extension.querySelectedSQL');
 
 }

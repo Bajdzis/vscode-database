@@ -17,10 +17,6 @@ module.exports = class runQueryBuild extends AbstractAction
             return;
         }
 
-         this.sqlMenager.queryPromiseMulti(query).then(allResult => {
-            allResult.forEach(result => {
-                 this.sqlMenager.queryOutput(result);
-            });
-        });
+         this.sqlMenager.runAsQuery(query);
     }
 }

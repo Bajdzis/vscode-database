@@ -10,14 +10,7 @@ module.exports = class querySelectedSQL extends AbstractAction {
 
         let selection = editor.document.getText(editor.selection);
         if (selection) {
-            this.sqlMenager.queryPromiseMulti(selection).then(allResult => {
-                allResult.forEach(result => {
-                    this.sqlMenager.queryOutput(result);
-                });
-            }).catch(function(errMsg){
-                vscode.window.showErrorMessage(errMsg);
-                _this.outputMsg(errMsg);
-            });
+            this.sqlMenager.runAsQuery(selection);
         }
     }
 }

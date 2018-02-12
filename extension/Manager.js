@@ -78,12 +78,27 @@ class Manager {
         }
     };
 
-    queryPromiseMulti(sqlMulti){
+    runAsQuery(sqlMulti){
         if(this.currentServer === null){
-            vscode.window.showErrorMessage('Server not selected');
-        }else{
-            return this.currentServer.queryPromiseMulti(sqlMulti);
+           vscode.window.showErrorMessage('Server not selected');
+           return;
         }
+        
+        const queries = this.currentServer.splitQueries(sqlMulti)
+            .map((sql) => (this.currentServer.queryPromise(sql).then((data) => {
+                    return Promise.resolve({data, sql});
+                })
+            ));
+
+        Promise.all(queries).then(allResult => {
+            allResult.forEach(result => {
+                this.outputMsg(result.sql);
+                this.queryOutput(result.data);
+            });
+        }).catch(function(errMsg){
+            vscode.window.showErrorMessage(errMsg);
+            this.outputMsg(errMsg);
+        });
     };
     
     getDatabase (){

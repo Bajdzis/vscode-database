@@ -44,23 +44,17 @@ module.exports = class AbstractServer
 
     /**
      * @param {string} sql - queries separate ;
-     * @return {Promise}
+     * @return {string[]}
      */
-    queryPromiseMulti(sqlMulti){
-        var queries = [];
-        sqlMulti.split(";").forEach(sql => {
+    splitQueries(sqlMulti) {
+        return sqlMulti.split(";").filter((sql) => {
             if (!sql) {
-                return;
+                return false;
             }
             const notEmpty = (sql.trim().replace(/(\r\n|\n|\r)/gm, "") !== "");
-            if (notEmpty) {
-                queries.push(this.queryPromise(sql));
-            }
-            
-        });
-
-        return Promise.all(queries);
-    };
+            return notEmpty ? true : false;
+        })
+    }
 
     /**
      * @param {object} currentStructure - save new structure to this params

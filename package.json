@@ -2,7 +2,7 @@
   "name": "vscode-database",
   "displayName": "vscode-database",
   "description": "Support SQL database (mysql and postgres)",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "publisher": "bajdzis",
   "icon": "icon.png",
   "engines": {
@@ -48,35 +48,52 @@
     "commands": [
       {
         "command": "extension.connectToSQLServer",
-        "title": "SQL: Connect to MySQL / PostgreSQL server"
+        "category": "SQL",
+        "title": "Connect to MySQL / PostgreSQL server"
       },
       {
         "command": "extension.changeDB",
-        "title": "SQL: Select database"
+        "category": "SQL",
+        "title": "Select database"
       },
       {
         "command": "extension.changeServer",
-        "title": "SQL: Change connected server"
+        "category": "SQL",
+        "title": "Change connected server"
       },
       {
         "command": "extension.querySQL",
-        "title": "SQL: Query"
+        "title": "Query",
+        "category": "SQL"
+      },
+      {
+        "command": "extension.queryFileSQL",
+        "title": "Run file as query",
+        "category": "SQL",
+        "icon": {
+            "dark": "icons/dark/database.svg",
+            "light": "icons/light/database.svg"
+        }
       },
       {
         "command": "extension.querySelectedSQL",
-        "title": "SQL: Run selected text as SQL query"
+        "category": "SQL",
+        "title": "Run selected text as SQL query"
       },
       {
         "command": "extension.queryBuild",
-        "title": "SQL: Query Advancer Build"
+        "category": "SQL",
+        "title": "Query Advancer Build"
       },
       {
         "command": "extension.runQueryBuild",
-        "title": "SQL: Run Query Advancer Build"
+        "category": "SQL",
+        "title": "Run Query Advancer Build"
       },
       {
         "command": "extension.saveConfig",
-        "title": "SQL: Save current server"
+        "category": "SQL",
+        "title": "Save current server"
       }
     ],
     "menus": {
@@ -85,6 +102,13 @@
           "command": "extension.querySelectedSQL",
           "when": "editorHasSelection && editorLangId == 'sql'",
           "group": "10_mysql"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "extension.queryFileSQL",
+          "when": "editorLangId == 'sql'",
+          "group": "navigation@1"
         }
       ],
       "view/title": [
