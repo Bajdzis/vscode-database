@@ -11,6 +11,8 @@
  
 ## Changelog
 
+* 1.5.1 - Fixed #39
+
 * 1.5.0 - Add new command for run query from SQL files
 
 * 1.4.1 - Fixed #24, #21

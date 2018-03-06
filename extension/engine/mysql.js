@@ -56,9 +56,9 @@ module.exports = class MySQLType extends AbstractServer
      * @param {function} func - callback
      */
     query (sql, func){
-        this.queryPromise(sql).then(func).catch(function(errMsg){
+        this.queryPromise(sql).then(func).catch(errMsg => {
             vscode.window.showErrorMessage(errMsg);
-            _this.outputMsg(errMsg);
+            this.outputMsg(errMsg);
         })
     };
 
