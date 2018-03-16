@@ -40,10 +40,14 @@ function activate(context) {
     addCommand(context, 'extension.connectToSQLServer');
 
     addCommand(context, 'extension.querySQL');
-
+    
     addCommand(context, 'extension.queryFileSQL');
 
+    addCommand(context, 'extension.queryFileSQLToCSV');
+
     addTextEditorCommand(context, 'extension.querySelectedSQL');
+
+    addTextEditorCommand(context, 'extension.querySelectedSQLToCSV');
 
 }
 exports.activate = activate;

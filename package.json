@@ -21,28 +21,28 @@
   "main": "./extension",
   "contributes": {
     "views": {
-			"explorer": [
-				{
-					"id": "Connections",
+      "explorer": [
+        {
+          "id": "Connections",
           "name": "SQL Connections",
           "when": "MinimumOneConnectionIsOnline"
         },
         {
-					"id": "Table",
+          "id": "Table",
           "name": "SQL Table",
           "when": "MinimumOneTableInStructure"
-				}
-			]
-		},
+        }
+      ]
+    },
     "configuration": {
       "type": "object",
       "title": "Database configuration",
       "properties": {
-          "database.connections": {
-              "type": "array",
-              "default": [],
-              "description": "Array of object with data to connect server on run editor or change workspace"
-          }
+        "database.connections": {
+          "type": "array",
+          "default": [],
+          "description": "Array of object with data to connect server on run editor or change workspace"
+        }
       }
     },
     "commands": [
@@ -71,14 +71,28 @@
         "title": "Run file as query",
         "category": "SQL",
         "icon": {
-            "dark": "icons/dark/database.svg",
-            "light": "icons/light/database.svg"
+          "dark": "icons/dark/database.svg",
+          "light": "icons/light/database.svg"
+        }
+      },
+      {
+        "command": "extension.queryFileSQLToCSV",
+        "title": "Run file as query with CSV result",
+        "category": "SQL",
+        "icon": {
+          "dark": "icons/dark/database.svg",
+          "light": "icons/light/database.svg"
         }
       },
       {
         "command": "extension.querySelectedSQL",
         "category": "SQL",
         "title": "Run selected text as SQL query"
+      },
+      {
+        "command": "extension.querySelectedSQLToCSV",
+        "category": "SQL",
+        "title": "Run selected text as SQL query with CSV result"
       },
       {
         "command": "extension.queryBuild",
@@ -102,11 +116,21 @@
           "command": "extension.querySelectedSQL",
           "when": "editorHasSelection && editorLangId == 'sql'",
           "group": "10_mysql"
+        },
+        {
+          "command": "extension.querySelectedSQLToCSV",
+          "when": "editorHasSelection && editorLangId == 'sql'",
+          "group": "10_mysql"
         }
       ],
       "editor/title": [
         {
           "command": "extension.queryFileSQL",
+          "when": "editorLangId == 'sql'",
+          "group": "navigation@1"
+        },
+        {
+          "command": "extension.queryFileSQLToCSV",
           "when": "editorLangId == 'sql'",
           "group": "navigation@1"
         }
@@ -151,6 +175,7 @@
     ]
   },
   "dependencies": {
+    "fast-csv": "^2.4.1",
     "fs": "0.0.2",
     "mysql": "^2.12.0",
     "pg": "^6.1.2"
