@@ -279,5 +279,21 @@ module.exports = class PostgreSQLType extends AbstractServer{
 
     }
 
+    /**
+     * @param {string} tableName
+     * @return {string} a quoted identifier table name
+     */
+    getIdentifiedTableName(tableName){
+        return `"${tableName}"`;
+    }
+
+    /**
+     * @param {string} tableName
+     * @return {string} a SQL SELECT statement
+     */
+    getSelectTableSql(tableName){
+        return `SELECT * FROM ${this.schema}.${this.getIdentifiedTableName(tableName)}`;
+    }
+
 }
 

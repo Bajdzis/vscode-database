@@ -126,9 +126,9 @@ class Manager {
     refreshStructureDataBase (){
         this.currentServer.refrestStructureDataBase().then((structure) => {
             this.currentStructure = structure;
-            structureProvider.setStructure(structure);
+            structureProvider.setStructure(structure, this.currentServer);
         }).catch(function(err){
-            structureProvider.setStructure({});
+            structureProvider.setStructure({}, this.currentServer);
         });
     };
 
@@ -140,17 +140,9 @@ class Manager {
         var completionItems = [];
         var databaseScructure = this.getStructure();
 
-        const isMySQLType      = (this.currentServer instanceof MySQLType);
-        const isPostgreSQLType = (this.currentServer instanceof PostgreSQLType);
-        const getIdentifiedTableName = (tableName) => {
-            if (isMySQLType)      return "`"  + tableName + "`";
-            if (isPostgreSQLType) return "\"" + tableName + "\"";
-            return tableName;
-        };
-
         for( var tableName in databaseScructure ) {
             var tableItem = new vscode.CompletionItem(tableName);
-            tableItem.insertText = getIdentifiedTableName(tableName);
+            tableItem.insertText = this.currentServer.getIdentifiedTableName(tableName);
             tableItem.kind = vscode.CompletionItemKind.Class;
             tableItem.detail = "Table";
             tableItem.documentation = databaseScructure[tableName].length + " columns :";

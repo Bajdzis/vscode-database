@@ -17,14 +17,14 @@ class StructureProvider{
 		return Promise.resolve(this.items);
 	}
 	
-	setStructure(structure){
+	setStructure(structure, currentServer){
         const tablesName = Object.keys(structure);
 
         this.items = tablesName.map(tableName => {
 			const item = new vscode.TreeItem(tableName);
 			item.contextValue = "tableItem";//for menus
 			item.command = {
-				arguments: [`SELECT * FROM ${tableName}`],
+				arguments: [currentServer.getSelectTableSql(tableName)],
 				command: "extension.querySQL"
 			}
 			return item;

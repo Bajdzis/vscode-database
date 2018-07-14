@@ -67,4 +67,20 @@ module.exports = class AbstractServer
     getDatabase(){
         return Promise.resolve([]);
     }
+
+    /**
+     * @param {string} tableName
+     * @return {string} a quoted identifier table name
+     */
+    getIdentifiedTableName(tableName){
+        return tableName;
+    }
+
+    /**
+     * @param {string} tableName
+     * @return {string} a SQL SELECT statement
+     */
+    getSelectTableSql(tableName){
+        return `SELECT * FROM ${getIdentifiedTableName(tableName)}`;
+    }
 }

@@ -21,28 +21,28 @@
   "main": "./extension",
   "contributes": {
     "views": {
-			"explorer": [
-				{
-					"id": "Connections",
+      "explorer": [
+        {
+          "id": "Connections",
           "name": "SQL Connections",
           "when": "MinimumOneConnectionIsOnline"
         },
         {
-					"id": "Table",
+          "id": "Table",
           "name": "SQL Table",
           "when": "MinimumOneTableInStructure"
-				}
-			]
-		},
+        }
+      ]
+    },
     "configuration": {
       "type": "object",
       "title": "Database configuration",
       "properties": {
-          "database.connections": {
-              "type": "array",
-              "default": [],
-              "description": "Array of object with data to connect server on run editor or change workspace"
-          }
+        "database.connections": {
+          "type": "array",
+          "default": [],
+          "description": "Array of object with data to connect server on run editor or change workspace"
+        }
       }
     },
     "commands": [
@@ -71,8 +71,8 @@
         "title": "Run file as query",
         "category": "SQL",
         "icon": {
-            "dark": "icons/dark/database.svg",
-            "light": "icons/light/database.svg"
+          "dark": "icons/dark/database.svg",
+          "light": "icons/light/database.svg"
         }
       },
       {
@@ -153,7 +153,7 @@
   "dependencies": {
     "fs": "0.0.2",
     "mysql": "^2.12.0",
-    "pg": "^6.1.2"
+    "pg": "^6.4.2"
   },
   "devDependencies": {
     "vscode": "1.1.10"
