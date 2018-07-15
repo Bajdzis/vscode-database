@@ -155,7 +155,7 @@ module.exports = class MySQLType extends AbstractServer
      * @return {string} a SQL SELECT statement
      */
     getSelectTableSql(tableName){
-        return `SELECT * FROM ${getIdentifiedTableName(tableName)}`;
+        return `SELECT * FROM ${this.getIdentifiedTableName(tableName)}`;
     }
 
 }

@@ -2,7 +2,7 @@
   "name": "vscode-database",
   "displayName": "vscode-database",
   "description": "Support SQL database (mysql and postgres)",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "publisher": "bajdzis",
   "icon": "icon.png",
   "engines": {

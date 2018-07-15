@@ -127,7 +127,7 @@ class Manager {
         this.currentServer.refrestStructureDataBase().then((structure) => {
             this.currentStructure = structure;
             structureProvider.setStructure(structure, this.currentServer);
-        }).catch(function(err){
+        }).catch((err) => {
             structureProvider.setStructure({}, this.currentServer);
         });
     };
