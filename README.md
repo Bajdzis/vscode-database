@@ -11,6 +11,8 @@
  
 ## Changelog
 
+* 1.5.3 - Fixed #59
+
 * 1.5.2 - Fixed #49
 
 * 1.5.1 - Fixed #39

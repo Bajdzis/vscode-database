@@ -2,7 +2,7 @@
   "name": "vscode-database",
   "displayName": "vscode-database",
   "description": "Support SQL database (mysql and postgres)",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "publisher": "bajdzis",
   "icon": "icon.png",
   "engines": {
@@ -130,11 +130,6 @@
       {
         "key": "Alt+q",
         "command": "extension.queryBuild"
-      },
-      {
-        "key": "Ctrl+enter",
-        "mac": "cmd+enter",
-        "command": "extension.runQueryBuild"
       },
       {
         "key": "ctrl+shift+e",
