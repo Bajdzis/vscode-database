@@ -1,12 +1,12 @@
 
 var vscode = require('vscode');
-var fs = require('fs');
 
 var config = require('./extension/action/helpers/Config');
 var manager = require('./extension/Manager');
 var structureProvider = require('./extension/StructureProvider');
 var connectionsProvider = require('./extension/ConnectionsProvider');
 var completionItemsProvider = require('./extension/CompletionItemsProvider');
+var { setExtensionPath } = require('./extension/webViews/webViewsRunner');
 
 function activate(context) {
     
@@ -20,6 +20,8 @@ function activate(context) {
             });
         });
     });
+
+    setExtensionPath(context.extensionPath);
 
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider('sql', completionItemsProvider, ' '));
     

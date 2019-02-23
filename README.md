@@ -11,6 +11,10 @@
  
 ## Changelog
 
+* 2.0.0 (IN PROGGRES)
+    * Created new form to connect database. Fixed #19 
+    * Add database icon in sidebar.
+
 * 1.5.3 - Fixed #59
 
 * 1.5.2 - Fixed #49

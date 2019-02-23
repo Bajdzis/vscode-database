@@ -6,7 +6,7 @@
   "publisher": "bajdzis",
   "icon": "icon.png",
   "engines": {
-    "vscode": "^0.10.1"
+    "vscode": "^1.30.0"
   },
   "categories": [
     "Other"
@@ -20,8 +20,17 @@
   },
   "main": "./extension",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "databaseExplorer",
+          "title": "Databases",
+          "icon": "icons/sidePanel/database.svg"
+        }
+      ]
+    },
     "views": {
-      "explorer": [
+      "databaseExplorer": [
         {
           "id": "Connections",
           "name": "SQL Connections",
@@ -151,6 +160,6 @@
     "pg": "^6.4.2"
   },
   "devDependencies": {
-    "vscode": "1.1.10"
+    "vscode": "^1.1.30"
   }
 }

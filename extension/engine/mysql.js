@@ -38,7 +38,7 @@ module.exports = class MySQLType extends AbstractServer
         return new Promise((resolve, reject) => {
             this.connection.connect((err) => {
                 if (err) {
-                    reject('MySQL Error: ' + err.stack);
+                    reject(err.message);
                 } else {
                     if(database === undefined){
                         resolve();
@@ -70,7 +70,7 @@ module.exports = class MySQLType extends AbstractServer
         return new Promise((resolve, reject) => {
             this.connection.query(sql, (err, rows) => {
                 if(err){
-                    reject('MySQL Error: ' + err.stack);
+                    reject(err.message);
                     return;
                 }
                 resolve(rows);

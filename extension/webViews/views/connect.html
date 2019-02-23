@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{basePath}}/style.css">
+    <title>Connect to SQL server</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Connect to SQL server</h1>
+        <ul class="tab">
+            <li class="tab__item" data-type="mysql" onclick="setState({type:'mysql'})">
+                MySQL
+            </li>
+
+            <li class="tab__item" data-type="postgres" onclick="setState({type:'postgres'})">
+                Postgres
+            </li>
+        </ul>
+
+        <blockquote class="panel" id="error" hidden>
+            <p class="panel__text">
+                Connection error! <span id="errorMessage"></span><br/>
+                You have a prolem? <a href="https://github.com/Bajdzis/vscode-database/issues/new" target="_blank">Add new issues!</a>
+            </p>
+        </blockquote>
+
+        <div class="field">
+            <label class="field__label" for="host">
+                <b>Host</b> (e.g host, 127.0.0.1, with port 127.0.0.1:3333)
+            </label>
+            <input class="field__input" id="host" oninput="setState({host:event.target.value})" type="text"
+                />
+        </div>
+
+        <div class="field">
+            <label class="field__label" for="username"><b>Username</b> (e.g root/user)</label>
+            <input class="field__input" id="username" oninput="setState({username:event.target.value})" type="text"
+              />
+        </div>
+
+        <div class="field">
+            <label class="field__label" for="password"><b>Password</b></label>
+            <input class="field__input" id="password" oninput="setState({password:event.target.value})"
+                type="password" />
+        </div>
+
+        <button class="button button--primary" onclick="tryConnect()">Connect</button>
+
+    </div>
+
+    <script>
+        const vscode = acquireVsCodeApi();
+        const initialState = {
+            type: 'mysql',
+            host: 'localhost',
+            username: 'root',
+            password: ''
+        };
+        let state = vscode.getState() || initialState;
+
+        const setState = (newState) => {
+            state = Object.assign({}, state, newState);
+            refreshView(state);
+            vscode.setState(state);
+        };
+
+        const tryConnect = () => {
+            const { host, username, password, type } = state;
+            vscode.postMessage({
+                type: 'CONNECT_TO_SQL_SERVER',
+                payload: {
+                    type,
+                    host,
+                    username,
+                    password
+                }
+            });
+        }
+
+        const refreshView = state => {
+            const tabs = document.querySelectorAll('[data-type]');
+            for (let i = 0; i < tabs.length; i++) {
+                const tab = tabs[i];
+                if (tab.dataset.type === state.type) {
+                    tab.classList.add('tab__item--active');
+                } else {
+                    tab.classList.remove('tab__item--active');
+                }
+            }
+            const inputs = document.querySelectorAll('#host, #username, #password');
+            for (let i = 0; i < inputs.length; i++) {
+                const input = inputs[i];
+                const id = input.getAttribute('id');
+                if (input.value !== state[id]) {
+                    input.value = state[id];
+                }
+            }
+
+        }
+
+        refreshView(state);
+
+        window.addEventListener('message', ({data}) => { 
+            if (data.type === 'CONNECTION_ERROR') {
+                const error = document.getElementById('error');
+                const errorMessage = document.getElementById('errorMessage');
+                error.removeAttribute('hidden');
+                errorMessage.innerText = data.payload.error.toString();
+            }
+        })
+    </script>
+</body>
+
+</html>
