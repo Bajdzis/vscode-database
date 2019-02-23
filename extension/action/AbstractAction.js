@@ -12,6 +12,6 @@ module.exports = class AbstractAction
      */
     execution(){
 
-    };
+    }
     
-}
+};

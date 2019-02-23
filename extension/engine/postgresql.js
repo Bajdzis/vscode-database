@@ -2,21 +2,21 @@ var pg = require('pg');
 var vscode = require('vscode');
 var AbstractServer = require('./AbstractServer.js');
 
-    const SELECT_DATABSE_SQL = 
+const SELECT_DATABSE_SQL = 
 `
 SELECT datname AS "Database" 
 FROM pg_database 
 WHERE datistemplate = false;
 `;
 
-    const SELECT_SCHEMA_SQL = 
+const SELECT_SCHEMA_SQL = 
 `
 SELECT
   schema_name AS "Database"
 FROM information_schema.schemata
 `;
 
-    const SELECT_TABLE_SQL = 
+const SELECT_TABLE_SQL = 
 `
 SELECT 
   table_name
@@ -24,7 +24,7 @@ FROM information_schema.tables
 WHERE table_schema = $1::text
 `;
 
-    const SELECT_COLUMNS_SQL = 
+const SELECT_COLUMNS_SQL = 
 `
 SELECT
   col.column_name                                                   AS "Field",
@@ -76,13 +76,13 @@ module.exports = class PostgreSQLType extends AbstractServer{
 
     constructor() {
         super();
-        this.type = "postgres";
-        this.host = "Empty";
-        this.port = "5432";
-        this.user = "Empty";
-        this.password = "Empty";
+        this.type = 'postgres';
+        this.host = 'Empty';
+        this.port = '5432';
+        this.user = 'Empty';
+        this.password = 'Empty';
         this.database = undefined;
-        this.schema = "public";
+        this.schema = 'public';
         this.onConnectSetDB = null;
         this.release = null;
     }
@@ -96,14 +96,14 @@ module.exports = class PostgreSQLType extends AbstractServer{
      * @return {Promise}
      */
     connectPromise(host, user, password, database, schema){
-        this.name = user + "@" + host + " (postgres)";
-        var hostAndPort = host.split(":");
+        this.name = user + '@' + host + ' (postgres)';
+        var hostAndPort = host.split(':');
         this.host = hostAndPort[0];
-        this.port = hostAndPort[1] || "5432";
+        this.port = hostAndPort[1] || '5432';
         this.user = user;
         this.password = password;
-        this.database = database || "postgres";
-        this.schema = schema || "public";
+        this.database = database || 'postgres';
+        this.schema = schema || 'public';
         this.connection = new pg.Pool({
             user: this.user,
             database: this.database,
@@ -124,11 +124,11 @@ module.exports = class PostgreSQLType extends AbstractServer{
                 }
                 resolve();
             });
-            this.connection.on('error', function (err, client) {
+            this.connection.on('error', (err) => {
                 reject('PostgreSQL Error: ' + err.stack);
             });
         });
-    };
+    }
 
     /**
      * @return {Promise}
@@ -140,7 +140,7 @@ module.exports = class PostgreSQLType extends AbstractServer{
                 resolve();
             }).catch(reject);
         });
-    };
+    }
     /**
      * @param {string} sql
      * @param {object} params
@@ -169,8 +169,8 @@ module.exports = class PostgreSQLType extends AbstractServer{
         this.queryPromise(sql, params).then(func).catch((errMsg) => {
             vscode.window.showErrorMessage(errMsg);
             this.outputMsg(errMsg);
-        })
-    };
+        });
+    }
 
     /**
      * @return {Promise}
@@ -184,15 +184,15 @@ module.exports = class PostgreSQLType extends AbstractServer{
                 var database = results[0];
                 var schema = results[1];
                 var allDatabase = [];
-                for (var i = 0; i < database.length; i++) {
+                for (let i = 0; i < database.length; i++) {
                     allDatabase.push(database[i].Database);
                 }
                 if(this.currentDatabase === null){
                     resolve(allDatabase);
                     return;
                 }
-                for (var i = 0; i < schema.length; i++) {
-                    allDatabase.push(this.currentDatabase + "." + schema[i].Database);
+                for (let i = 0; i < schema.length; i++) {
+                    allDatabase.push(this.currentDatabase + '.' + schema[i].Database);
                 }
                 resolve(allDatabase);
             }).catch(reject);
@@ -204,9 +204,9 @@ module.exports = class PostgreSQLType extends AbstractServer{
      * @return {Promise}
      */
     changeDatabase (name) {
-        var databaseAndSchema = name.split(".");
+        var databaseAndSchema = name.split('.');
         var database = databaseAndSchema.splice(0, 1)[0];
-        var schema = "public";
+        var schema = 'public';
         if(databaseAndSchema.length > 0){
             schema = databaseAndSchema.join('.');
         }
@@ -215,7 +215,7 @@ module.exports = class PostgreSQLType extends AbstractServer{
                 this.changeSchema(schema).then(resolve).catch(reject);
             }else{
                 this.closeConnect().then(() => {
-                    this.connectPromise(this.host + ":" + this.port, this.user, this.password, database, schema).then(() =>{
+                    this.connectPromise(this.host + ':' + this.port, this.user, this.password, database, schema).then(() =>{
                         this.schema = schema;
                         this.currentDatabase = database;
                         resolve();
@@ -223,11 +223,11 @@ module.exports = class PostgreSQLType extends AbstractServer{
                 });
             }
         });
-    };
+    }
 
     changeSchema(schema){
         return new Promise((resolve, reject) => {
-            this.queryPromise("SET search_path to " + schema).then(() => {
+            this.queryPromise('SET search_path to ' + schema).then(() => {
                 this.schema = schema;
                 resolve();
             }).catch(() => {
@@ -295,5 +295,5 @@ module.exports = class PostgreSQLType extends AbstractServer{
         return `SELECT * FROM ${this.schema}.${this.getIdentifiedTableName(tableName)}`;
     }
 
-}
+};
 

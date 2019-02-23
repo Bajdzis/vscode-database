@@ -13,7 +13,7 @@ module.exports = class querySQL extends AbstractAction
             this.sqlMenager.query(query, (data) => {
                 this.sqlMenager.queryOutput(data);
             });
-        }
+        };
 
         if(query !== null && typeof query === 'string'){
             runQuery(query);
@@ -21,14 +21,14 @@ module.exports = class querySQL extends AbstractAction
         }
 
         vscode.window.showInputBox({
-            value:"", 
-            prompt: "e.g SELECT * FROM table", 
-            placeHolder: "Query", 
+            value:'', 
+            prompt: 'e.g SELECT * FROM table', 
+            placeHolder: 'Query', 
             password: false
         }).then(runQuery);
-    };
+    }
 
 
 
 
-}
+};

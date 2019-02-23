@@ -3,11 +3,11 @@ var vscode = require('vscode');
 module.exports = class StatusBar {
     constructor() {
         this.serverStatus = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-        this.serverStatus.command = "extension.changeServer";
+        this.serverStatus.command = 'extension.changeServer';
         this.serverStatus.show();
         
         this.databaseStatus = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-        this.databaseStatus.command = "extension.changeDB";
+        this.databaseStatus.command = 'extension.changeDB';
         
         this.setDatabase(null);
         this.setServer(null);
@@ -26,4 +26,4 @@ module.exports = class StatusBar {
         this.databaseStatus.text = ' $(database) ' + (name || 'Database not selected');
     }
 
-}
+};

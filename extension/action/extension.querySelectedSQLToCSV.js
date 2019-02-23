@@ -1,4 +1,3 @@
-var vscode = require('vscode');
 var AbstractAction = require('./AbstractAction.js');
 
 module.exports = class querySelectedSQLToCSV extends AbstractAction {
@@ -13,4 +12,4 @@ module.exports = class querySelectedSQLToCSV extends AbstractAction {
             this.sqlMenager.runAsQueryToCSV(selection);
         }
     }
-}
+};

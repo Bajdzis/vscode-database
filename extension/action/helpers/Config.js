@@ -1,5 +1,4 @@
 var vscode = require('vscode');
-var fs = require('fs');
 
 class Config{
 
@@ -16,11 +15,11 @@ class Config{
         this.getDatabases().then((connections) =>{
             connections.push(newDatabaseConfig);
             this.databaseConfig.update('connections',connections);
-        })
+        });
         
     }
 
-};
+}
 
 const config = new Config();
 

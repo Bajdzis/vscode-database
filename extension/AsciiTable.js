@@ -29,41 +29,41 @@ module.exports = function AsciiTable(json)
         }
 
         return _this.draw();
-    }
+    };
 
     this.draw = function () {
         var buffer = '';
         // draw 
         buffer += _this.line();
-        buffer += "\n | "
+        buffer += '\n | ';
         for (var key in _this.keys) {
-            buffer += _this.keys[key] + ( ' '.repeat(_this.width[_this.keys[key]] - String(_this.keys[key]).length) ) + " | ";
+            buffer += _this.keys[key] + ( ' '.repeat(_this.width[_this.keys[key]] - String(_this.keys[key]).length) ) + ' | ';
         }
             
         buffer += _this.line(); 
         
         for (var row in json) {
             
-            buffer += "\n | ";
+            buffer += '\n | ';
             for (var data in json[row]) {
 
-                buffer += String(json[row][data]) + ( ' '.repeat(_this.width[data] - String(json[row][data]).length) ) + " | ";
+                buffer += String(json[row][data]) + ( ' '.repeat(_this.width[data] - String(json[row][data]).length) ) + ' | ';
 
             }
         }
         
         buffer += this.line(); 
         return buffer;
-    }
+    };
 
     this.line = function(){
-        var line = "\n +";
+        var line = '\n +';
         for (var size in this.width) {
-            line +=  ( '-'.repeat(this.width[size]+2) ) + "+";
+            line +=  ( '-'.repeat(this.width[size]+2) ) + '+';
         }
 
         return line;
-    }
+    };
 
     return this.table();
-}
+};

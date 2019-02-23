@@ -14,5 +14,5 @@ module.exports = class queryFileSQL extends AbstractAction
         const queries = vscode.window.activeTextEditor.document.getText();
 
         manager.runAsQuery(queries);
-    };
-}
+    }
+};

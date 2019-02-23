@@ -14,5 +14,5 @@ module.exports = class queryFileSQLToCSV extends AbstractAction
         const queries = vscode.window.activeTextEditor.document.getText();
 
         manager.runAsQueryToCSV(queries);
-    };
-}
+    }
+};

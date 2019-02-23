@@ -9,7 +9,7 @@ var PostgreSQLType = require('./engine/postgresql.js');
 var structureProvider = require('./StructureProvider');
 var connectionsProvider = require('./ConnectionsProvider');
 
-var csv = require('fast-csv')
+var csv = require('fast-csv');
 
 class Manager {
 
@@ -18,7 +18,7 @@ class Manager {
         this.currentServer = null;
         this.statusBar = new StatusBar();
         this.OutputChannel = null;
-    };
+    }
 
     showStatus(){
         var databaseName = this.getCurrentDatabase();
@@ -31,14 +31,14 @@ class Manager {
         }
 
         connectionsProvider.refreshList(this.server, this.currentServer);
-    };
+    }
 
     outputMsg (msg){
         if(this.OutputChannel === null){
-            this.OutputChannel = vscode.window.createOutputChannel("database");
+            this.OutputChannel = vscode.window.createOutputChannel('database');
         }
         this.OutputChannel.appendLine(msg);
-    };
+    }
 
     factoryServer (type){
         if(type == 'mysql'){
@@ -46,7 +46,7 @@ class Manager {
         }else if(type == 'postgres'){
             return new PostgreSQLType();
         }
-    };
+    }
     
     connect (type, host, user, password, onConnectSetDB){
         var newServer = this.factoryServer(type);
@@ -55,7 +55,7 @@ class Manager {
         newServer.connect(host, user, password, this);
         this.showStatus();
         return newServer;
-    };
+    }
 
     connectPromise (type, host, user, password, database){
         var newServer = this.factoryServer(type);
@@ -69,7 +69,7 @@ class Manager {
             }).catch(reject);
         });
 
-    };
+    }
     
     query (sql, func, params){
         this.outputMsg(sql);
@@ -78,18 +78,18 @@ class Manager {
         }else{
             this.currentServer.query(sql, func, params);
         }
-    };
+    }
 
     runAsQuery(sqlMulti){
         if(this.currentServer === null){
-           vscode.window.showErrorMessage('Server not selected');
-           return;
+            vscode.window.showErrorMessage('Server not selected');
+            return;
         }
         
         const queries = this.currentServer.splitQueries(sqlMulti)
             .map((sql) => (this.currentServer.queryPromise(sql).then((data) => {
-                    return Promise.resolve({data, sql});
-                })
+                return Promise.resolve({data, sql});
+            })
             ));
 
         Promise.all(queries).then(allResult => {
@@ -101,18 +101,18 @@ class Manager {
             vscode.window.showErrorMessage(errMsg);
             this.outputMsg(errMsg);
         });
-    };
+    }
 
     runAsQueryToCSV(sqlMulti){
         if(this.currentServer === null){
-           vscode.window.showErrorMessage('Server not selected');
-           return;
+            vscode.window.showErrorMessage('Server not selected');
+            return;
         }
         
         const queries = this.currentServer.splitQueries(sqlMulti)
             .map((sql) => (this.currentServer.queryPromise(sql).then((data) => {
-                    return Promise.resolve({data, sql});
-                })
+                return Promise.resolve({data, sql});
+            })
             ));
 
         Promise.all(queries).then(allResult => {
@@ -124,11 +124,11 @@ class Manager {
             vscode.window.showErrorMessage(errMsg);
             this.outputMsg(errMsg);
         });
-    };
+    }
     
     getDatabase (){
         return this.currentServer.getDatabase();
-    };
+    }
 
     changeDatabase (name){
         this.currentServer.changeDatabase(name).then(() => {
@@ -139,27 +139,27 @@ class Manager {
             this.outputMsg('-'.repeat(msg.length));
             this.showStatus();
         });
-    };
+    }
 
     getCurrentDatabase () {
         if(this.currentServer === null){
             return null;
         }
         return this.currentServer.currentDatabase;
-    };
+    }
 
     refreshStructureDataBase (){
         this.currentServer.refrestStructureDataBase().then((structure) => {
             this.currentStructure = structure;
             structureProvider.setStructure(structure, this.currentServer);
-        }).catch((err) => {
+        }).catch(() => {
             structureProvider.setStructure({}, this.currentServer);
         });
-    };
+    }
 
     getStructure (){
         return this.currentStructure;
-    };
+    }
 
     getCompletionItem (){
         var completionItems = [];
@@ -169,27 +169,27 @@ class Manager {
             var tableItem = new vscode.CompletionItem(tableName);
             tableItem.insertText = this.currentServer.getIdentifiedTableName(tableName);
             tableItem.kind = vscode.CompletionItemKind.Class;
-            tableItem.detail = "Table";
-            tableItem.documentation = databaseScructure[tableName].length + " columns :";
+            tableItem.detail = 'Table';
+            tableItem.documentation = databaseScructure[tableName].length + ' columns :';
             
             for( var columnName in databaseScructure[tableName] ) {
                 var element = databaseScructure[tableName][columnName];
                 var item = new vscode.CompletionItem(tableName + '.' + element.Field);
                 
                 item.kind = vscode.CompletionItemKind.Property;
-                item.detail = "Column from " + tableName;
-                item.documentation = "Type :" + element.Type + "\n Table :" + tableName + "\n Default :" + element.Default + "\n Key :" + element.Key + "\n Extra :" + element.Extra ;
+                item.detail = 'Column from ' + tableName;
+                item.documentation = 'Type :' + element.Type + '\n Table :' + tableName + '\n Default :' + element.Default + '\n Key :' + element.Key + '\n Extra :' + element.Extra ;
                 item.insertText = element.Field;
 
                 completionItems.push(item);
 
-                tableItem.documentation += "\n " + element.Field + " (" + element.Type  + ")";
+                tableItem.documentation += '\n ' + element.Field + ' (' + element.Type  + ')';
 
             }
             completionItems.push(tableItem);
         }
         return completionItems;
-    };
+    }
     
     changeServer (server){
         this.currentServer = server;
@@ -201,16 +201,16 @@ class Manager {
 
         this.showStatus();
         
-    };
+    }
     
     registerNewServer (obj){
         this.server.push(obj);
         this.changeServer(obj);
-    };
+    }
     
     queryOutput (data){
         if(typeof data.message !== 'undefined'){
-            var table = asciiTable([{
+            let table = asciiTable([{
                 fieldCount: data.fieldCount,
                 affectedRows: data.affectedRows,
                 insertId: data.insertId,
@@ -223,21 +223,21 @@ class Manager {
         }else if(typeof data === 'object'){
             const noResult = data.length === 0;
             if (noResult) {
-                this.outputMsg("Query result 0 rows!");
+                this.outputMsg('Query result 0 rows!');
             } else {
-                var table = asciiTable(data);
-                const lines = table.split("\n");
+                let table = asciiTable(data);
+                const lines = table.split('\n');
                 lines.forEach((line) => {
                     this.outputMsg(line);
-                })
+                });
             }
         }else{
-            this.outputMsg("ok");
+            this.outputMsg('ok');
         }
         if(this.OutputChannel !== null){
             this.OutputChannel.show();
         }
-    };
+    }
 
     queryToCSV (data){
         if(typeof data.message !== 'undefined'){
@@ -254,7 +254,7 @@ class Manager {
         }else if(typeof data === 'object'){
             const noResult = data.length === 0;
             if (noResult) {
-                this.outputMsg("Query result 0 rows!");
+                this.outputMsg('Query result 0 rows!');
             } else {
                 csv.writeToString(
                     data,
@@ -273,12 +273,12 @@ class Manager {
                 );
             }
         }else{
-            this.outputMsg("ok");
+            this.outputMsg('ok');
         }
         if(this.OutputChannel !== null){
             this.OutputChannel.show();
         }
-    };
+    }
     
     changeServerAlias (newName){
         if(this.currentServer === null){
@@ -287,7 +287,7 @@ class Manager {
         this.currentServer.name = newName;
         this.showStatus();
         
-    };
+    }
 }
 
 const manager = new Manager();

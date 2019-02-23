@@ -1,16 +1,15 @@
-var vscode = require('vscode');
 var manager = require('./Manager');
 
 class CompletionItemsProvider{
 
-	constructor() { 
+    constructor() { 
     }
 
-    provideCompletionItems(document, position, token) {
+    provideCompletionItems() {
         return manager.getCompletionItem();
     }
 
-    resolveCompletionItem(item, token) {
+    resolveCompletionItem(item) {
         return item;
     }
 }

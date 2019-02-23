@@ -3,7 +3,7 @@ module.exports = class AbstractServer
     constructor() {
         this.connection = null;
         this.currentDatabase = null;
-        this.name = "Noname";
+        this.name = 'Noname';
         this.OutputChannel = null;
     }
 
@@ -12,7 +12,7 @@ module.exports = class AbstractServer
      */
     setOutput(OutputChannel){
         this.OutputChannel = OutputChannel;
-    };
+    }
     
     /**
      * @param {string} msg - text message to show
@@ -21,7 +21,7 @@ module.exports = class AbstractServer
         if(this.OutputChannel !== null){
             this.OutputChannel.appendLine(msg);
         }
-    };
+    }
 
     /**
      * @param {string} host
@@ -30,35 +30,38 @@ module.exports = class AbstractServer
      * @param {string|undefined} database
      * @return {Promise}
      */
+    // eslint-disable-next-line no-unused-vars
     connectPromise(host, user, password, database){
-        return Promise.reject("No implement connectPromise");
-    };
+        return Promise.reject('No implement connectPromise');
+    }
 
     /**
      * @param {string} sql - query
      * @return {Promise}
      */
+    // eslint-disable-next-line no-unused-vars
     queryPromise(sql){
-        return Promise.reject("No implement queryPromise");
-    };
+        return Promise.reject('No implement queryPromise');
+    }
 
     /**
      * @param {string} sql - queries separate ;
      * @return {string[]}
      */
     splitQueries(sqlMulti) {
-        return sqlMulti.split(";").filter((sql) => {
+        return sqlMulti.split(';').filter((sql) => {
             if (!sql) {
                 return false;
             }
-            const notEmpty = (sql.trim().replace(/(\r\n|\n|\r)/gm, "") !== "");
+            const notEmpty = (sql.trim().replace(/(\r\n|\n|\r)/gm, '') !== '');
             return notEmpty ? true : false;
-        })
+        });
     }
 
     /**
      * @param {object} currentStructure - save new structure to this params
      */
+    // eslint-disable-next-line no-unused-vars
     refrestStructureDataBase (currentStructure) { }
 
     /**
@@ -81,6 +84,6 @@ module.exports = class AbstractServer
      * @return {string} a SQL SELECT statement
      */
     getSelectTableSql(tableName){
-        return `SELECT * FROM ${getIdentifiedTableName(tableName)}`;
+        return `SELECT * FROM ${this.getIdentifiedTableName(tableName)}`;
     }
-}
+};

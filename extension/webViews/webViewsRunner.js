@@ -6,7 +6,7 @@ let extensionPath = '';
 
 const setExtensionPath = (newExtensionPath) => {
     extensionPath = newExtensionPath;
-}
+};
 
 const getPath = (piecesOfPath = []) => path.join(extensionPath, 'extension', 'webViews', ...piecesOfPath);
 
@@ -27,11 +27,12 @@ const showWebview = (viewName, title) => {
             }
             const panel = createWebviewPanel(viewName, title);
             panel.webview.html = html.replace(/\{\{basePath\}\}/gi,vscode.Uri.file(getPath()).with({
-                scheme: "vscode-resource"
+                scheme: 'vscode-resource'
             }));
 
             resolve(panel);
         });
+    // eslint-disable-next-line no-console
     }).catch(err => console.error(err));
 };
 
@@ -40,4 +41,4 @@ module.exports = {
     getSetting,
     createWebviewPanel,
     showWebview
-}
+};

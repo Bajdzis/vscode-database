@@ -6,11 +6,11 @@ module.exports = class MySQLType extends AbstractServer
 {
     constructor() {
         super();
-        this.type = "mysql";
-        this.host = "Empty";
-        this.port = "3306";
-        this.user = "Empty";
-        this.password = "Empty";
+        this.type = 'mysql';
+        this.host = 'Empty';
+        this.port = '3306';
+        this.user = 'Empty';
+        this.password = 'Empty';
         this.onConnectSetDB = null;
     }
     
@@ -23,10 +23,10 @@ module.exports = class MySQLType extends AbstractServer
      * @return {Promise}
      */
     connectPromise(host, user, password, database) {
-        this.name = host + " (mysql)";
-        var hostAndPort = host.split(":");
+        this.name = host + ' (mysql)';
+        var hostAndPort = host.split(':');
         this.host = hostAndPort[0];
-        this.port = hostAndPort[1] || "3306";
+        this.port = hostAndPort[1] || '3306';
         this.user = user;
         this.password = password;
         this.connection = mysql.createConnection({
@@ -48,7 +48,7 @@ module.exports = class MySQLType extends AbstractServer
                 }
             });
         });
-    };
+    }
 
     /**
      * @deprecated new implement is queryPromise
@@ -59,8 +59,8 @@ module.exports = class MySQLType extends AbstractServer
         this.queryPromise(sql).then(func).catch(errMsg => {
             vscode.window.showErrorMessage(errMsg);
             this.outputMsg(errMsg);
-        })
-    };
+        });
+    }
 
     /**
      * @param {string} sql
@@ -107,7 +107,7 @@ module.exports = class MySQLType extends AbstractServer
                 reject(err);
             });
         });
-    };
+    }
 
     /**
      * @return {Promise}
@@ -116,12 +116,12 @@ module.exports = class MySQLType extends AbstractServer
         var currentStructure = {};
         var tablePromise = [];
         return new Promise((resolve, reject) => {
-            this.queryPromise("SHOW tables").then(results => {
+            this.queryPromise('SHOW tables').then(results => {
                 for (let i = 0; i < results.length; i++) {
                     let key = Object.keys(results[i])[0];
                     let tableName = results[i][key];
                     let promise = new Promise((resolve, reject) => {
-                        this.queryPromise("SHOW COLUMNS FROM " + tableName).then((column) => {
+                        this.queryPromise('SHOW COLUMNS FROM ' + tableName).then((column) => {
                             resolve({
                                 column : column,
                                 tableName : tableName
@@ -158,4 +158,4 @@ module.exports = class MySQLType extends AbstractServer
         return `SELECT * FROM ${this.getIdentifiedTableName(tableName)}`;
     }
 
-}
+};

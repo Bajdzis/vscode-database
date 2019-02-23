@@ -4,6 +4,9 @@
   "description": "Support SQL database (mysql and postgres)",
   "version": "1.5.3",
   "publisher": "bajdzis",
+  "scripts": {
+    "lint": "eslint extension"
+  },
   "icon": "icon.png",
   "engines": {
     "vscode": "^1.30.0"
@@ -179,6 +182,7 @@
     ]
   },
   "dependencies": {
+    "eslint": "^5.14.1",
     "fast-csv": "^2.4.1",
     "fs": "0.0.2",
     "mysql": "^2.12.0",
