@@ -9,6 +9,8 @@ var PostgreSQLType = require('./engine/postgresql.js');
 var structureProvider = require('./StructureProvider');
 var connectionsProvider = require('./ConnectionsProvider');
 
+var csv = require('fast-csv')
+
 class Manager {
 
     constructor() {
@@ -94,6 +96,29 @@ class Manager {
             allResult.forEach(result => {
                 this.outputMsg(result.sql);
                 this.queryOutput(result.data);
+            });
+        }).catch(function(errMsg){
+            vscode.window.showErrorMessage(errMsg);
+            this.outputMsg(errMsg);
+        });
+    };
+
+    runAsQueryToCSV(sqlMulti){
+        if(this.currentServer === null){
+           vscode.window.showErrorMessage('Server not selected');
+           return;
+        }
+        
+        const queries = this.currentServer.splitQueries(sqlMulti)
+            .map((sql) => (this.currentServer.queryPromise(sql).then((data) => {
+                    return Promise.resolve({data, sql});
+                })
+            ));
+
+        Promise.all(queries).then(allResult => {
+            allResult.forEach(result => {
+                this.outputMsg(result.sql);
+                this.queryToCSV(result.data);
             });
         }).catch(function(errMsg){
             vscode.window.showErrorMessage(errMsg);
@@ -205,6 +230,47 @@ class Manager {
                 lines.forEach((line) => {
                     this.outputMsg(line);
                 })
+            }
+        }else{
+            this.outputMsg("ok");
+        }
+        if(this.OutputChannel !== null){
+            this.OutputChannel.show();
+        }
+    };
+
+    queryToCSV (data){
+        if(typeof data.message !== 'undefined'){
+            var table = asciiTable([{
+                fieldCount: data.fieldCount,
+                affectedRows: data.affectedRows,
+                insertId: data.insertId,
+                serverStatus: data.serverStatus,
+                warningCount: data.warningCount,
+                changedRows: data.changedRows
+            }]);
+            this.outputMsg(data.message);
+            this.outputMsg(table);
+        }else if(typeof data === 'object'){
+            const noResult = data.length === 0;
+            if (noResult) {
+                this.outputMsg("Query result 0 rows!");
+            } else {
+                csv.writeToString(
+                    data,
+                    {headers: true},
+                    function(err, dataCSV){
+                        vscode.workspace.openTextDocument().then(doc => {
+                            vscode.window.showTextDocument(doc, 2, false).then(e => {
+                                e.edit(edit => {
+                                    edit.insert(new vscode.Position(0, 0), dataCSV);
+                                });
+                            });
+                        }, (error) => {
+                            vscode.window.showErrorMessage(error);
+                        });
+                    }
+                );
             }
         }else{
             this.outputMsg("ok");

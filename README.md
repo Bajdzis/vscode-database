@@ -14,6 +14,7 @@
 * 2.0.0 (IN PROGGRES)
     * Created new form to connect database. Fixed #19 
     * Add database icon in sidebar.
+    * Query result to csv
 
 * 1.5.3 - Fixed #59
 
@@ -56,6 +57,7 @@
 * Bajdzis - Extension
 * k--kato - Postgres integration
 * serl - Execute selected query
+* ArtemiusUA - Query result to csv
 
 ## License
 MIT © [Bajdzis](https://github.com/Bajdzis)

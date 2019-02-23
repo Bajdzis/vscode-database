@@ -85,9 +85,23 @@
         }
       },
       {
+        "command": "extension.queryFileSQLToCSV",
+        "title": "Run file as query with CSV result",
+        "category": "SQL",
+        "icon": {
+          "dark": "icons/dark/database.svg",
+          "light": "icons/light/database.svg"
+        }
+      },
+      {
         "command": "extension.querySelectedSQL",
         "category": "SQL",
         "title": "Run selected text as SQL query"
+      },
+      {
+        "command": "extension.querySelectedSQLToCSV",
+        "category": "SQL",
+        "title": "Run selected text as SQL query with CSV result"
       },
       {
         "command": "extension.queryBuild",
@@ -111,11 +125,21 @@
           "command": "extension.querySelectedSQL",
           "when": "editorHasSelection && editorLangId == 'sql'",
           "group": "10_mysql"
+        },
+        {
+          "command": "extension.querySelectedSQLToCSV",
+          "when": "editorHasSelection && editorLangId == 'sql'",
+          "group": "10_mysql"
         }
       ],
       "editor/title": [
         {
           "command": "extension.queryFileSQL",
+          "when": "editorLangId == 'sql'",
+          "group": "navigation@1"
+        },
+        {
+          "command": "extension.queryFileSQLToCSV",
           "when": "editorLangId == 'sql'",
           "group": "navigation@1"
         }
@@ -155,6 +179,7 @@
     ]
   },
   "dependencies": {
+    "fast-csv": "^2.4.1",
     "fs": "0.0.2",
     "mysql": "^2.12.0",
     "pg": "^6.4.2"
