@@ -11,14 +11,7 @@ var { setExtensionPath } = require('./extension/webViews/webViewsRunner');
 function activate(context) {
     
     config.getDatabases().then((databases) => {
-        databases.forEach((database) => {
-            manager.connectPromise(database.type, database.host, database.user, database.password, database.database).then((server) => {
-                server.name = database.name;
-                manager.showStatus();
-            }).catch(function(err){
-                vscode.window.showErrorMessage(err);
-            });
-        });
+        manager.restoreConnections(databases);
     });
 
     setExtensionPath(context.extensionPath);

@@ -11,42 +11,31 @@
 <body>
     <div class="container">
         <h1>Connect to SQL server</h1>
-        <ul class="tab">
-            <li class="tab__item" data-type="mysql" onclick="setState({type:'mysql'})">
-                MySQL
-            </li>
-
-            <li class="tab__item" data-type="postgres" onclick="setState({type:'postgres'})">
-                Postgres
-            </li>
+        <ul class="tab" id="tabs">
+            <template>
+                <li class="tab__item" onclick="setState({type:'mysql'})">
+                    MySQL
+                </li>
+            </template>
         </ul>
 
         <blockquote class="panel" id="error" hidden>
             <p class="panel__text">
                 Connection error! <span id="errorMessage"></span><br/>
-                You have a prolem? <a href="https://github.com/Bajdzis/vscode-database/issues/new" target="_blank">Add new issues!</a>
+                You have a problem? <a href="https://github.com/Bajdzis/vscode-database/issues/new" target="_blank">Add new issue!</a>
             </p>
         </blockquote>
 
-        <div class="field">
-            <label class="field__label" for="host">
-                <b>Host</b> (e.g host, 127.0.0.1, with port 127.0.0.1:3333)
-            </label>
-            <input class="field__input" id="host" oninput="setState({host:event.target.value})" type="text"
-                />
-        </div>
+        <template id="field-template">
+            <div class="field">
+                <label class="field__label" for="{{name}}">
+                    <b>{{title}}</b> {{info}}
+                </label>
+                <input class="field__input" id="{{name}}" type="text" value="{{value}}"/>
+            </div>
+        </template>
 
-        <div class="field">
-            <label class="field__label" for="username"><b>Username</b> (e.g root/user)</label>
-            <input class="field__input" id="username" oninput="setState({username:event.target.value})" type="text"
-              />
-        </div>
-
-        <div class="field">
-            <label class="field__label" for="password"><b>Password</b></label>
-            <input class="field__input" id="password" oninput="setState({password:event.target.value})"
-                type="password" />
-        </div>
+        <div id="fields" data-type="none"></div>
 
         <button class="button button--primary" onclick="tryConnect()">Connect</button>
 
@@ -54,52 +43,109 @@
 
     <script>
         const vscode = acquireVsCodeApi();
+        const initialType = 'mysql'
         const initialState = {
-            type: 'mysql',
-            host: 'localhost',
-            username: 'root',
-            password: ''
+            type: initialType,
+            dataForm: [],
+            fieldValue: {}
         };
         let state = vscode.getState() || initialState;
 
         const setState = (newState) => {
-            state = Object.assign({}, state, newState);
+            state = {
+                ...state,
+                ...newState,
+                fieldValue: {
+                    ...state.fieldValue,
+                    ...newState.fieldValue,
+                }
+            };
             refreshView(state);
             vscode.setState(state);
         };
 
         const tryConnect = () => {
-            const { host, username, password, type } = state;
+            const { fieldValue, type } = state;
             vscode.postMessage({
                 type: 'CONNECT_TO_SQL_SERVER',
                 payload: {
-                    type,
-                    host,
-                    username,
-                    password
+                    fieldValue,
+                    type
                 }
             });
         }
 
+        const renderField = ({type, name, title, value, info}) => {
+            const fieldTemplate = document.querySelector('#field-template');
+            const html = fieldTemplate.innerHTML;
+            const fragment = document.createElement('template');
+            fragment.innerHTML = html
+                .replace(/\{\{type\}\}/gi, type)
+                .replace(/\{\{name\}\}/gi, name)
+                .replace(/\{\{title\}\}/gi, title)
+                .replace(/\{\{value\}\}/gi, value)
+                .replace(/\{\{info\}\}/gi, info);
+
+            return fragment.content;
+        }
+
         const refreshView = state => {
-            const tabs = document.querySelectorAll('[data-type]');
-            for (let i = 0; i < tabs.length; i++) {
-                const tab = tabs[i];
-                if (tab.dataset.type === state.type) {
-                    tab.classList.add('tab__item--active');
-                } else {
-                    tab.classList.remove('tab__item--active');
-                }
-            }
-            const inputs = document.querySelectorAll('#host, #username, #password');
-            for (let i = 0; i < inputs.length; i++) {
-                const input = inputs[i];
-                const id = input.getAttribute('id');
-                if (input.value !== state[id]) {
-                    input.value = state[id];
-                }
+            const tabs = document.querySelector('#tabs');
+            while (tabs.firstChild) {
+                tabs.firstChild.remove();
             }
 
+            state.dataForm.forEach(sql => {
+                // Create tabs
+                const li = document.createElement('li');
+                li.innerText = sql.name;
+                li.addEventListener('click', () => {
+                    setState({
+                        type: sql.type,
+                        fieldValue: sql.fields.reduce((obj, field) => ({...obj, [field.name]: field.defaultValue || '' }), {})
+                    });
+                });
+                li.classList.add('tab__item');
+                if (sql.type === state.type) {
+                    li.classList.add('tab__item--active');
+                }
+                tabs.appendChild(li);
+
+                //Create fields
+                if (sql.type === state.type) {
+                    const fields = document.querySelector('#fields');
+          
+                    const renderedType = fields.dataset.type;
+                    if (renderedType !== sql.type) {
+                        while (fields.firstChild) {
+                            fields.firstChild.remove();
+                        }
+                        sql.fields.forEach(field => {
+                            const fieldElement = renderField({
+                                name: field.name,
+                                type: field.type,
+                                title: field.title,
+                                info: field.info,
+                                value: state.fieldValue[field.name]
+                            });
+                            fieldElement
+                                .querySelector('input')
+                                .addEventListener('input', (e) => setState({fieldValue: {[field.name]:e.target.value}}))
+                            fields.appendChild(fieldElement);
+                        });
+                        fields.dataset.type = sql.type;
+                    }else{
+                        const inputs = fields.querySelectorAll('input');
+                        for (let i = 0; i < inputs.length; i++) {
+                            const input = inputs[i];
+                            const id = input.getAttribute('id');
+                            if (input.value !== state.fieldValue[id]) {
+                                input.value = state.fieldValue[id];
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         refreshView(state);
@@ -110,6 +156,13 @@
                 const errorMessage = document.getElementById('errorMessage');
                 error.removeAttribute('hidden');
                 errorMessage.innerText = data.payload.error.toString();
+            }
+            if (data.type === 'SHOW_FORM') {
+                var currentType = data.payload.filter(sql => sql.type === initialType)[0];
+                setState({
+                    dataForm: data.payload,
+                    fieldValue: currentType.fields.reduce((obj, field) => ({...obj, [field.name]: field.defaultValue || '' }), {})
+                })
             }
         })
     </script>

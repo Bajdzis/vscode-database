@@ -1,4 +1,4 @@
-module.exports = class AbstractServer
+class AbstractServer
 {
     constructor() {
         this.connection = null;
@@ -22,16 +22,35 @@ module.exports = class AbstractServer
             this.OutputChannel.appendLine(msg);
         }
     }
+   
+    /**
+     * @return {object} - object with some data to save
+     */
+    getDataToRestore(){
+        return {
+            type:this.type,
+            name:this.name,
+            host:this.host + ':' + this.port,
+            username:this.username,
+            password:this.password,
+            database:this.currentDatabase
+        };
+    } 
+   
+    /**
+     * @param {object} fields - result getDataToRestore() function
+     * @return {Promise}
+     */
+    restoreConnection(fields){
+        return this.connectPromise(fields);
+    } 
 
     /**
-     * @param {string} host
-     * @param {string} user
-     * @param {string} password
-     * @param {string|undefined} database
+     * @param {object} fields - object with fields from *.prototype.fieldsToConnect
      * @return {Promise}
      */
     // eslint-disable-next-line no-unused-vars
-    connectPromise(host, user, password, database){
+    connectPromise(fields){
         return Promise.reject('No implement connectPromise');
     }
 
@@ -86,4 +105,32 @@ module.exports = class AbstractServer
     getSelectTableSql(tableName){
         return `SELECT * FROM ${this.getIdentifiedTableName(tableName)}`;
     }
-};
+}
+
+AbstractServer.prototype.typeName = 'Unknow';
+
+AbstractServer.prototype.fieldsToConnect = [
+    {
+        type: 'text',
+        defaultValue: 'localhost',
+        name: 'host',
+        title: 'Host',
+        info: '(e.g host, 127.0.0.1, with port 127.0.0.1:3333)'
+    },
+    {
+        type: 'text',
+        defaultValue: 'root',
+        name: 'username',
+        title: 'Username',
+        info: '(e.g root/user)'
+    },
+    {
+        type: 'password',
+        name: 'password',
+        defaultValue: '',
+        title: 'Password',
+        info: ''
+    }
+];
+
+module.exports = AbstractServer;

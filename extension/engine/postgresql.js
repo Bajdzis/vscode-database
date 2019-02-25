@@ -71,8 +71,7 @@ ORDER BY
   , col.ordinal_position
 `;
 
-
-module.exports = class PostgreSQLType extends AbstractServer{
+class PostgreSQLType extends AbstractServer{
 
     constructor() {
         super();
@@ -95,15 +94,15 @@ module.exports = class PostgreSQLType extends AbstractServer{
      * @param {string} [schema="public"]
      * @return {Promise}
      */
-    connectPromise(host, user, password, database, schema){
-        this.name = user + '@' + host + ' (postgres)';
+    connectPromise({ host, username, password, database, schema }){
+        this.name = username + '@' + host + ' (postgres)';
         var hostAndPort = host.split(':');
         this.host = hostAndPort[0];
         this.port = hostAndPort[1] || '5432';
-        this.user = user;
+        this.user = username;
         this.password = password;
-        this.database = database || 'postgres';
-        this.schema = schema || 'public';
+        this.database = database;
+        this.schema = schema;
         this.connection = new pg.Pool({
             user: this.user,
             database: this.database,
@@ -295,5 +294,46 @@ module.exports = class PostgreSQLType extends AbstractServer{
         return `SELECT * FROM ${this.schema}.${this.getIdentifiedTableName(tableName)}`;
     }
 
-};
+}
 
+PostgreSQLType.prototype.typeName = 'Postgre SQL';
+
+PostgreSQLType.prototype.fieldsToConnect = [
+    {
+        type: 'text',
+        defaultValue: 'localhost',
+        title: 'Host',
+        name: 'host',
+        info: '(e.g host, 127.0.0.1, with port 127.0.0.1:3333)'
+    },
+    {
+        type: 'text',
+        defaultValue: 'postgres',
+        title: 'Database',
+        name: 'database',
+        info: ''
+    },
+    {
+        type: 'text',
+        defaultValue: 'public',
+        title: 'Schema',
+        name: 'schema',
+        info: ''
+    },
+    {
+        type: 'text',
+        defaultValue: 'root',
+        title: 'Userame',
+        name: 'username',
+        info: '(e.g root/user)'
+    },
+    {
+        type: 'password',
+        name: 'password',
+        defaultValue: '',
+        title: 'Password',
+        info: ''
+    }
+];
+
+module.exports = PostgreSQLType;

@@ -2,7 +2,7 @@ var mysql = require('mysql');
 var vscode = require('vscode');
 var AbstractServer = require('./AbstractServer.js');
 
-module.exports = class MySQLType extends AbstractServer
+class MySQLType extends AbstractServer
 {
     constructor() {
         super();
@@ -14,25 +14,21 @@ module.exports = class MySQLType extends AbstractServer
         this.onConnectSetDB = null;
     }
     
-
     /**
-     * @param {string} host
-     * @param {string} user
-     * @param {string} password
-     * @param {string|undefined} database
+     * @param {object} fields
      * @return {Promise}
      */
-    connectPromise(host, user, password, database) {
+    connectPromise({host, username, password}) {
         this.name = host + ' (mysql)';
         var hostAndPort = host.split(':');
         this.host = hostAndPort[0];
         this.port = hostAndPort[1] || '3306';
-        this.user = user;
+        this.user = username;
         this.password = password;
         this.connection = mysql.createConnection({
             'host': this.host,
             'port': this.port,
-            'user': user,
+            'user': username,
             'password': password
         });
         return new Promise((resolve, reject) => {
@@ -40,11 +36,7 @@ module.exports = class MySQLType extends AbstractServer
                 if (err) {
                     reject(err.message);
                 } else {
-                    if(database === undefined){
-                        resolve();
-                    }else{
-                        this.changeDatabase(database).then(resolve).catch(reject);
-                    }
+                    resolve();
                 }
             });
         });
@@ -158,4 +150,8 @@ module.exports = class MySQLType extends AbstractServer
         return `SELECT * FROM ${this.getIdentifiedTableName(tableName)}`;
     }
 
-};
+}
+
+MySQLType.prototype.typeName = 'MySql';
+
+module.exports = MySQLType;

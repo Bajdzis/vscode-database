@@ -3,8 +3,7 @@ var vscode = require('vscode');
 var asciiTable = require('./AsciiTable.js');
 var StatusBar = require('./StatusBar.js');
 
-var MySQLType = require('./engine/mysql.js');
-var PostgreSQLType = require('./engine/postgresql.js');
+var { factoryServer } = require('./factoryServer');
 
 var structureProvider = require('./StructureProvider');
 var connectionsProvider = require('./ConnectionsProvider');
@@ -40,35 +39,32 @@ class Manager {
         this.OutputChannel.appendLine(msg);
     }
 
-    factoryServer (type){
-        if(type == 'mysql'){
-            return new MySQLType();
-        }else if(type == 'postgres'){
-            return new PostgreSQLType();
-        }
-    }
-    
-    connect (type, host, user, password, onConnectSetDB){
-        var newServer = this.factoryServer(type);
-        newServer.setOutput(this.OutputChannel);
-        newServer.onConnectSetDB = onConnectSetDB;
-        newServer.connect(host, user, password, this);
-        this.showStatus();
-        return newServer;
-    }
-
-    connectPromise (type, host, user, password, database){
-        var newServer = this.factoryServer(type);
+    connectPromise (type, fields){
+        var newServer = factoryServer(type);
         var _this = this;
         newServer.setOutput(this.OutputChannel);
         return new Promise((resolve, reject) => {
-            newServer.connectPromise(host, user, password, database).then(() => {
+            newServer.connectPromise(fields).then(() => {
                 _this.registerNewServer(newServer);
                 _this.showStatus();
                 resolve(newServer);
             }).catch(reject);
         });
 
+    }
+
+    restoreConnections(databases){
+        return databases.forEach((fields) => {
+            const newServer = factoryServer(fields.type);
+            newServer.setOutput(this.OutputChannel);
+            newServer.restoreConnection(fields).then(() => {
+                newServer.name = fields.name;
+                this.registerNewServer(newServer);
+                this.showStatus();
+            }).catch((err) => {
+                vscode.window.showErrorMessage(err);
+            }); 
+        });
     }
     
     query (sql, func, params){

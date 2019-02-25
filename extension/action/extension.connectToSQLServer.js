@@ -1,13 +1,26 @@
-var vscode = require('vscode');
 var AbstractAction = require('./AbstractAction.js');
 var { showWebview } = require('../webViews/webViewsRunner');
+var {allServerType} = require('../factoryServer');
+
+const dataForm = Object.keys(allServerType).map(key => ({
+    type: key,
+    name: allServerType[key].prototype.typeName,
+    fields: allServerType[key].prototype.fieldsToConnect
+}));
+
 module.exports = class connectMySQL extends AbstractAction{
 
     execution(){
         showWebview('connect', 'Connect to SQL server').then((panel) => {
+
+            panel.webview.postMessage({ 
+                type: 'SHOW_FORM', 
+                payload : dataForm
+            });
+
             panel.webview.onDidReceiveMessage((action) => {
                 if (action.type === 'CONNECT_TO_SQL_SERVER') {
-                    this.connectFactory(action.payload.type, action.payload)
+                    this.connectFactory(action.payload.type, action.payload.fieldValue)
                         .then(() => {
                             panel.dispose();
                         })
@@ -22,32 +35,13 @@ module.exports = class connectMySQL extends AbstractAction{
         });
     }
 	
-    connectFactory(type, data){
-        if(type === 'postgres'){
-            return this.connectToPostgres(data);
-        }
-
-        if(type === 'mysql'){
-            return this.connectToMySQL(data);
+    connectFactory(type, fields){
+        if (allServerType[type]) {
+            return this.sqlMenager.connectPromise(type, fields);
         }
 
         return Promise.reject(`Unknow type ${type}`);
     }
 	
-    connectToMySQL(data) {
-        return this.sqlMenager.connectPromise('mysql', data.host, data.username, data.password).then(() => {
-            vscode.commands.executeCommand('extension.changeDB');
-        });
-    }
-
-    connectToPostgres(data) {
-        return vscode.window.showInputBox({ value: 'postgres', prompt: 'e.g database', placeHolder: 'Database', password: false })
-            .then((databaseName) => {
-                if (databaseName === undefined) {
-                    return Promise.reject('Cancel choose database');
-                }
-                return this.sqlMenager.connectPromise('postgres', data.host, data.username, data.password, databaseName);
-            });
-    }
 
 };
