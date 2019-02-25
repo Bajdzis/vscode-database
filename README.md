@@ -16,6 +16,7 @@
     * Add database icon in sidebar.
     * Query result to csv
     * Connect via SSL to postgres #54
+    * Ask for save with password #3
 
 * 1.5.3 - Fixed #59
 

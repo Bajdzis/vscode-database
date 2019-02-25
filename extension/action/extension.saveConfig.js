@@ -11,7 +11,8 @@ module.exports = class saveConfig extends AbstractAction
             vscode.window.showInformationMessage('You are currently not connected to the server');
             return;
         }
-
-        config.pushDatabase(server.getDataToRestore());
+        server.getDataToRestore().then((database) => {
+            config.pushDatabase(database);
+        });
     }
 };

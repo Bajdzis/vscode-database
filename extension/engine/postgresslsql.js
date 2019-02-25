@@ -63,7 +63,7 @@ class PostgreSSLSQLType extends PostgreSQLType {
      * @return {object} - object with some data to save
      */
     getDataToRestore(){
-        return {
+        return Promise.resolve({
             type:this.type,
             name:this.name,
             host:this.host + ':' + this.port,
@@ -71,9 +71,17 @@ class PostgreSSLSQLType extends PostgreSQLType {
             key: this.key,
             cert: this.cert,
             database:this.currentDatabase,
-        };
+        });
     }
  
+       
+    /**
+     * @param {object} fields - result getDataToRestore() function
+     * @return {Promise}
+     */
+    restoreConnection(fields){
+        return this.connectPromise(fields);
+    } 
 }
 
 PostgreSSLSQLType.prototype.typeName = 'Postgre SQL (SSL)';

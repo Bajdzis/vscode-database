@@ -1,3 +1,5 @@
+const vscode = require('vscode');
+
 class AbstractServer
 {
     constructor() {
@@ -24,17 +26,32 @@ class AbstractServer
     }
    
     /**
-     * @return {object} - object with some data to save
+     * @return {Promise<object>} - object with some data to save
      */
     getDataToRestore(){
-        return {
-            type:this.type,
-            name:this.name,
-            host:this.host + ':' + this.port,
-            username:this.username,
-            password:this.password,
-            database:this.currentDatabase
-        };
+
+        return vscode.window.showQuickPick([
+            {label:'Yes'},	
+            {label:'No'}		
+        ], {	
+            matchOnDescription:false,
+            placeHolder:'Save password in setting? (plain text)'					
+        }).then(output => {
+            const data = {
+                type:this.type,
+                name:this.name,
+                host:this.host + ':' + this.port,
+                username:this.username,
+                database:this.currentDatabase,
+            };
+
+            if (output.label === 'Yes') {
+                data.password = this.password;
+            }
+
+            return data;
+        });
+
     } 
    
     /**
@@ -42,6 +59,14 @@ class AbstractServer
      * @return {Promise}
      */
     restoreConnection(fields){
+        if(!fields.password) {
+            return vscode.window.showInputBox({ value: '', prompt: 'e.g password', placeHolder: 'Password', password: true })
+                .then((password) => {
+                    fields.password = password;
+                    return this.connectPromise(fields);
+                });
+        }
+
         return this.connectPromise(fields);
     } 
 
