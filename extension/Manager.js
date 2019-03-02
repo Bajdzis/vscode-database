@@ -91,7 +91,7 @@ class Manager {
         Promise.all(queries).then(allResult => {
             allResult.forEach(result => {
                 this.outputMsg(result.sql);
-                this.queryOutput(result.data);
+                this.queryOutput(result.data, result.sql);
             });
         }).catch(function(errMsg){
             vscode.window.showErrorMessage(errMsg);
@@ -203,8 +203,13 @@ class Manager {
         this.server.push(obj);
         this.changeServer(obj);
     }
+
+    queryOutput(data, sql){
+        this.queryOutputAscii(data, sql);
+        this.queryOutputMarkdown(data, sql);
+    }
     
-    queryOutput (data){
+    queryOutputAscii (data){
         if(typeof data.message !== 'undefined'){
             let table = asciiTable([{
                 fieldCount: data.fieldCount,
@@ -230,9 +235,46 @@ class Manager {
         }else{
             this.outputMsg('ok');
         }
-        if(this.OutputChannel !== null){
-            this.OutputChannel.show();
+        // if(this.OutputChannel !== null){
+        //     this.OutputChannel.show();
+        // }
+    }
+
+    queryOutputMarkdown (data, sql){
+        if(typeof data.message !== 'undefined'){
+            this.showQueryResult({
+                message: data.message,
+                sql,
+                data: [{
+                    fieldCount: data.fieldCount,
+                    affectedRows: data.affectedRows,
+                    insertId: data.insertId,
+                    serverStatus: data.serverStatus,
+                    warningCount: data.warningCount,
+                    changedRows: data.changedRows
+                }]
+            });
+        }else if(typeof data === 'object'){
+            this.showQueryResult({
+                message: `Query result ${data.length} rows!`,
+                sql,
+                data
+            });
+        }else{
+            this.showQueryResult({
+                message: 'OK',
+                sql
+            });
         }
+
+    }
+
+    showQueryResult(data){
+        const dataJson = encodeURI(JSON.stringify(data));
+        const uri = vscode.Uri.parse(`bajdzis-database-markdown://queryResult?${dataJson}`);
+
+        vscode.commands.executeCommand('markdown.showPreview', uri);
+        vscode.commands.executeCommand('markdown.preview.refresh', uri);
     }
 
     queryToCSV (data){

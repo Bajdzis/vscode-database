@@ -11,7 +11,7 @@ module.exports = class querySQL extends AbstractAction
                 return;
             }
             this.sqlMenager.query(query, (data) => {
-                this.sqlMenager.queryOutput(data);
+                this.sqlMenager.queryOutput(data, query);
             });
         };
 

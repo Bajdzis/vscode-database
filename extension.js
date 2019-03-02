@@ -7,6 +7,7 @@ var structureProvider = require('./extension/StructureProvider');
 var connectionsProvider = require('./extension/ConnectionsProvider');
 var completionItemsProvider = require('./extension/CompletionItemsProvider');
 var { setExtensionPath } = require('./extension/webViews/webViewsRunner');
+var { markdownProvider } = require('./extension/providers/markdownProvider');
 
 function activate(context) {
     
@@ -43,6 +44,8 @@ function activate(context) {
     addTextEditorCommand(context, 'extension.querySelectedSQL');
 
     addTextEditorCommand(context, 'extension.querySelectedSQLToCSV');
+
+    context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider('bajdzis-database-markdown', markdownProvider));
 
 }
 exports.activate = activate;
