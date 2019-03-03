@@ -21,7 +21,7 @@ class ConnectionsProvider{
 
         this.items = connections.map(connection => {
             var databaseName = connection.currentDatabase || 'no DB selected';
-            const item = new vscode.TreeItem(connection.name + ':' + databaseName + (connection === activeConnection ? ' - active' : '' ));
+            const item = new vscode.TreeItem(connection.getName() + ':' + databaseName + (connection === activeConnection ? ' - active' : '' ));
             item.contextValue = 'databaseItem';//for menus
             item.command = {
                 arguments: [connection],

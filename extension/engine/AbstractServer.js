@@ -5,8 +5,17 @@ class AbstractServer
     constructor() {
         this.connection = null;
         this.currentDatabase = null;
-        this.name = 'Noname';
         this.OutputChannel = null;
+    }
+
+    /**
+     * @return {string} - name server
+     */
+    getName() {
+        if (this.name) {
+            return this.name;
+        }
+        return  `${this.username}@${this.host} (${this.typeName})`;
     }
 
     /**
@@ -39,7 +48,7 @@ class AbstractServer
         }).then(output => {
             const data = {
                 type:this.type,
-                name:this.name,
+                name:this.getName(),
                 host:this.host + ':' + this.port,
                 username:this.username,
                 database:this.currentDatabase,
@@ -59,8 +68,8 @@ class AbstractServer
      * @return {Promise}
      */
     restoreConnection(fields){
-        if(!fields.password) {
-            return vscode.window.showInputBox({ value: '', prompt: 'e.g password', placeHolder: 'Password', password: true })
+        if (!fields.password) {
+            return vscode.window.showInputBox({ value: '', prompt: this.name, placeHolder: 'Password', password: true })
                 .then((password) => {
                     fields.password = password;
                     return this.connectPromise(fields);

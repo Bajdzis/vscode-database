@@ -22,7 +22,7 @@ class Manager {
     showStatus(){
         var databaseName = this.getCurrentDatabase();
 
-        this.statusBar.setServer(this.currentServer.name || null);
+        this.statusBar.setServer(this.currentServer.getName() || null);
         this.statusBar.setDatabase(databaseName);
 
         if(databaseName !== null){

@@ -19,11 +19,10 @@ class MySQLType extends AbstractServer
      * @return {Promise}
      */
     connectPromise({host, username, password}) {
-        this.name = host + ' (mysql)';
-        var hostAndPort = host.split(':');
-        this.host = hostAndPort[0];
-        this.port = hostAndPort[1] || '3306';
-        this.user = username;
+        const [hostName, port = '3306'] = host.split(':');
+        this.host = hostName;
+        this.port = port;
+        this.username = username;
         this.password = password;
         this.connection = mysql.createConnection({
             'host': this.host,

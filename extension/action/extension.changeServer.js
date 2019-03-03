@@ -35,10 +35,11 @@ module.exports = class connectPostgreSQL extends AbstractAction
         });
 
         for (var i = 0; i < this.sqlMenager.server.length; i++) {
+            const server = this.sqlMenager.server[i];
             allServerName.push({
                 number: i,
-                label:(i+1) + ') ' + this.sqlMenager.server[i].name,
-                description:this.sqlMenager.server[i].host + ' ' + this.sqlMenager.server[i].user + ' ' + ('*'.repeat(this.sqlMenager.server[i].password.length))
+                label: `${i+1}) ${server.getName()}`,
+                description: ''
             });
         }
         return allServerName;

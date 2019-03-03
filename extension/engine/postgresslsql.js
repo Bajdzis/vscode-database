@@ -17,15 +17,21 @@ class PostgreSSLSQLType extends PostgreSQLType {
         this.release = null;
     }
 
+    getName() {
+        if (this.name) {
+            return this.name;
+        }
+        return  `${this.host}:${this.port} (${this.typeName})`;
+    }
+
     /**
      * @param {object} fields
      * @return {Promise}
      */
-    connectPromise({host, database, schema, key, cert, ca}){
-        this.name = host + ' (postgres SSL)';
-        var hostAndPort = host.split(':');
-        this.host = hostAndPort[0];
-        this.port = hostAndPort[1] || '5432';
+    connectPromise({host, database, schema, key, cert, ca}) {
+        const [hostName, port = '5432'] = host.split(':');
+        this.host = hostName;
+        this.port = port;
         this.database = database;
         this.schema = schema;
         this.ca = ca;

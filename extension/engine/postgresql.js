@@ -95,16 +95,15 @@ class PostgreSQLType extends AbstractServer{
      * @return {Promise}
      */
     connectPromise({ host, username, password, database, schema }){
-        this.name = username + '@' + host + ' (postgres)';
-        var hostAndPort = host.split(':');
-        this.host = hostAndPort[0];
-        this.port = hostAndPort[1] || '5432';
-        this.user = username;
+        const [hostName, port = '5432'] = host.split(':');
+        this.host = hostName;
+        this.port = port;
+        this.username = username;
         this.password = password;
         this.database = database;
         this.schema = schema;
         this.connection = new pg.Pool({
-            user: this.user,
+            user: this.username,
             database: this.database,
             password: this.password,
             host: this.host,
