@@ -36,9 +36,21 @@
     padding: 1em 0;
 }
 
+.field--checkbox {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row-reverse;
+    align-items: center;
+}
+
 .field__label {
     display: block;
     margin: 2px 0;
+    cursor: pointer;
+}
+
+.field--checkbox .field__label {
+    margin: 2px 4px;
 }
 
 .field__input {

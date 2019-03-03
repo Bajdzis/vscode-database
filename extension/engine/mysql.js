@@ -18,18 +18,24 @@ class MySQLType extends AbstractServer
      * @param {object} fields
      * @return {Promise}
      */
-    connectPromise({host, username, password}) {
+    connectPromise({host, username, password, socket}) {
         const [hostName, port = '3306'] = host.split(':');
         this.host = hostName;
         this.port = port;
         this.username = username;
         this.password = password;
-        this.connection = mysql.createConnection({
+        const setting = {
             'host': this.host,
             'port': this.port,
             'user': username,
             'password': password
-        });
+        }
+        if(socket){
+            setting.socketPath = this.host;
+            delete setting.host;
+            delete setting.port;
+        }
+        this.connection = mysql.createConnection(setting);
         return new Promise((resolve, reject) => {
             this.connection.connect((err) => {
                 if (err) {
@@ -152,5 +158,36 @@ class MySQLType extends AbstractServer
 }
 
 MySQLType.prototype.typeName = 'MySql';
+
+MySQLType.prototype.fieldsToConnect = [
+    {
+        type: 'text',
+        defaultValue: 'localhost',
+        name: 'host',
+        title: 'Host',
+        info: '(e.g host, 127.0.0.1, with port 127.0.0.1:3333)'
+    },
+    {
+        type: 'checkbox',
+        defaultValue: false,
+        name: 'socket',
+        title: 'via socket',
+        info: '(if you want to connect via socket, enter socketPath in the host field)'
+    },
+    {
+        type: 'text',
+        defaultValue: 'root',
+        name: 'username',
+        title: 'Username',
+        info: '(e.g root/user)'
+    },
+    {
+        type: 'password',
+        name: 'password',
+        defaultValue: '',
+        title: 'Password',
+        info: ''
+    }
+];
 
 module.exports = MySQLType;

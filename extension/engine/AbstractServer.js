@@ -143,28 +143,6 @@ class AbstractServer
 
 AbstractServer.prototype.typeName = 'Unknow';
 
-AbstractServer.prototype.fieldsToConnect = [
-    {
-        type: 'text',
-        defaultValue: 'localhost',
-        name: 'host',
-        title: 'Host',
-        info: '(e.g host, 127.0.0.1, with port 127.0.0.1:3333)'
-    },
-    {
-        type: 'text',
-        defaultValue: 'root',
-        name: 'username',
-        title: 'Username',
-        info: '(e.g root/user)'
-    },
-    {
-        type: 'password',
-        name: 'password',
-        defaultValue: '',
-        title: 'Password',
-        info: ''
-    }
-];
+AbstractServer.prototype.fieldsToConnect = [];
 
 module.exports = AbstractServer;

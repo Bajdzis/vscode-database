@@ -27,11 +27,11 @@
         </blockquote>
 
         <template id="field-template">
-            <div class="field">
+            <div class="field field--{{type}}">
                 <label class="field__label" for="{{name}}">
                     <b>{{title}}</b> {{info}}
                 </label>
-                <input class="field__input" id="{{name}}" type="text" value="{{value}}"/>
+                <input class="field__input" id="{{name}}" type="{{type}}" value="{{value}}"/>
             </div>
         </template>
 
@@ -130,7 +130,10 @@
                             });
                             fieldElement
                                 .querySelector('input')
-                                .addEventListener('input', (e) => setState({fieldValue: {[field.name]:e.target.value}}))
+                                .addEventListener('input', ({target}) => {
+                                    const value = target.type === 'checkbox' ? target.checked : target.value;
+                                    setState({fieldValue: {[field.name]: value}});
+                                })
                             fields.appendChild(fieldElement);
                         });
                         fields.dataset.type = sql.type;
