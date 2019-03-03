@@ -2,7 +2,10 @@
 ### Extension for Visual Studio Code 
 
 ## Usage
-![how use](https://github.com/Bajdzis/vscode-database/raw/master/readme/v0.1.gif)
+
+![result](https://github.com/Bajdzis/vscode-database/raw/master/readme/v2.0-result.gif)
+
+![connection](https://github.com/Bajdzis/vscode-database/raw/master/readme/v2.0-connection.gif)
 
 ## Install
 * Press `Shift+Ctrl+P` 
@@ -11,7 +14,7 @@
  
 ## Changelog
 
-* 2.0.0 (IN PROGGRES)
+* 2.0.0 (IN BETA TESTING)
     * Created new form to connect database. Fixed #19 
     * Add database icon in sidebar.
     * Query result to csv
