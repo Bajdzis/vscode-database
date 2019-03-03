@@ -19,6 +19,7 @@
     * Ask for save with password #3
     * New query result (based on markdown)
     * Connect via Socket to mysql #28
+    * Connect via SSL to mysql #47
 
 * 1.5.3 - Fixed #59
 

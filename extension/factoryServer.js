@@ -1,9 +1,11 @@
 var MySQLType = require('./engine/mysql.js');
+var MySQLSSLType = require('./engine/mysql-ssl.js');
 var PostgreSQLType = require('./engine/postgresql.js');
 var PostgreSSLSQLType = require('./engine/postgresslsql.js');
 
 const allServerType = {
     mysql: MySQLType,
+    mysqlssl: MySQLSSLType,
     postgres: PostgreSQLType,
     postgresSSL: PostgreSSLSQLType,
 };
