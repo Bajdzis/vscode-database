@@ -68,8 +68,11 @@ class AbstractServer
      * @return {Promise}
      */
     restoreConnection(fields){
+        if (!fields.username) {
+            fields.username = fields.user;
+        }
         if (!fields.password) {
-            return vscode.window.showInputBox({ value: '', prompt: this.name, placeHolder: 'Password', password: true })
+            return vscode.window.showInputBox({ value: '', prompt: fields.name, placeHolder: 'Password', password: true })
                 .then((password) => {
                     fields.password = password;
                     return this.connectPromise(fields);
