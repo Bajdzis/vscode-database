@@ -71,7 +71,7 @@ class AbstractServer
         if (!fields.username) {
             fields.username = fields.user;
         }
-        if (!fields.password) {
+        if (fields.password === undefined) {
             return vscode.window.showInputBox({ value: '', prompt: fields.name, placeHolder: 'Password', password: true })
                 .then((password) => {
                     fields.password = password;
