@@ -213,7 +213,13 @@ class PostgreSQLType extends AbstractServer{
                 this.changeSchema(schema).then(resolve).catch(reject);
             }else{
                 this.closeConnect().then(() => {
-                    this.connectPromise(this.host + ':' + this.port, this.username, this.password, database, schema).then(() =>{
+                    this.connectPromise({
+                        host: this.host + ':' + this.port, 
+                        username: this.username, 
+                        password: this.password, 
+                        database, 
+                        schema
+                    }).then(() =>{
                         this.schema = schema;
                         this.currentDatabase = database;
                         resolve();
