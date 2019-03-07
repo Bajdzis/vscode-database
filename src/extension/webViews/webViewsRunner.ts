@@ -8,7 +8,7 @@ const setExtensionPath = (newExtensionPath) => {
     extensionPath = newExtensionPath;
 };
 
-const getPath = (piecesOfPath = []) => path.join(extensionPath, 'extension', 'webViews', ...piecesOfPath);
+const getPath = (piecesOfPath = []) => path.join(extensionPath, 'src', 'extension', 'webViews', ...piecesOfPath);
 
 const getSetting = () => ({
     enableScripts: true,
