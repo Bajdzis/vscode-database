@@ -81,6 +81,7 @@ class PostgreSQLType extends AbstractServer{
         this.username = 'Empty';
         this.password = 'Empty';
         this.database = undefined;
+        this.sslEnabled = false;
         this.schema = 'public';
         this.onConnectSetDB = null;
         this.release = null;
@@ -92,9 +93,10 @@ class PostgreSQLType extends AbstractServer{
      * @param {string} password
      * @param {string} [database="postgres"]
      * @param {string} [schema="public"]
+     * @param {bool} [sslEnabled=false]
      * @return {Promise}
      */
-    connectPromise({ host, username, password, database, schema }){
+    connectPromise({ host, username, password, database, schema, sslEnabled }){
         const [hostName, port = '5432'] = host.split(':');
         this.host = hostName;
         this.port = port;
@@ -102,12 +104,14 @@ class PostgreSQLType extends AbstractServer{
         this.password = password;
         this.database = database;
         this.schema = schema;
+        this.sslEnabled = sslEnabled;
         this.connection = new pg.Pool({
             user: this.username,
             database: this.database,
             password: this.password,
             host: this.host,
             port: this.port,
+            ssl: this.sslEnabled,
             max: 10,
             idleTimeoutMillis: 30000,
             schema: this.schema,
@@ -217,6 +221,7 @@ class PostgreSQLType extends AbstractServer{
                         host: this.host + ':' + this.port, 
                         username: this.username, 
                         password: this.password, 
+                        sslEnabled: this.sslEnabled,
                         database, 
                         schema
                     }).then(() =>{
@@ -337,6 +342,13 @@ PostgreSQLType.prototype.fieldsToConnect = [
         name: 'password',
         defaultValue: '',
         title: 'Password',
+        info: ''
+    },
+    {
+        type: 'checkbox',
+        name: 'sslEnabled',
+        defaultValue: false,
+        title: 'Use SSL',
         info: ''
     }
 ];
