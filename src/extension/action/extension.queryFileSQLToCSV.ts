@@ -1,9 +1,7 @@
-var vscode = require('vscode');
-var AbstractAction = require('./AbstractAction.js');
-var manager = require('../Manager');
+import * as vscode from 'vscode';
+import { AbstractAction } from './AbstractAction.js';
 
-
-module.exports = class queryFileSQLToCSV extends AbstractAction
+export class QueryFileSQLToCSV extends AbstractAction
 {
     
     execution() {
@@ -13,6 +11,6 @@ module.exports = class queryFileSQLToCSV extends AbstractAction
 
         const queries = vscode.window.activeTextEditor.document.getText();
 
-        manager.runAsQueryToCSV(queries);
+        this.sqlMenager.runAsQueryToCSV(queries);
     }
-};
+}

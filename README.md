@@ -26,6 +26,7 @@
     * Fix SQL Connection error in postgres #63
     * Fix change database in postgres #66
     * Hide password input show if save connection require empty password
+    * Migrate JavaScript to TypeScript
 
 * 1.5.3 - Fixed #59
 

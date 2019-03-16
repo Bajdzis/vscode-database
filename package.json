@@ -187,6 +187,8 @@
 		]
 	},
 	"dependencies": {
+		"@types/mysql": "^2.15.5",
+		"@types/pg": "^6.1.45",
 		"fast-csv": "^2.4.1",
 		"fs": "0.0.2",
 		"mysql": "^2.12.0",
@@ -195,6 +197,7 @@
 	"devDependencies": {
 		"@types/mocha": "^2.2.42",
 		"@types/node": "^10.12.21",
+		"@typescript-eslint/eslint-plugin": "^1.4.2",
 		"@typescript-eslint/parser": "^1.4.2",
 		"eslint": "^5.15.0",
 		"typescript": "^3.3.1",

@@ -1,24 +1,24 @@
-const vscode = require('vscode');
-const path = require('path');
-const fs = require('fs');
+import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fs from 'fs';
 
 let extensionPath = '';
 
-const setExtensionPath = (newExtensionPath) => {
+export const setExtensionPath = (newExtensionPath: string) => {
     extensionPath = newExtensionPath;
 };
 
-const getPath = (piecesOfPath = []) => path.join(extensionPath, 'src', 'extension', 'webViews', ...piecesOfPath);
+const getPath = (piecesOfPath: string[] = []) => path.join(extensionPath, 'src', 'extension', 'webViews', ...piecesOfPath);
 
-const getSetting = () => ({
+export const getSetting = () => ({
     enableScripts: true,
 });
 
-const createWebviewPanel = (type, title) => vscode.window.createWebviewPanel(
+export const createWebviewPanel = (type: string, title: string): vscode.WebviewPanel => vscode.window.createWebviewPanel(
     type, title, vscode.ViewColumn.One, getSetting()
 );
 
-const showWebview = (viewName, title) => {
+export const showWebview = (viewName: string, title: string): Promise<vscode.WebviewPanel> => {
 
     return new Promise((resolve, reject) => {
         fs.readFile(getPath(['views', `${viewName}.html`]), 'utf8', (err, html) => {
@@ -28,17 +28,10 @@ const showWebview = (viewName, title) => {
             const panel = createWebviewPanel(viewName, title);
             panel.webview.html = html.replace(/\{\{basePath\}\}/gi,vscode.Uri.file(getPath()).with({
                 scheme: 'vscode-resource'
-            }));
+            }).toString());
 
             resolve(panel);
         });
     // eslint-disable-next-line no-console
-    }).catch(err => console.error(err));
-};
-
-module.exports = {
-    setExtensionPath,
-    getSetting,
-    createWebviewPanel,
-    showWebview
+    });//.catch(err => {console.error(err);});
 };

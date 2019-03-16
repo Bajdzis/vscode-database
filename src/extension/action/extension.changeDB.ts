@@ -1,7 +1,7 @@
-var vscode = require('vscode');
-var AbstractAction = require('./AbstractAction.js');
+import * as vscode from 'vscode';
+import { AbstractAction } from './AbstractAction.js';
 
-module.exports = class connectPostgreSQL extends AbstractAction
+export class ChangeDB extends AbstractAction
 {
     
     execution() {
@@ -16,4 +16,4 @@ module.exports = class connectPostgreSQL extends AbstractAction
     }
 
 
-};
+}

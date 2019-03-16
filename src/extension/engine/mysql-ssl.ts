@@ -1,17 +1,19 @@
-var fs = require('fs');
-var mysql = require('mysql');
-var MySQLType = require('./mysql.js');
+import * as fs from 'fs';
+import * as mysql from 'mysql';
+import {MySQLType} from './mysql';
+import { AnyObject } from '../../typeing/common';
 
-class MySQLSSLType extends MySQLType {
+export class MySQLSSLType extends MySQLType {
+
+    public ca: string;
+    public key: string;
+    public cert: string;
 
     constructor() {
         super();
-        this.type = 'mysqlssl';
-        this.host = 'Empty';
-        this.port = '3306';
-        this.user = 'Empty';
-        this.password = 'Empty';
-        this.onConnectSetDB = null;
+        this.ca = '';
+        this.key = '';
+        this.cert = '';
     }
 
     getName() {
@@ -25,7 +27,7 @@ class MySQLSSLType extends MySQLType {
      * @param {object} fields
      * @return {Promise}
      */
-    connectPromise({host, username, password, socket, key, cert, ca}) {
+    connectPromise({host, username, password, socket, key, cert, ca}: AnyObject): Promise<undefined> {
         const [hostName, port = '3306'] = host.split(':');
         this.host = hostName;
         this.port = port;
@@ -34,29 +36,31 @@ class MySQLSSLType extends MySQLType {
         this.ca = ca;
         this.key = key;
         this.cert = cert;
-        const setting = {
-            'host': this.host,
-            'port': this.port,
-            'user': username,
-            'password': password,
-            'ssl' : {
+        const setting: mysql.ConnectionConfig = {
+            host: this.host,
+            port: parseInt(port, 10),
+            user: username,
+            password: password,
+            ssl: {
                 rejectUnauthorized : false,
                 ca   : fs.readFileSync(ca).toString(),
                 key  : fs.readFileSync(key).toString(),
                 cert : fs.readFileSync(cert).toString(),
             }
-        }
+        };
         if (socket) {
-            setting.socketPath = this.host;
+            this.socket = hostName;
+            setting.socketPath = hostName;
             delete setting.host;
             delete setting.port;
         }
-        this.connection = mysql.createConnection(setting);
+        const connection = mysql.createConnection(setting);
         return new Promise((resolve, reject) => {
-            this.connection.connect((err) => {
+            connection.connect((err) => {
                 if (err) {
                     reject(err.message);
                 } else {
+                    this.connection = connection;
                     resolve();
                 }
             });
@@ -78,18 +82,18 @@ class MySQLSSLType extends MySQLType {
             database: this.currentDatabase,
         });
     }
- 
        
     /**
      * @param {object} fields - result getDataToRestore() function
      * @return {Promise}
      */
-    restoreConnection(fields){
+    restoreConnection(fields: AnyObject): Promise<undefined>{
         return this.connectPromise(fields);
     } 
+
 }
 
-MySQLSSLType.prototype.typeName = 'MySql (SSL)';
+MySQLSSLType.prototype.typeName= 'MySql (SSL)';
 
 MySQLSSLType.prototype.fieldsToConnect = [
     {
@@ -128,5 +132,3 @@ MySQLSSLType.prototype.fieldsToConnect = [
         info: '(Client certificates - path to `client.crt`)'
     }
 ];
-
-module.exports = MySQLSSLType;

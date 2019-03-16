@@ -1,42 +1,47 @@
-var mysql = require('mysql');
-var vscode = require('vscode');
-var AbstractServer = require('./AbstractServer.js');
+import * as vscode from 'vscode';
+import { AbstractServer } from './AbstractServer';
+import { createConnection, Connection, ConnectionConfig } from 'mysql';
+import { AnyObject } from '../../typeing/common';
 
-class MySQLType extends AbstractServer
+export class MySQLType extends AbstractServer
 {
+    protected connection?: Connection;
+    public socket: string;
+
     constructor() {
         super();
         this.type = 'mysql';
         this.host = 'Empty';
         this.port = '3306';
-        this.user = 'Empty';
+        this.username = 'Empty';
         this.password = 'Empty';
-        this.onConnectSetDB = null;
+        this.socket = '';
     }
     
     /**
      * @param {object} fields
      * @return {Promise}
      */
-    connectPromise({host, username, password, socket}) {
+    connectPromise({host, username, password, socket}: AnyObject): Promise<undefined> {
         const [hostName, port = '3306'] = host.split(':');
         this.host = hostName;
         this.port = port;
         this.username = username;
         this.password = password;
-        const setting = {
+        const setting: ConnectionConfig = {
             'host': this.host,
-            'port': this.port,
+            'port': parseInt(port, 10),
             'user': username,
             'password': password
-        }
+        };
         if(socket){
+            this.socket = hostName;
             setting.socketPath = this.host;
             delete setting.host;
             delete setting.port;
         }
-        this.connection = mysql.createConnection(setting);
         return new Promise((resolve, reject) => {
+            this.connection = createConnection(setting);
             this.connection.connect((err) => {
                 if (err) {
                     reject(err.message);
@@ -52,8 +57,8 @@ class MySQLType extends AbstractServer
      * @param {string} sql
      * @param {function} func - callback
      */
-    query (sql, func){
-        this.queryPromise(sql).then(func).catch(errMsg => {
+    query (sql: string, func: any){
+        this.queryPromise(sql).then(func).catch((errMsg: string) => {
             vscode.window.showErrorMessage(errMsg);
             this.outputMsg(errMsg);
         });
@@ -63,9 +68,13 @@ class MySQLType extends AbstractServer
      * @param {string} sql
      * @return {Promise}
      */
-    queryPromise(sql){
+    queryPromise(sql: string): Promise<AnyObject[]>{
         return new Promise((resolve, reject) => {
-            this.connection.query(sql, (err, rows) => {
+            if (!this.connection) {
+                reject('connection is undefined');
+                return;
+            }
+            this.connection.query(sql, (err, rows: AnyObject[]) => {
                 if(err){
                     reject(err.message);
                     return;
@@ -78,12 +87,12 @@ class MySQLType extends AbstractServer
     /**
      * @return {Promise<string[], Error>}
      */
-    getDatabase(){
+    getDatabase(): Promise<string[]>{
         return new Promise((resolve, reject) => {
-            this.queryPromise('SHOW DATABASES').then(function(results){
-                var allDatabase = [];
+            this.queryPromise('SHOW DATABASES').then((results: AnyObject[]) => {
+                var allDatabase: string[] = [];
                 for (var i = 0; i < results.length; i++) {
-                    allDatabase.push(results[i].Database);
+                    allDatabase.push(results[i].Database as string);
                 }
                 resolve(allDatabase);
             }).catch(reject);
@@ -94,7 +103,7 @@ class MySQLType extends AbstractServer
      * @param {string} name - name Database
      * @return {Promise}
      */
-    changeDatabase (name){
+    changeDatabase (name: string){
         return new Promise((resolve, reject) => {
             this.queryPromise('USE `' + name + '`').then(() => {
                 this.currentDatabase = name;
@@ -110,8 +119,8 @@ class MySQLType extends AbstractServer
      * @return {Promise}
      */
     refrestStructureDataBase (){
-        var currentStructure = {};
-        var tablePromise = [];
+        var currentStructure: any = {};
+        var tablePromise: Promise<{}>[] = [];
         return new Promise((resolve, reject) => {
             this.queryPromise('SHOW tables').then(results => {
                 for (let i = 0; i < results.length; i++) {
@@ -127,7 +136,7 @@ class MySQLType extends AbstractServer
                     });
                     tablePromise.push(promise);
                 }
-                Promise.all(tablePromise).then(data => {
+                Promise.all(tablePromise).then((data: AnyObject[]) => {
                     for (var i = 0; i < data.length; i++) {
                         var columnStructure = data[i].column;
                         var tableName = data[i].tableName;
@@ -143,7 +152,7 @@ class MySQLType extends AbstractServer
      * @param {string} tableName
      * @return {string} a quoted identifier table name
      */
-    getIdentifiedTableName(tableName){
+    getIdentifiedTableName(tableName: string){
         return `\`${tableName}\``;
     }
 
@@ -151,7 +160,7 @@ class MySQLType extends AbstractServer
      * @param {string} tableName
      * @return {string} a SQL SELECT statement
      */
-    getSelectTableSql(tableName){
+    getSelectTableSql(tableName: string): string{
         return `SELECT * FROM ${this.getIdentifiedTableName(tableName)}`;
     }
 
@@ -189,5 +198,3 @@ MySQLType.prototype.fieldsToConnect = [
         info: ''
     }
 ];
-
-module.exports = MySQLType;

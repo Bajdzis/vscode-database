@@ -1,8 +1,8 @@
-var vscode = require('vscode');
-var AbstractAction = require('./AbstractAction.js');
-var config = require('./helpers/Config');
+import config from './helpers/Config';
+import * as vscode from 'vscode';
+import { AbstractAction } from './AbstractAction.js';
 
-module.exports = class saveConfig extends AbstractAction
+export class SaveConfig extends AbstractAction
 {
     
     execution() {
@@ -15,4 +15,4 @@ module.exports = class saveConfig extends AbstractAction
             config.pushDatabase(database);
         });
     }
-};
+}

@@ -1,9 +1,25 @@
-const vscode = require('vscode');
+import * as vscode from 'vscode';
+import { AnyObject } from '../../typeing/common';
 
-class AbstractServer
+
+export class AbstractServer
 {
+    currentDatabase: string | null;
+    OutputChannel: vscode.OutputChannel | null;
+
+    name?: string;
+    type?: string;
+
+    username?: string;
+    password?: string;
+    host?: string;
+    port?: string;
+    typeName?: string;
+    fieldsToConnect: AnyObject[];
+
     constructor() {
-        this.connection = null;
+        this.type = this.typeName;
+        this.fieldsToConnect = [];
         this.currentDatabase = null;
         this.OutputChannel = null;
     }
@@ -21,14 +37,14 @@ class AbstractServer
     /**
      * @param {OutputChannel} OutputChannel - VS Code Output Channel
      */
-    setOutput(OutputChannel){
+    setOutput(OutputChannel: vscode.OutputChannel | null){
         this.OutputChannel = OutputChannel;
     }
     
     /**
      * @param {string} msg - text message to show
      */
-    outputMsg (msg){
+    outputMsg (msg: string){
         if(this.OutputChannel !== null){
             this.OutputChannel.appendLine(msg);
         }
@@ -39,14 +55,14 @@ class AbstractServer
      */
     getDataToRestore(){
 
-        return vscode.window.showQuickPick([
+        return vscode.window.showQuickPick<vscode.QuickPickItem>([
             {label:'Yes'},	
             {label:'No'}		
         ], {	
             matchOnDescription:false,
             placeHolder:'Save password in setting? (plain text)'					
-        }).then(output => {
-            const data = {
+        }).then((output) => {
+            const data: AnyObject = {
                 type:this.type,
                 name:this.getName(),
                 host:this.host + ':' + this.port,
@@ -54,7 +70,7 @@ class AbstractServer
                 database:this.currentDatabase,
             };
 
-            if (output.label === 'Yes') {
+            if (output && output.label === 'Yes') {
                 data.password = this.password;
             }
 
@@ -67,16 +83,20 @@ class AbstractServer
      * @param {object} fields - result getDataToRestore() function
      * @return {Promise}
      */
-    restoreConnection(fields){
+    restoreConnection(fields: AnyObject): Promise<undefined>{
         if (!fields.username) {
             fields.username = fields.user;
         }
         if (fields.password === undefined) {
-            return vscode.window.showInputBox({ value: '', prompt: fields.name, placeHolder: 'Password', password: true })
-                .then((password) => {
-                    fields.password = password;
-                    return this.connectPromise(fields);
-                });
+            return new Promise((resolve) => {
+                vscode.window.showInputBox({ value: '', prompt: fields.name, placeHolder: 'Password', password: true })
+                    .then((password) => {
+                        fields.password = password;
+                        this.connectPromise(fields).then(resolve);
+                    });
+            });
+            
+            
         }
 
         return this.connectPromise(fields);
@@ -87,7 +107,7 @@ class AbstractServer
      * @return {Promise}
      */
     // eslint-disable-next-line no-unused-vars
-    connectPromise(fields){
+    connectPromise(fields: AnyObject): Promise<undefined>{
         return Promise.reject('No implement connectPromise');
     }
 
@@ -96,15 +116,20 @@ class AbstractServer
      * @return {Promise}
      */
     // eslint-disable-next-line no-unused-vars
-    queryPromise(sql){
+    queryPromise(sql: string, params?: any): Promise<{}>{
         return Promise.reject('No implement queryPromise');
+    }
+
+    // eslint-disable-next-line no-unused-vars
+    changeDatabase(name: string): Promise<{}>{
+        return Promise.reject('No implement changeDatabase');
     }
 
     /**
      * @param {string} sql - queries separate ;
      * @return {string[]}
      */
-    splitQueries(sqlMulti) {
+    splitQueries(sqlMulti: string) {
         return sqlMulti.split(';').filter((sql) => {
             if (!sql) {
                 return false;
@@ -118,12 +143,14 @@ class AbstractServer
      * @param {object} currentStructure - save new structure to this params
      */
     // eslint-disable-next-line no-unused-vars
-    refrestStructureDataBase (currentStructure) { }
+    refrestStructureDataBase (currentStructure?: AnyObject): Promise<{}> {
+        return Promise.resolve({});
+    }
 
     /**
      * @return {Promise<string[], Error|string>}
      */
-    getDatabase(){
+    getDatabase(): Promise<string[]>{
         return Promise.resolve([]);
     }
 
@@ -131,7 +158,7 @@ class AbstractServer
      * @param {string} tableName
      * @return {string} a quoted identifier table name
      */
-    getIdentifiedTableName(tableName){
+    getIdentifiedTableName(tableName: string): string {
         return tableName;
     }
 
@@ -139,13 +166,12 @@ class AbstractServer
      * @param {string} tableName
      * @return {string} a SQL SELECT statement
      */
-    getSelectTableSql(tableName){
-        return `SELECT * FROM ${this.getIdentifiedTableName(tableName)}`;
+    getSelectTableSql(tableName: string, limit: number = 50): string {
+        return `SELECT * FROM ${this.getIdentifiedTableName(tableName)} LIMIT ${limit}`;
     }
+
 }
 
-AbstractServer.prototype.typeName = 'Unknow';
+AbstractServer.prototype.typeName= 'Unknow';
 
 AbstractServer.prototype.fieldsToConnect = [];
-
-module.exports = AbstractServer;

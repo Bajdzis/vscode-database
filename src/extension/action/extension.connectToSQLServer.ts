@@ -1,14 +1,14 @@
-var AbstractAction = require('./AbstractAction.js');
-var { showWebview } = require('../webViews/webViewsRunner');
-var {allServerType} = require('../factoryServer');
+import { AbstractAction } from './AbstractAction.js';
+import { showWebview } from '../webViews/webViewsRunner';
+import {allServerType, ServerTypeName} from '../factoryServer';
+import { AnyObject } from '../../typeing/common.js';
 
 const dataForm = Object.keys(allServerType).map(key => ({
     type: key,
     name: allServerType[key].prototype.typeName,
     fields: allServerType[key].prototype.fieldsToConnect
 }));
-
-module.exports = class connectMySQL extends AbstractAction{
+export class ConnectToSQLServer extends AbstractAction{
 
     execution(){
         showWebview('connect', 'Connect to SQL server').then((panel) => {
@@ -35,7 +35,7 @@ module.exports = class connectMySQL extends AbstractAction{
         });
     }
 	
-    connectFactory(type, fields){
+    connectFactory(type: ServerTypeName, fields: AnyObject){
         if (allServerType[type]) {
             return this.sqlMenager.connectPromise(type, fields);
         }
@@ -44,4 +44,4 @@ module.exports = class connectMySQL extends AbstractAction{
     }
 	
 
-};
+}

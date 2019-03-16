@@ -1,11 +1,13 @@
 import * as vscode from 'vscode';
-var config = require('./extension/action/helpers/Config');
-var manager = require('./extension/Manager');
-var structureProvider = require('./extension/StructureProvider');
-var connectionsProvider = require('./extension/ConnectionsProvider');
-var completionItemsProvider = require('./extension/CompletionItemsProvider');
-var { setExtensionPath } = require('./extension/webViews/webViewsRunner');
-var { markdownProvider } = require('./extension/providers/markdownProvider');
+import {actionsList, ActionsList} from './extension/action';
+import { CommandCallback, AbstractAction } from './extension/action/AbstractAction';
+import config from './extension/action/helpers/Config';
+import { manager } from './extension/Manager';
+import structureProvider from './extension/StructureProvider';
+import connectionsProvider from './extension/ConnectionsProvider';
+import completionItemsProvider from './extension/CompletionItemsProvider';
+import { setExtensionPath } from './extension/webViews/webViewsRunner';
+import { markdownProvider } from './extension/providers/markdownProvider';
 
 function activate(context: vscode.ExtensionContext) {
     
@@ -48,21 +50,22 @@ function activate(context: vscode.ExtensionContext) {
 }
 exports.activate = activate;
 
-function addCommand(context, name) {
+
+function addCommand(context: vscode.ExtensionContext, name: keyof ActionsList) {
     const func = getCommandFunction(name);
-    const command = vscode.commands.registerCommand(name, func);
+    const command = vscode.commands.registerCommand(name as string, func);
     context.subscriptions.push(command);
 }
 
-function addTextEditorCommand(context, name) {
+function addTextEditorCommand(context: vscode.ExtensionContext, name: keyof ActionsList) {
     const func = getCommandFunction(name);
-    const command = vscode.commands.registerTextEditorCommand(name, func);
+    const command = vscode.commands.registerTextEditorCommand(name as string, func);
     context.subscriptions.push(command);
 }
 
-function getCommandFunction(name) {
-    const actionClass = require('./extension/action/' + name + '.js');
-    const actionObject = new actionClass();
+function getCommandFunction(name: keyof ActionsList): CommandCallback {
+    const actionClass = actionsList[name];
+    const actionObject = new actionClass(manager);
     return actionObject.execution;
 }
 

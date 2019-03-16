@@ -1,6 +1,7 @@
-var pg = require('pg');
-var vscode = require('vscode');
-var AbstractServer = require('./AbstractServer.js');
+import { Pool, QueryResult } from 'pg';
+import * as vscode from 'vscode';
+import { AbstractServer } from './AbstractServer';
+import { AnyObject } from '../../typeing/common';
 
 const SELECT_DATABSE_SQL = 
 `
@@ -71,7 +72,13 @@ ORDER BY
   , col.ordinal_position
 `;
 
-class PostgreSQLType extends AbstractServer{
+export class PostgreSQLType extends AbstractServer{
+
+    database: string;
+    sslEnabled: boolean;
+    schema: string;
+    protected connection?: Pool;
+    protected release: () => void;
 
     constructor() {
         super();
@@ -80,11 +87,10 @@ class PostgreSQLType extends AbstractServer{
         this.port = '5432';
         this.username = 'Empty';
         this.password = 'Empty';
-        this.database = undefined;
         this.sslEnabled = false;
+        this.database = '';
         this.schema = 'public';
-        this.onConnectSetDB = null;
-        this.release = null;
+        this.release = () => {};
     }
 
     /**
@@ -96,7 +102,7 @@ class PostgreSQLType extends AbstractServer{
      * @param {bool} [sslEnabled=false]
      * @return {Promise}
      */
-    connectPromise({ host, username, password, database, schema, sslEnabled }){
+    connectPromise({ host, username, password, database, schema, sslEnabled }: AnyObject): Promise<undefined>{
         const [hostName, port = '5432'] = host.split(':');
         this.host = hostName;
         this.port = port;
@@ -105,19 +111,19 @@ class PostgreSQLType extends AbstractServer{
         this.database = database;
         this.schema = schema;
         this.sslEnabled = sslEnabled;
-        this.connection = new pg.Pool({
+        const connection = new Pool({
             user: this.username,
             database: this.database,
             password: this.password,
             host: this.host,
-            port: this.port,
             ssl: this.sslEnabled,
+            port: parseInt(port, 10),
             max: 10,
             idleTimeoutMillis: 30000,
-            schema: this.schema,
         });
         return new Promise((resolve, reject) => {
-            this.connection.connect((err, client, release) => {
+            connection.connect((err, client, release) => {
+                this.connection = connection;
                 this.release = release;
                 this.release();
                 if (err) {
@@ -126,7 +132,7 @@ class PostgreSQLType extends AbstractServer{
                 }
                 resolve();
             });
-            this.connection.on('error', (err) => {
+            connection.on('error', (err) => {
                 reject('PostgreSQL Error: ' + err.stack);
             });
         });
@@ -137,8 +143,12 @@ class PostgreSQLType extends AbstractServer{
      */
     closeConnect(){
         return new Promise((resolve, reject) => {
+            if(!this.connection){
+                resolve();
+                return;
+            }
             this.connection.end().then(() => {
-                this.connection = null;
+                this.connection = undefined;
                 resolve();
             }).catch(reject);
         });
@@ -148,12 +158,16 @@ class PostgreSQLType extends AbstractServer{
      * @param {object} params
      * @return {Promise}
      */
-    queryPromise(sql, params){
+    queryPromise(sql: string, params?: any): Promise<AnyObject[]>{
         return new Promise((resolve, reject) => {
-            this.connection.query(sql, params, (err, rows) => {
+            if(!this.connection){
+                reject(new Error('PostgreSQL: No have correct connection.'));
+                return;
+            }
+            this.connection.query(sql, params, (err: Error, rows: QueryResult) => {
                 this.release();
                 if (err) {
-                    reject('PostgreSQL Error: ' + err.stack);
+                    reject(new Error('PostgreSQL Error: ' + err.message));
                     return;
                 }
                 resolve(rows.rows);
@@ -167,7 +181,7 @@ class PostgreSQLType extends AbstractServer{
      * @param {function} func - callback
      * @param {object} params
      */
-    query (sql, func, params){
+    query (sql: string, func: any, params?: AnyObject){
         this.queryPromise(sql, params).then(func).catch((errMsg) => {
             vscode.window.showErrorMessage(errMsg);
             this.outputMsg(errMsg);
@@ -177,15 +191,13 @@ class PostgreSQLType extends AbstractServer{
     /**
      * @return {Promise}
      */
-    getDatabase(){
+    getDatabase(): Promise<string[]>{
         return new Promise((resolve, reject) => {
             Promise.all([
                 this.queryPromise(SELECT_DATABSE_SQL),
                 this.queryPromise(SELECT_SCHEMA_SQL)
-            ]).then(results => {
-                var database = results[0];
-                var schema = results[1];
-                var allDatabase = [];
+            ]).then(([database, schema]) => {
+                const allDatabase = [];
                 for (let i = 0; i < database.length; i++) {
                     allDatabase.push(database[i].Database);
                 }
@@ -205,7 +217,7 @@ class PostgreSQLType extends AbstractServer{
      * @param {string} name - name Database or Database.schema
      * @return {Promise}
      */
-    changeDatabase (name) {
+    changeDatabase (name: string) {
         var databaseAndSchema = name.split('.');
         var database = databaseAndSchema.splice(0, 1)[0];
         var schema = 'public';
@@ -234,13 +246,13 @@ class PostgreSQLType extends AbstractServer{
         });
     }
 
-    changeSchema(schema){
+    changeSchema(schema: string){
         return new Promise((resolve, reject) => {
             this.queryPromise('SET search_path to ' + schema).then(() => {
                 this.schema = schema;
                 resolve();
             }).catch(() => {
-                this.schema = null;
+                this.schema = 'public';
                 reject();
             });
         });
@@ -250,19 +262,19 @@ class PostgreSQLType extends AbstractServer{
      * @return {Promise}
      */
     refrestStructureDataBase () {
-        var currentStructure = {};
-        var tablePromise = [];
+        var currentStructure: any = {};
+        var tablePromise: Promise<any>[] = [];
         const tableParams = [this.schema];
         return new Promise((resolve, reject) => {
-            this.queryPromise(SELECT_TABLE_SQL, tableParams).then((results) => {
-                for (var i = 0; i < results.length; i++) {
+            this.queryPromise(SELECT_TABLE_SQL, tableParams).then((results: AnyObject[]) => {
+                for (let i = 0; i < results.length; i++) {
                     let key = Object.keys(results[i])[0];
                     let tableName =  results[i][key];
                     let columnParams = [tableName,tableName];
                     let promise = new Promise((resolve, reject) => {
-                        this.queryPromise(SELECT_COLUMNS_SQL, columnParams).then((column) => {
+                        this.queryPromise(SELECT_COLUMNS_SQL, columnParams).then((column: AnyObject[]) => {
                             var columns = [];
-                            for (var i = 0; i < column.length; i++) {
+                            for (let i = 0; i < column.length; i++) {
                                 var element = column[i];
                                 columns.push(element);
                             }
@@ -284,15 +296,13 @@ class PostgreSQLType extends AbstractServer{
                 }).catch(reject);
             });
         });
-
-
     }
 
     /**
      * @param {string} tableName
      * @return {string} a quoted identifier table name
      */
-    getIdentifiedTableName(tableName){
+    getIdentifiedTableName(tableName: string): string {
         return `"${tableName}"`;
     }
 
@@ -300,10 +310,9 @@ class PostgreSQLType extends AbstractServer{
      * @param {string} tableName
      * @return {string} a SQL SELECT statement
      */
-    getSelectTableSql(tableName){
+    getSelectTableSql(tableName: string): string {
         return `SELECT * FROM ${this.schema}.${this.getIdentifiedTableName(tableName)}`;
     }
-
 }
 
 PostgreSQLType.prototype.typeName = 'Postgre SQL';
@@ -352,5 +361,3 @@ PostgreSQLType.prototype.fieldsToConnect = [
         info: ''
     }
 ];
-
-module.exports = PostgreSQLType;

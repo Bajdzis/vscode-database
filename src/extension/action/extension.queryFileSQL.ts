@@ -1,9 +1,7 @@
-var vscode = require('vscode');
-var AbstractAction = require('./AbstractAction.js');
-var manager = require('../Manager');
+import * as vscode from 'vscode';
+import { AbstractAction } from './AbstractAction.js';
 
-
-module.exports = class queryFileSQL extends AbstractAction
+export class QueryFileSQL extends AbstractAction
 {
     
     execution() {
@@ -13,6 +11,6 @@ module.exports = class queryFileSQL extends AbstractAction
 
         const queries = vscode.window.activeTextEditor.document.getText();
 
-        manager.runAsQuery(queries);
+        this.sqlMenager.runAsQuery(queries);
     }
-};
+}

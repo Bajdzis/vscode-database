@@ -1,24 +1,22 @@
+import { AnyObject } from '../typeing/common';
 
-
-module.exports = function AsciiTableBig(json)
-{
+export const asciiTableBig = (json: AnyObject[]): string => {
     
-    var _this = this;
-    var MAX_CHARACTERS_IN_LINE = 180;
-    this.keys = Object.keys(json[0]);
-    this.widthKey = 0;
-    this.widthData = 0;
+    let widthKey = 0;
+    let widthData = 0;
+    const MAX_CHARACTERS_IN_LINE = 180;
+    const keys = Object.keys(json[0]);
 
-    this.table = function(){
+    const line = () => {
+        var line = '\n +';
 
-        for (var key in _this.keys) {
-            _this.widthKey = Math.max(_this.widthKey, String(_this.keys[key]).length);
-        }
-        _this.widthData = MAX_CHARACTERS_IN_LINE - _this.widthKey;
-        return _this.draw();
+        line +=  ( '-'.repeat(widthKey+2) ) + '+';
+        line +=  ( '-'.repeat(widthData+2) ) + '+';
+
+        return line;
     };
 
-    this.draw = function () {
+    const draw = () => {
         var buffer = '';
 
         for (var row in json) {
@@ -29,36 +27,32 @@ module.exports = function AsciiTableBig(json)
 
             for (var key in json[row]) {
 
-                buffer += _this.line();
+                buffer += line();
                 buffer += '\n | ';
 
                 var data = String(json[row][key]);
                 
-                if(data.length > _this.widthData){
-                    data = data.substr(0, _this.widthData-6);
+                if(data.length > widthData){
+                    data = data.substr(0, widthData-6);
                     data += '[...]';
                 }
 
-                buffer += key + ( ' '.repeat(_this.widthKey - String(key).length) ) + ' | ';
-                buffer += data + ( ' '.repeat(_this.widthData - data.length) ) + ' | ';
+                buffer += key + ( ' '.repeat(widthKey - String(key).length) ) + ' | ';
+                buffer += data + ( ' '.repeat(widthData - data.length) ) + ' | ';
 
             }
 
-            buffer += _this.line();
+            buffer += line();
 
         }
 
         return buffer;
     };
 
-    this.line = function(){
-        var line = '\n +';
+    for (var key in keys) {
+        widthKey = Math.max(widthKey, String(keys[key]).length);
+    }
+    widthData = MAX_CHARACTERS_IN_LINE - widthKey;
 
-        line +=  ( '-'.repeat(_this.widthKey+2) ) + '+';
-        line +=  ( '-'.repeat(_this.widthData+2) ) + '+';
-
-        return line;
-    };
-
-    return this.table();
+    return draw();
 };

@@ -1,15 +1,19 @@
-var vscode = require('vscode');
+import * as vscode from 'vscode';
+import { AbstractServer } from './engine/AbstractServer';
 
 
 class ConnectionsProvider{
-
+    items: vscode.TreeItem[];
+    _onDidChangeTreeData: vscode.EventEmitter<any>;
+    onDidChangeTreeData: any;
+    
     constructor() { 
         this._onDidChangeTreeData = new vscode.EventEmitter();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
         this.items = [];
     }
 
-    getTreeItem(element) {
+    getTreeItem(element: vscode.TreeItem) {
         return element;
     }
 
@@ -17,14 +21,15 @@ class ConnectionsProvider{
         return Promise.resolve(this.items);
     }
 	
-    refreshList(connections, activeConnection){
+    refreshList(connections: AbstractServer[], activeConnection: AbstractServer | null){
 
         this.items = connections.map(connection => {
             var databaseName = connection.currentDatabase || 'no DB selected';
             const item = new vscode.TreeItem(connection.getName() + ':' + databaseName + (connection === activeConnection ? ' - active' : '' ));
             item.contextValue = 'databaseItem';//for menus
             item.command = {
-                arguments: [connection],
+                title: 'change server',
+                arguments: [null, null, connection],
                 command: 'extension.changeServer'
             };
             return item;
@@ -39,4 +44,4 @@ class ConnectionsProvider{
 
 const connectionsProvider = new ConnectionsProvider();
 
-module.exports = connectionsProvider;
+export default connectionsProvider;

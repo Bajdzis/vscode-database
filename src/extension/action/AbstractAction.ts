@@ -1,17 +1,24 @@
-var manager = require('../Manager');
+import * as vscode from 'vscode';
+import { Manager } from '../Manager';
 
-module.exports = class AbstractAction
+export type CommandCallback = (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args: any[]) => void;
+
+export interface Action {
+    sqlMenager: Manager;
+    execution: CommandCallback;
+}
+export class AbstractAction implements Action
 {
-    constructor() {
-        this.sqlMenager = manager;
+    sqlMenager: Manager;
+
+    constructor(sqlMenager: Manager) {
+        this.sqlMenager = sqlMenager;
         this.execution = this.execution.bind(this);
     }
 
-    /**
-     * execution action
-     */
-    execution(){
+    
+    execution(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args: any[]): void {
 
     }
     
-};
+}

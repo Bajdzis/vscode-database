@@ -1,20 +1,21 @@
-var pg = require('pg');
-var fs = require('fs');
-var PostgreSQLType = require('./postgresql.js');
+import { AnyObject } from '../../typeing/common';
+import { Pool } from 'pg';
+import { readFileSync } from 'fs';
+import { PostgreSQLType } from './postgresql';
+import { AbstractServer } from './AbstractServer';
 
-class PostgreSSLSQLType extends PostgreSQLType {
+export class PostgreSSLSQLType extends PostgreSQLType {
+
+    public ca: string;
+    public key: string;
+    public cert: string;
+
 
     constructor() {
         super();
-        this.type = 'postgresssl';
-        this.host = 'Empty';
-        this.port = '5432';
-        this.user = 'Empty';
-        this.password = 'Empty';
-        this.database = undefined;
-        this.schema = 'public';
-        this.onConnectSetDB = null;
-        this.release = null;
+        this.ca = '';
+        this.key = '';
+        this.cert = '';
     }
 
     getName() {
@@ -28,7 +29,7 @@ class PostgreSSLSQLType extends PostgreSQLType {
      * @param {object} fields
      * @return {Promise}
      */
-    connectPromise({host, database, schema, key, cert, ca}) {
+    connectPromise({host, database, schema, key, cert, ca}: AnyObject): Promise<undefined> {
         const [hostName, port = '5432'] = host.split(':');
         this.host = hostName;
         this.port = port;
@@ -37,22 +38,22 @@ class PostgreSSLSQLType extends PostgreSQLType {
         this.ca = ca;
         this.key = key;
         this.cert = cert;
-        this.connection = new pg.Pool({
+        const connection = new Pool({
             database: this.database,
             host: this.host,
-            port: this.port,
+            port: parseInt(port, 10),
             max: 10,
             idleTimeoutMillis: 30000,
-            schema: this.schema,
             ssl : {
                 rejectUnauthorized : false,
-                ca   : fs.readFileSync(ca).toString(),
-                key  : fs.readFileSync(key).toString(),
-                cert : fs.readFileSync(cert).toString(),
+                ca   : readFileSync(ca).toString(),
+                key  : readFileSync(key).toString(),
+                cert : readFileSync(cert).toString(),
             }
         });
         return new Promise((resolve, reject) => {
-            this.connection.connect((err, client, release) => {
+            connection.connect((err, client, release) => {
+                this.connection = connection;
                 this.release = release;
                 this.release();
                 if (err) {
@@ -61,14 +62,14 @@ class PostgreSSLSQLType extends PostgreSQLType {
                 }
                 resolve();
             });
-            this.connection.on('error', reject);
+            connection.on('error', reject);
         });
     }
 
     /**
      * @return {object} - object with some data to save
      */
-    getDataToRestore(){
+    getDataToRestore(): Promise<AnyObject> {
         return Promise.resolve({
             type:this.type,
             name:this.name,
@@ -85,7 +86,7 @@ class PostgreSSLSQLType extends PostgreSQLType {
      * @param {object} fields - result getDataToRestore() function
      * @return {Promise}
      */
-    restoreConnection(fields){
+    restoreConnection(fields: AnyObject): Promise<undefined>{
         return this.connectPromise(fields);
     } 
 }
@@ -136,5 +137,3 @@ PostgreSSLSQLType.prototype.fieldsToConnect = [
         info: '(Client certificates - path to `client.crt`)'
     }
 ];
-
-module.exports = PostgreSSLSQLType;

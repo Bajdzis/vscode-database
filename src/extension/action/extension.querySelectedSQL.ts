@@ -1,8 +1,9 @@
-var AbstractAction = require('./AbstractAction.js');
+import * as vscode from 'vscode';
+import { AbstractAction } from './AbstractAction.js';
 
-module.exports = class querySelectedSQL extends AbstractAction {
+export class QuerySelectedSQL extends AbstractAction {
 
-    execution(editor) {
+    execution(editor: vscode.TextEditor) {
         if (!editor || !editor.document || editor.selection.isEmpty) {
             return;
         }
@@ -12,4 +13,4 @@ module.exports = class querySelectedSQL extends AbstractAction {
             this.sqlMenager.runAsQuery(selection);
         }
     }
-};
+}

@@ -1,22 +1,13 @@
-var vscode = require('vscode');
-var AbstractAction = require('./AbstractAction.js');
+import * as vscode from 'vscode';
+import { AbstractAction } from './AbstractAction.js';
 
-module.exports = class querySQL extends AbstractAction
+export class QuerySQL extends AbstractAction
 {
     
-    execution(query = null) {
+    execution(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, query?: string) {
 
-        const runQuery = (query) => {
-            if(typeof query === 'undefined'){
-                return;
-            }
-            this.sqlMenager.query(query, (data) => {
-                this.sqlMenager.queryOutput(data, query);
-            });
-        };
-
-        if(query !== null && typeof query === 'string'){
-            runQuery(query);
+        if(typeof query === 'string'){
+            this.runQuery(query);
             return;
         }
 
@@ -25,10 +16,14 @@ module.exports = class querySQL extends AbstractAction
             prompt: 'e.g SELECT * FROM table', 
             placeHolder: 'Query', 
             password: false
-        }).then(runQuery);
+        }).then(this.runQuery);
     }
 
+    runQuery(query?: string) {
+        if(typeof query === 'undefined'){
+            return;
+        }
+        this.sqlMenager.runAsQuery(query);
+    }
 
-
-
-};
+}

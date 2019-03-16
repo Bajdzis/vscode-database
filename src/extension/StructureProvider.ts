@@ -1,15 +1,17 @@
-var vscode = require('vscode');
-
+import * as vscode from 'vscode';
+import { AbstractServer } from './engine/AbstractServer';
+import { AnyObject } from '../typeing/common';
 
 class StructureProvider{
+    private _onDidChangeTreeData: vscode.EventEmitter<any>;
+    private items: vscode.TreeItem[];
 
     constructor() { 
         this._onDidChangeTreeData = new vscode.EventEmitter();
-        this.onDidChangeTreeData = this._onDidChangeTreeData.event;
         this.items = [];
     }
 
-    getTreeItem(element) {
+    getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
         return element;
     }
 
@@ -17,14 +19,15 @@ class StructureProvider{
         return Promise.resolve(this.items);
     }
 	
-    setStructure(structure, currentServer){
+    setStructure(structure: AnyObject, currentServer: AbstractServer){
         const tablesName = Object.keys(structure);
 
         this.items = tablesName.map(tableName => {
-            const item = new vscode.TreeItem(tableName);
+            const item: vscode.TreeItem = new vscode.TreeItem(tableName);
             item.contextValue = 'tableItem';//for menus
             item.command = {
-                arguments: [currentServer.getSelectTableSql(tableName)],
+                title: '',
+                arguments: [null, null, currentServer.getSelectTableSql(tableName)],
                 command: 'extension.querySQL'
             };
             return item;
@@ -38,4 +41,4 @@ class StructureProvider{
 
 const structureProvider = new StructureProvider();
 
-module.exports = structureProvider;
+export default structureProvider;

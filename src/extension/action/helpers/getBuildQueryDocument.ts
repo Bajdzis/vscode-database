@@ -1,11 +1,11 @@
-var vscode = require('vscode');
-var fs = require('fs');
+import * as vscode from 'vscode';
+import * as fs from 'fs';
 
-module.exports = function getBuildQueryDocument(){
+export default function getBuildQueryDocument(): Promise<vscode.TextDocument>{
     const root = vscode.workspace.rootPath;
     if(typeof root === 'undefined'){
         vscode.window.showInformationMessage('Open folder before Query Advancer Build');
-        return;
+        return Promise.reject(new Error('Open folder before Query Advancer Build'));
     }
     const existsDIR = fs.existsSync(root + '/.vscode/');
     if(existsDIR === false){
@@ -20,17 +20,17 @@ module.exports = function getBuildQueryDocument(){
     }
 
     return new Promise((resolve, reject) => {
-        vscode.workspace.openTextDocument(vscode.Uri.file(pathTempFile)).then(function(document){
+        vscode.workspace.openTextDocument(vscode.Uri.file(pathTempFile)).then((document) => {
             resolve(document);
             vscode.workspace.onDidCloseTextDocument( closeDocument => {
                 if(closeDocument === document){
                     if(fs.existsSync(pathLastSQLFile) === true){
                         fs.unlinkSync(pathLastSQLFile);
                     }
-                    fs.rename(pathTempFile, pathLastSQLFile);
+                    fs.rename(pathTempFile, pathLastSQLFile, () => {});
                 }
             });
-        }).catch(reject);
+        });
     });
 
-};
+}

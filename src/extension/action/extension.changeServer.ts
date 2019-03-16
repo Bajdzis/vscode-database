@@ -1,11 +1,12 @@
-var vscode = require('vscode');
-var AbstractAction = require('./AbstractAction.js');
+import * as vscode from 'vscode';
+import { AbstractAction } from './AbstractAction.js';
+import { AbstractServer } from '../engine/AbstractServer.js';
 
-module.exports = class connectPostgreSQL extends AbstractAction
+export class ChangeServer extends AbstractAction
 {
     
-    execution(server = null) {
-        if(server !== null){
+    execution(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, server?: AbstractServer) {
+        if(server !== undefined){
             this.sqlMenager.changeServer(server);
             return;
         }
@@ -46,4 +47,4 @@ module.exports = class connectPostgreSQL extends AbstractAction
     }
 
 
-};
+}

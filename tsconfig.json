@@ -11,7 +11,7 @@
 		"strict": true,
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
-		"noUnusedParameters": true,
+		"noUnusedParameters": false,
 	},
 	"exclude": [
 		"node_modules",

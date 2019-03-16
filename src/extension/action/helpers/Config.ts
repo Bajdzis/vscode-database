@@ -1,6 +1,8 @@
-var vscode = require('vscode');
+import * as vscode from 'vscode';
+import { AnyObject } from '../../../typeing/common';
 
 class Config{
+    databaseConfig: any;
 
     constructor(){
         this.databaseConfig = vscode.workspace.getConfiguration('database');
@@ -11,7 +13,7 @@ class Config{
         return Promise.resolve(connections);
     }
 
-    pushDatabase(newDatabaseConfig){
+    pushDatabase(newDatabaseConfig: AnyObject){
         this.getDatabases().then((connections) =>{
             connections.push(newDatabaseConfig);
             this.databaseConfig.update('connections',connections);
@@ -23,4 +25,4 @@ class Config{
 
 const config = new Config();
 
-module.exports = config;
+export default config;

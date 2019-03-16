@@ -1,8 +1,8 @@
-var vscode = require('vscode');
-var AbstractAction = require('./AbstractAction.js');
-var getBuildQueryDocument = require('./helpers/getBuildQueryDocument.js');
+import getBuildQueryDocument from './helpers/getBuildQueryDocument.js';
+import * as vscode from 'vscode';
+import { AbstractAction } from './AbstractAction.js';
 
-module.exports = class queryBuild extends AbstractAction
+export class QueryBuild extends AbstractAction
 {
     
     execution() {
@@ -23,11 +23,11 @@ module.exports = class queryBuild extends AbstractAction
 
     }
 
-    execQuery(query) {
+    execQuery(query?: string) {
         if (!query) {
             return;
         }
 
         this.sqlMenager.runAsQuery(query);
     }
-};
+}

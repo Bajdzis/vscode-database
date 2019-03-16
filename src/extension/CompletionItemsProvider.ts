@@ -1,4 +1,5 @@
-var manager = require('./Manager');
+import * as vscode from 'vscode';
+import { manager } from './Manager';
 
 class CompletionItemsProvider{
 
@@ -9,11 +10,11 @@ class CompletionItemsProvider{
         return manager.getCompletionItem();
     }
 
-    resolveCompletionItem(item) {
+    resolveCompletionItem(item: vscode.CompletionItem) {
         return item;
     }
 }
 
 const completionItemsProvider = new CompletionItemsProvider();
 
-module.exports = completionItemsProvider;
+export default completionItemsProvider;

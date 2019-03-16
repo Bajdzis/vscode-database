@@ -1,28 +1,41 @@
 
-var vscode = require('vscode');
-var asciiTable = require('./AsciiTable.js');
-var StatusBar = require('./StatusBar.js');
+import * as vscode from 'vscode';
+import {asciiTable} from './AsciiTable.js';
+import { AbstractServer } from './engine/AbstractServer.js';
+import { StatusBar } from './StatusBar.js';
 
-var { factoryServer } = require('./factoryServer');
+import { factoryServer, ServerTypeName } from './factoryServer';
 
-var structureProvider = require('./StructureProvider');
-var connectionsProvider = require('./ConnectionsProvider');
+import structureProvider from './StructureProvider';
+import connectionsProvider from './ConnectionsProvider';
 
-var csv = require('fast-csv');
+import * as csv from 'fast-csv';
+import { AnyObject } from '../typeing/common.js';
 
-class Manager {
+
+export class Manager {
+    server: AbstractServer[];
+    currentServer: AbstractServer | null;
+    statusBar: StatusBar;
+    OutputChannel: vscode.OutputChannel | null;
+    currentStructure: AnyObject | null;
 
     constructor() {
         this.server = [];
         this.currentServer = null;
         this.statusBar = new StatusBar();
         this.OutputChannel = null;
+        this.currentStructure = null;
     }
 
     showStatus(){
-        var databaseName = this.getCurrentDatabase();
+        const databaseName = this.getCurrentDatabase();
 
-        this.statusBar.setServer(this.currentServer.getName() || null);
+        if (this.currentServer) {
+            this.statusBar.setServer(this.currentServer.getName());
+        } else {
+            this.statusBar.setServer(null);
+        }
         this.statusBar.setDatabase(databaseName);
 
         if(databaseName !== null){
@@ -32,14 +45,14 @@ class Manager {
         connectionsProvider.refreshList(this.server, this.currentServer);
     }
 
-    outputMsg (msg){
+    outputMsg (msg: string){
         if(this.OutputChannel === null){
             this.OutputChannel = vscode.window.createOutputChannel('database');
         }
         this.OutputChannel.appendLine(msg);
     }
 
-    connectPromise (type, fields){
+    connectPromise (type: ServerTypeName, fields: AnyObject){
         var newServer = factoryServer(type);
         var _this = this;
         newServer.setOutput(this.OutputChannel);
@@ -53,7 +66,7 @@ class Manager {
 
     }
 
-    restoreConnections(databases){
+    restoreConnections(databases: AnyObject[]){
         return databases.forEach((fields) => {
             const newServer = factoryServer(fields.type);
             newServer.setOutput(this.OutputChannel);
@@ -66,47 +79,36 @@ class Manager {
             }); 
         });
     }
-    
-    query (sql, func, params){
-        this.outputMsg(sql);
-        if(this.currentServer === null){
-            vscode.window.showErrorMessage('Server not selected');
-        }else{
-            this.currentServer.query(sql, func, params);
-        }
-    }
 
-    runAsQuery(sqlMulti){
+    runAsQuery(sqlMulti: string){
         if(this.currentServer === null){
             vscode.window.showErrorMessage('Server not selected');
             return;
         }
+        const currentServer = this.currentServer;
         
-        const queries = this.currentServer.splitQueries(sqlMulti)
-            .map((sql) => (this.currentServer.queryPromise(sql).then((data) => {
-                return Promise.resolve({data, sql});
-            })
-            ));
+        const queries = currentServer.splitQueries(sqlMulti)
+            .map((sql) => currentServer.queryPromise(sql).then((data) => Promise.resolve({data, sql})));
 
         Promise.all(queries).then(allResult => {
             allResult.forEach(result => {
                 this.outputMsg(result.sql);
                 this.queryOutput(result.data, result.sql);
             });
-        }).catch(function(errMsg){
+        }).catch((errMsg: string) => {
             vscode.window.showErrorMessage(errMsg);
             this.outputMsg(errMsg);
         });
     }
 
-    runAsQueryToCSV(sqlMulti){
+    runAsQueryToCSV(sqlMulti: string){
         if(this.currentServer === null){
             vscode.window.showErrorMessage('Server not selected');
             return;
         }
-        
-        const queries = this.currentServer.splitQueries(sqlMulti)
-            .map((sql) => (this.currentServer.queryPromise(sql).then((data) => {
+        const currentServer = this.currentServer;
+        const queries = currentServer.splitQueries(sqlMulti)
+            .map((sql) => (currentServer.queryPromise(sql).then((data) => {
                 return Promise.resolve({data, sql});
             })
             ));
@@ -116,17 +118,23 @@ class Manager {
                 this.outputMsg(result.sql);
                 this.queryToCSV(result.data);
             });
-        }).catch(function(errMsg){
+        }).catch((errMsg: string) => {
             vscode.window.showErrorMessage(errMsg);
             this.outputMsg(errMsg);
         });
     }
     
     getDatabase (){
+        if(!this.currentServer){
+            return Promise.resolve([]);
+        }
         return this.currentServer.getDatabase();
     }
 
-    changeDatabase (name){
+    changeDatabase (name: string){
+        if(!this.currentServer){
+            return;
+        }
         this.currentServer.changeDatabase(name).then(() => {
 
             const msg = `-- Database changed : ${name} --`;
@@ -145,11 +153,15 @@ class Manager {
     }
 
     refreshStructureDataBase (){
-        this.currentServer.refrestStructureDataBase().then((structure) => {
+        if(!this.currentServer){
+            return;
+        }
+        const currentServer = this.currentServer;
+        currentServer.refrestStructureDataBase().then((structure) => {
             this.currentStructure = structure;
-            structureProvider.setStructure(structure, this.currentServer);
+            structureProvider.setStructure(structure, currentServer);
         }).catch(() => {
-            structureProvider.setStructure({}, this.currentServer);
+            structureProvider.setStructure({}, currentServer);
         });
     }
 
@@ -157,12 +169,16 @@ class Manager {
         return this.currentStructure;
     }
 
-    getCompletionItem (){
-        var completionItems = [];
-        var databaseScructure = this.getStructure();
+    getCompletionItem (): vscode.CompletionItem[]{
+        const completionItems: vscode.CompletionItem[] = [];
+        const databaseScructure = this.getStructure();
 
-        for( var tableName in databaseScructure ) {
-            var tableItem = new vscode.CompletionItem(tableName);
+        if(!this.currentServer){
+            return completionItems;
+        }
+
+        for( let tableName in databaseScructure ) {
+            const tableItem = new vscode.CompletionItem(tableName);
             tableItem.insertText = this.currentServer.getIdentifiedTableName(tableName);
             tableItem.kind = vscode.CompletionItemKind.Class;
             tableItem.detail = 'Table';
@@ -187,7 +203,7 @@ class Manager {
         return completionItems;
     }
     
-    changeServer (server){
+    changeServer (server: AbstractServer){
         this.currentServer = server;
         this.currentStructure = {};
         const msg = `-- Start use server : ${server.name} --`;
@@ -199,17 +215,17 @@ class Manager {
         
     }
     
-    registerNewServer (obj){
+    registerNewServer (obj: AbstractServer){
         this.server.push(obj);
         this.changeServer(obj);
     }
 
-    queryOutput(data, sql){
-        this.queryOutputAscii(data, sql);
+    queryOutput(data: AnyObject, sql: string){
+        this.queryOutputAscii(data);
         this.queryOutputMarkdown(data, sql);
     }
     
-    queryOutputAscii (data){
+    queryOutputAscii (data: AnyObject){
         if(typeof data.message !== 'undefined'){
             let table = asciiTable([{
                 fieldCount: data.fieldCount,
@@ -221,7 +237,7 @@ class Manager {
             }]);
             this.outputMsg(data.message);
             this.outputMsg(table);
-        }else if(typeof data === 'object'){
+        }else if(typeof data === 'object' && Array.isArray(data)){
             const noResult = data.length === 0;
             if (noResult) {
                 this.outputMsg('Query result 0 rows!');
@@ -240,7 +256,7 @@ class Manager {
         // }
     }
 
-    queryOutputMarkdown (data, sql){
+    queryOutputMarkdown (data: AnyObject, sql: string){
         if(typeof data.message !== 'undefined'){
             this.showQueryResult({
                 message: data.message,
@@ -269,7 +285,7 @@ class Manager {
 
     }
 
-    showQueryResult(data){
+    showQueryResult(data: AnyObject){
         const dataJson = encodeURI(JSON.stringify(data));
         const uri = vscode.Uri.parse(`bajdzis-database-markdown://queryResult?${dataJson}`);
 
@@ -277,7 +293,7 @@ class Manager {
         vscode.commands.executeCommand('markdown.preview.refresh', uri);
     }
 
-    queryToCSV (data){
+    queryToCSV (data: any){
         if(typeof data.message !== 'undefined'){
             var table = asciiTable([{
                 fieldCount: data.fieldCount,
@@ -297,7 +313,7 @@ class Manager {
                 csv.writeToString(
                     data,
                     {headers: true},
-                    function(err, dataCSV){
+                    (err, dataCSV) => {
                         vscode.workspace.openTextDocument().then(doc => {
                             vscode.window.showTextDocument(doc, 2, false).then(e => {
                                 e.edit(edit => {
@@ -318,16 +334,14 @@ class Manager {
         }
     }
     
-    changeServerAlias (newName){
+    changeServerAlias (newName: string){
         if(this.currentServer === null){
-            return false;
+            return;
         }
         this.currentServer.name = newName;
         this.showStatus();
-        
     }
 }
 
-const manager = new Manager();
+export const manager = new Manager();
 
-module.exports = manager;
