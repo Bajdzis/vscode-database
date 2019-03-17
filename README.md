@@ -16,10 +16,11 @@
  
 ## Changelog
 
-* 2.1.0
+* 2.1.1
     * Migrate JavaScript to TypeScript
     * Add connection SSL with user and password authentication (thanks @brooksgarrett)
     * Start using webpack #75
+    * Fix: add webview to extension pack
 
 * 2.0.3
     * Created new form to connect database. Fixed #19 
