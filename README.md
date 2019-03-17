@@ -1,6 +1,8 @@
 # VS Code database
 ### Extension for Visual Studio Code 
 
+[![Build Status](https://travis-ci.com/Bajdzis/vscode-database.svg?branch=master)](https://travis-ci.com/Bajdzis/vscode-database)
+
 ## Usage
 
 ![result](https://github.com/Bajdzis/vscode-database/raw/master/readme/v2.0-result.gif)
@@ -14,7 +16,12 @@
  
 ## Changelog
 
-* 2.0.1 (IN BETA TESTING)
+* 2.1.0
+    * Migrate JavaScript to TypeScript
+    * Add connection SSL with user and password authentication (thanks @brooksgarrett)
+    * Start using webpack #75
+
+* 2.0.3
     * Created new form to connect database. Fixed #19 
     * Add database icon in sidebar.
     * Query result to csv
@@ -69,6 +76,7 @@
 * k--kato - Postgres integration
 * serl - Execute selected query
 * ArtemiusUA - Query result to csv
+* brooksgarrett - Add connection SSL with user and password authenticatio
 
 ## License
 MIT © [Bajdzis](https://github.com/Bajdzis)

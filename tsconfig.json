@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es6",
+		"outDir": "dist",
+		"lib": [
+			"es6"
+		],
+		"sourceMap": true,
+		"rootDir": "src",
+		"strict": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUnusedParameters": false,
+		"typeRoots" : ["node_modules/@types", "src/typeing"],
+	},
+	"include": [
+		"./src/**/*.ts",
+		"./node_modules/vscode/vscode.d.ts",
+		"./node_modules/@types/pg/index.d.ts",
+		"./node_modules/@types/mysql/index.d.ts",
+		"./node_modules/vscode/lib/*",
+
+		"./node_modules/mysql/**/*",
+		"./node_modules/fast-csv/**/*",
+	]
+}

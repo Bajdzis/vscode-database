@@ -1,194 +1,211 @@
 {
-  "name": "vscode-database",
-  "displayName": "vscode-database",
-  "description": "Support mysql, postgres, SSL, socked - SQL database",
-  "version": "2.0.3",
-  "publisher": "bajdzis",
-  "scripts": {
-    "lint": "eslint extension"
-  },
-  "icon": "icon.png",
-  "engines": {
-    "vscode": "^1.30.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "*"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Bajdzis/vscode-database.git"
-  },
-  "main": "./extension",
-  "contributes": {
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "databaseExplorer",
-          "title": "Databases",
-          "icon": "icons/sidePanel/database.svg"
-        }
-      ]
-    },
-    "views": {
-      "databaseExplorer": [
-        {
-          "id": "Connections",
-          "name": "SQL Connections",
-          "when": "MinimumOneConnectionIsOnline"
-        },
-        {
-          "id": "Table",
-          "name": "SQL Table",
-          "when": "MinimumOneTableInStructure"
-        }
-      ]
-    },
-    "configuration": {
-      "type": "object",
-      "title": "Database configuration",
-      "properties": {
-        "database.connections": {
-          "type": "array",
-          "default": [],
-          "description": "Array of object with data to connect server on run editor or change workspace"
-        }
-      }
-    },
-    "commands": [
-      {
-        "command": "extension.connectToSQLServer",
-        "category": "SQL",
-        "title": "Connect to MySQL / PostgreSQL server"
-      },
-      {
-        "command": "extension.changeDB",
-        "category": "SQL",
-        "title": "Select database"
-      },
-      {
-        "command": "extension.changeServer",
-        "category": "SQL",
-        "title": "Change connected server"
-      },
-      {
-        "command": "extension.querySQL",
-        "title": "Query",
-        "category": "SQL"
-      },
-      {
-        "command": "extension.queryFileSQL",
-        "title": "Run file as query",
-        "category": "SQL",
-        "icon": {
-          "dark": "icons/dark/database.svg",
-          "light": "icons/light/database.svg"
-        }
-      },
-      {
-        "command": "extension.queryFileSQLToCSV",
-        "title": "Run file as query with CSV result",
-        "category": "SQL",
-        "icon": {
-          "dark": "icons/dark/database.svg",
-          "light": "icons/light/database.svg"
-        }
-      },
-      {
-        "command": "extension.querySelectedSQL",
-        "category": "SQL",
-        "title": "Run selected text as SQL query"
-      },
-      {
-        "command": "extension.querySelectedSQLToCSV",
-        "category": "SQL",
-        "title": "Run selected text as SQL query with CSV result"
-      },
-      {
-        "command": "extension.queryBuild",
-        "category": "SQL",
-        "title": "Query Advancer Build"
-      },
-      {
-        "command": "extension.runQueryBuild",
-        "category": "SQL",
-        "title": "Run Query Advancer Build"
-      },
-      {
-        "command": "extension.saveConfig",
-        "category": "SQL",
-        "title": "Save current server"
-      }
-    ],
-    "menus": {
-      "editor/context": [
-        {
-          "command": "extension.querySelectedSQL",
-          "when": "editorHasSelection && editorLangId == 'sql'",
-          "group": "10_mysql"
-        },
-        {
-          "command": "extension.querySelectedSQLToCSV",
-          "when": "editorHasSelection && editorLangId == 'sql'",
-          "group": "10_mysql"
-        }
-      ],
-      "editor/title": [
-        {
-          "command": "extension.queryFileSQL",
-          "when": "editorLangId == 'sql'",
-          "group": "navigation@1"
-        },
-        {
-          "command": "extension.queryFileSQLToCSV",
-          "when": "editorLangId == 'sql'",
-          "group": "navigation@1"
-        }
-      ],
-      "view/title": [
-        {
-          "command": "extension.connectToSQLServer",
-          "when": "view == Connections"
-        },
-        {
-          "command": "extension.changeDB",
-          "when": "view == Connections"
-        }
-      ]
-    },
-    "keybindings": [
-      {
-        "key": "Ctrl+q",
-        "command": "extension.querySQL"
-      },
-      {
-        "key": "Alt+q",
-        "command": "extension.queryBuild"
-      },
-      {
-        "key": "ctrl+shift+e",
-        "mac": "cmd+shift+e",
-        "command": "extension.querySelectedSQL",
-        "when": "editorTextFocus && editorHasSelection && editorLangId == 'sql'"
-      }
-    ],
-    "snippets": [
-      {
-        "language": "sql",
-        "path": "./snippets/main.json"
-      }
-    ]
-  },
-  "dependencies": {
-    "fast-csv": "^2.4.1",
-    "fs": "0.0.2",
-    "mysql": "^2.12.0",
-    "pg": "^6.4.2"
-  },
-  "devDependencies": {
-    "eslint": "^5.15.0",
-    "vscode": "^1.1.30"
-  }
+	"name": "vscode-database",
+	"displayName": "vscode-database",
+	"description": "Support mysql, postgres, SSL, socked - SQL database",
+	"version": "2.1.0",
+	"publisher": "bajdzis",
+	"scripts": {
+		"lint": "eslint src --ext .ts",
+		"vscode:prepublish": "webpack --mode production",
+		"watch": "tsc -watch -p ./",
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"test": "npm run test-compile && npm run lint",
+		"webpack": "webpack --mode development",
+		"webpack-dev": "webpack --mode development --watch",
+		"test-compile": "tsc -p ./"
+	},
+	"icon": "icon.png",
+	"engines": {
+		"vscode": "^1.30.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"*"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Bajdzis/vscode-database.git"
+	},
+	"main": "./out/extension.js",
+	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "databaseExplorer",
+					"title": "Databases",
+					"icon": "icons/sidePanel/database.svg"
+				}
+			]
+		},
+		"views": {
+			"databaseExplorer": [
+				{
+					"id": "Connections",
+					"name": "SQL Connections",
+					"when": "MinimumOneConnectionIsOnline"
+				},
+				{
+					"id": "Table",
+					"name": "SQL Table",
+					"when": "MinimumOneTableInStructure"
+				}
+			]
+		},
+		"configuration": {
+			"type": "object",
+			"title": "Database configuration",
+			"properties": {
+				"database.connections": {
+					"type": "array",
+					"default": [],
+					"description": "Array of object with data to connect server on run editor or change workspace"
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "extension.connectToSQLServer",
+				"category": "SQL",
+				"title": "Connect to MySQL / PostgreSQL server"
+			},
+			{
+				"command": "extension.changeDB",
+				"category": "SQL",
+				"title": "Select database"
+			},
+			{
+				"command": "extension.changeServer",
+				"category": "SQL",
+				"title": "Change connected server"
+			},
+			{
+				"command": "extension.querySQL",
+				"title": "Query",
+				"category": "SQL"
+			},
+			{
+				"command": "extension.queryFileSQL",
+				"title": "Run file as query",
+				"category": "SQL",
+				"icon": {
+					"dark": "icons/dark/database.svg",
+					"light": "icons/light/database.svg"
+				}
+			},
+			{
+				"command": "extension.queryFileSQLToCSV",
+				"title": "Run file as query with CSV result",
+				"category": "SQL",
+				"icon": {
+					"dark": "icons/dark/database.svg",
+					"light": "icons/light/database.svg"
+				}
+			},
+			{
+				"command": "extension.querySelectedSQL",
+				"category": "SQL",
+				"title": "Run selected text as SQL query"
+			},
+			{
+				"command": "extension.querySelectedSQLToCSV",
+				"category": "SQL",
+				"title": "Run selected text as SQL query with CSV result"
+			},
+			{
+				"command": "extension.queryBuild",
+				"category": "SQL",
+				"title": "Query Advancer Build"
+			},
+			{
+				"command": "extension.runQueryBuild",
+				"category": "SQL",
+				"title": "Run Query Advancer Build"
+			},
+			{
+				"command": "extension.saveConfig",
+				"category": "SQL",
+				"title": "Save current server"
+			}
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"command": "extension.querySelectedSQL",
+					"when": "editorHasSelection && editorLangId == 'sql'",
+					"group": "10_mysql"
+				},
+				{
+					"command": "extension.querySelectedSQLToCSV",
+					"when": "editorHasSelection && editorLangId == 'sql'",
+					"group": "10_mysql"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "extension.queryFileSQL",
+					"when": "editorLangId == 'sql'",
+					"group": "navigation@1"
+				},
+				{
+					"command": "extension.queryFileSQLToCSV",
+					"when": "editorLangId == 'sql'",
+					"group": "navigation@1"
+				}
+			],
+			"view/title": [
+				{
+					"command": "extension.connectToSQLServer",
+					"when": "view == Connections"
+				},
+				{
+					"command": "extension.changeDB",
+					"when": "view == Connections"
+				}
+			]
+		},
+		"keybindings": [
+			{
+				"key": "Ctrl+q",
+				"command": "extension.querySQL"
+			},
+			{
+				"key": "Alt+q",
+				"command": "extension.queryBuild"
+			},
+			{
+				"key": "ctrl+shift+e",
+				"mac": "cmd+shift+e",
+				"command": "extension.querySelectedSQL",
+				"when": "editorTextFocus && editorHasSelection && editorLangId == 'sql'"
+			}
+		],
+		"snippets": [
+			{
+				"language": "sql",
+				"path": "./snippets/main.json"
+			}
+		]
+	},
+	"dependencies": {
+		"@types/mysql": "^2.15.5",
+		"@types/pg": "^6.1.45",
+		"fast-csv": "^2.4.1",
+		"fs": "0.0.2",
+		"mysql": "^2.12.0",
+		"pg": "^6.4.2"
+	},
+	"devDependencies": {
+		"@types/mocha": "^2.2.42",
+		"@types/node": "^10.12.21",
+		"@typescript-eslint/eslint-plugin": "^1.4.2",
+		"@typescript-eslint/parser": "^1.4.2",
+		"eslint": "^5.15.0",
+		"typescript": "^3.3.1",
+		"ts-loader": "^4.4.2",
+		"vscode": "^1.1.30",
+		"webpack": "^4.19.1",
+		"webpack-cli": "^3.1.0"
+	}
 }

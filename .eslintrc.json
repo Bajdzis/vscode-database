@@ -1,14 +1,21 @@
 {
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"project": "./tsconfig.json" 
+	},
 	"env": {
 		"node": true,
 		"es6": true
 	},
-	"extends": [ "eslint:recommended" ],
+	"plugins": ["@typescript-eslint"],
+	"extends": [ "eslint:recommended", "plugin:@typescript-eslint/recommended" ],
 	"rules": {
 		"indent": [ "error", 4 ],
 		"linebreak-style": [ 0 ],
 		"quotes": [ "error", "single" ],
 		"semi": [ "error", "always" ],
-		"eol-last": [ "error", "always" ]
+		"eol-last": [ "error", "always" ],
+		"@typescript-eslint/no-use-before-define": [ 0 ],
+		"@typescript-eslint/explicit-member-accessibility": [ 0 ]
 	}
 }
