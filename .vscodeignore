@@ -1,4 +1,5 @@
 .vscode/**
+node_modules
 .vscode-test/**
 out/test/**
 src/**
@@ -8,3 +9,5 @@ vsc-extension-quickstart.md
 **/tslint.json
 **/*.map
 **/*.ts
+package-json.lock
+webpack.config.js

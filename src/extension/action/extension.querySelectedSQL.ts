@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { AbstractAction } from './AbstractAction.js';
+import { AbstractAction } from './AbstractAction';
 
 export class QuerySelectedSQL extends AbstractAction {
 

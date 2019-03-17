@@ -1,6 +1,6 @@
 import config from './helpers/Config';
 import * as vscode from 'vscode';
-import { AbstractAction } from './AbstractAction.js';
+import { AbstractAction } from './AbstractAction';
 
 export class SaveConfig extends AbstractAction
 {

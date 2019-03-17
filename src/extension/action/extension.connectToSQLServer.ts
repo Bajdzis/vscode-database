@@ -1,7 +1,7 @@
-import { AbstractAction } from './AbstractAction.js';
+import { AbstractAction } from './AbstractAction';
 import { showWebview } from '../webViews/webViewsRunner';
 import {allServerType, ServerTypeName} from '../factoryServer';
-import { AnyObject } from '../../typeing/common.js';
+import { AnyObject } from '../../typeing/common';
 
 const dataForm = Object.keys(allServerType).map(key => ({
     type: key,

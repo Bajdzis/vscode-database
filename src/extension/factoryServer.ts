@@ -1,8 +1,8 @@
-import {MySQLType} from './engine/mysql.js';
-import {MySQLSSLType} from './engine/mysql-ssl.js';
-import {PostgreSQLType} from './engine/postgresql.js';
-import {PostgreSSLSQLType} from './engine/postgresslsql.js';
-import { AbstractServer } from './engine/AbstractServer.js';
+import {MySQLType} from './engine/mysql-pass';
+import {MySQLSSLType} from './engine/mysql-ssl';
+import {PostgreSQLType} from './engine/postgresql';
+import {PostgreSSLSQLType} from './engine/postgresslsql';
+import { AbstractServer } from './engine/AbstractServer';
 
 export const allServerType: {
     [key: string]: typeof AbstractServer;

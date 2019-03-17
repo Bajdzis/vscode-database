@@ -1,6 +1,5 @@
-import {asciiTableBig} from './AsciiTableBig.js';
-import { AnyObject } from '../typeing/common.js';
-
+import {asciiTableBig} from './AsciiTableBig';
+import { AnyObject } from '../typeing/common';
 
 export const asciiTable = (json: AnyObject[]): string => {
     const MAX_CHARACTERS_IN_LINE = 180;

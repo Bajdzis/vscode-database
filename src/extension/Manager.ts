@@ -1,8 +1,8 @@
 
 import * as vscode from 'vscode';
-import {asciiTable} from './AsciiTable.js';
-import { AbstractServer } from './engine/AbstractServer.js';
-import { StatusBar } from './StatusBar.js';
+import {asciiTable} from './AsciiTable';
+import { AbstractServer } from './engine/AbstractServer';
+import { StatusBar } from './StatusBar';
 
 import { factoryServer, ServerTypeName } from './factoryServer';
 
@@ -10,7 +10,7 @@ import structureProvider from './StructureProvider';
 import connectionsProvider from './ConnectionsProvider';
 
 import * as csv from 'fast-csv';
-import { AnyObject } from '../typeing/common.js';
+import { AnyObject } from '../typeing/common';
 
 
 export class Manager {
@@ -313,7 +313,7 @@ export class Manager {
                 csv.writeToString(
                     data,
                     {headers: true},
-                    (err, dataCSV) => {
+                    (err: Error, dataCSV: string) => {
                         vscode.workspace.openTextDocument().then(doc => {
                             vscode.window.showTextDocument(doc, 2, false).then(e => {
                                 e.edit(edit => {

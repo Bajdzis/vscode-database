@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { AbstractAction } from './AbstractAction.js';
-import { AbstractServer } from '../engine/AbstractServer.js';
+import { AbstractAction } from './AbstractAction';
+import { AbstractServer } from '../engine/AbstractServer';
 
 export class ChangeServer extends AbstractAction
 {

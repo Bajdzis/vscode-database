@@ -13,7 +13,7 @@ import { ConnectToSQLServer } from './extension.connectToSQLServer';
 import { QuerySQL } from './extension.querySQL';
 
 export interface ActionsList {
-    [K: string]: new (sqlMenager: Manager) => AbstractAction;
+    [K: string]: typeof AbstractAction;
 }
 
 export const actionsList: ActionsList = {

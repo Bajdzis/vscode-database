@@ -1,6 +1,6 @@
-import getBuildQueryDocument from './helpers/getBuildQueryDocument.js';
+import getBuildQueryDocument from './helpers/getBuildQueryDocument';
 import * as vscode from 'vscode';
-import { AbstractAction } from './AbstractAction.js';
+import { AbstractAction } from './AbstractAction';
 
 export class QueryBuild extends AbstractAction
 {

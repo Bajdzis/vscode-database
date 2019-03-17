@@ -2,15 +2,17 @@
 	"name": "vscode-database",
 	"displayName": "vscode-database",
 	"description": "Support mysql, postgres, SSL, socked - SQL database",
-	"version": "2.0.3",
+	"version": "2.1.0",
 	"publisher": "bajdzis",
 	"scripts": {
 		"lint": "eslint src --ext .ts",
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
+		"vscode:prepublish": "webpack --mode production",
 		"watch": "tsc -watch -p ./",
 		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "npm run compile && node ./node_modules/vscode/bin/test"
+		"test": "npm run test-compile && npm run lint",
+		"webpack": "webpack --mode development",
+		"webpack-dev": "webpack --mode development --watch",
+		"test-compile": "tsc -p ./"
 	},
 	"icon": "icon.png",
 	"engines": {
@@ -201,6 +203,9 @@
 		"@typescript-eslint/parser": "^1.4.2",
 		"eslint": "^5.15.0",
 		"typescript": "^3.3.1",
-		"vscode": "^1.1.30"
+		"ts-loader": "^4.4.2",
+		"vscode": "^1.1.30",
+		"webpack": "^4.19.1",
+		"webpack-cli": "^3.1.0"
 	}
 }

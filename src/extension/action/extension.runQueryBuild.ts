@@ -1,5 +1,5 @@
-import getBuildQueryDocument from './helpers/getBuildQueryDocument.js';
-import { AbstractAction } from './AbstractAction.js';
+import getBuildQueryDocument from './helpers/getBuildQueryDocument';
+import { AbstractAction } from './AbstractAction';
 
 export class RunQueryBuild extends AbstractAction
 {

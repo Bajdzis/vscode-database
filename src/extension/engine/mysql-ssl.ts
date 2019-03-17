@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import * as mysql from 'mysql';
-import {MySQLType} from './mysql';
+import { createConnection, ConnectionConfig } from 'mysql';
+import {MySQLType} from './mysql-pass';
 import { AnyObject } from '../../typeing/common';
 
 export class MySQLSSLType extends MySQLType {
@@ -36,7 +36,7 @@ export class MySQLSSLType extends MySQLType {
         this.ca = ca;
         this.key = key;
         this.cert = cert;
-        const setting: mysql.ConnectionConfig = {
+        const setting: ConnectionConfig = {
             host: this.host,
             port: parseInt(port, 10),
             user: username,
@@ -54,9 +54,9 @@ export class MySQLSSLType extends MySQLType {
             delete setting.host;
             delete setting.port;
         }
-        const connection = mysql.createConnection(setting);
+        const connection = createConnection(setting);
         return new Promise((resolve, reject) => {
-            connection.connect((err) => {
+            connection.connect((err: Error) => {
                 if (err) {
                     reject(err.message);
                 } else {

@@ -9,7 +9,7 @@ import completionItemsProvider from './extension/CompletionItemsProvider';
 import { setExtensionPath } from './extension/webViews/webViewsRunner';
 import { markdownProvider } from './extension/providers/markdownProvider';
 
-function activate(context: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
     
     config.getDatabases().then((databases) => {
         manager.restoreConnections(databases);
@@ -48,8 +48,6 @@ function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider('bajdzis-database-markdown', markdownProvider));
 
 }
-exports.activate = activate;
-
 
 function addCommand(context: vscode.ExtensionContext, name: keyof ActionsList) {
     const func = getCommandFunction(name);
@@ -70,6 +68,5 @@ function getCommandFunction(name: keyof ActionsList): CommandCallback {
 }
 
 // this method is called when your extension is deactivated
-function deactivate() {
+export function deactivate() {
 }
-exports.deactivate = deactivate;
