@@ -2,7 +2,7 @@
 	"name": "vscode-database",
 	"displayName": "vscode-database",
 	"description": "Support mysql, postgres, SSL, socked - SQL database",
-	"version": "2.1.2",
+	"version": "2.1.3",
 	"publisher": "bajdzis",
 	"scripts": {
 		"lint": "eslint src --ext .ts",
@@ -189,8 +189,6 @@
 		]
 	},
 	"dependencies": {
-		"@types/mysql": "^2.15.5",
-		"@types/pg": "^6.1.45",
 		"fast-csv": "^2.4.1",
 		"fs": "0.0.2",
 		"mysql": "^2.12.0",
@@ -198,7 +196,9 @@
 	},
 	"devDependencies": {
 		"@types/mocha": "^2.2.42",
+		"@types/mysql": "^2.15.5",
 		"@types/node": "^10.12.21",
+		"@types/pg": "^6.1.47",
 		"@typescript-eslint/eslint-plugin": "^1.4.2",
 		"@typescript-eslint/parser": "^1.4.2",
 		"eslint": "^5.15.0",

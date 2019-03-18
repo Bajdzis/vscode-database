@@ -44,6 +44,9 @@ const config = {
             }]
         }]
     },
+    optimization: {
+        minimize: false, // disable mangle for fixed issue #78
+    }
 }
 
 module.exports = config;
