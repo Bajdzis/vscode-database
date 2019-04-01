@@ -4,10 +4,12 @@ import { AnyObject } from '../typeing/common';
 
 class StructureProvider{
     private _onDidChangeTreeData: vscode.EventEmitter<any>;
+    onDidChangeTreeData: any;
     private items: vscode.TreeItem[];
 
     constructor() { 
         this._onDidChangeTreeData = new vscode.EventEmitter();
+        this.onDidChangeTreeData = this._onDidChangeTreeData.event;
         this.items = [];
     }
 
