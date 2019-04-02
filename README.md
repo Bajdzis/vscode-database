@@ -18,6 +18,9 @@ Extension for Visual Studio Code
  
 ## Changelog
 
+* 2.1.4
+    * Fix sidebar provider #82
+
 * 2.1.3
     * Fixed #78 (disable mangle in webpack config)
 
@@ -88,11 +91,12 @@ Extension for Visual Studio Code
 
 ## Authors
 
-* Bajdzis - Extension
-* k--kato - Postgres integration
-* serl - Execute selected query
-* ArtemiusUA - Query result to csv
-* brooksgarrett - Add connection SSL with user and password authenticatio
+* [Bajdzis](https://github.com/Bajdzis) - Extension
+* [k--kato](https://github.com/k--kato) - Postgres integration
+* [serl](https://github.com/serl) - Execute selected query
+* [ArtemiusUA](https://github.com/ArtemiusUA) - Query result to csv
+* [brooksgarrett](https://github.com/brooksgarrett) - Add connection SSL with user and password authenticatio
+* [EPMatt](https://github.com/EPMatt) - Fix sidebar provider #82
 
 ## License
 MIT © [Bajdzis](https://github.com/Bajdzis)
