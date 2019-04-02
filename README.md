@@ -1,18 +1,20 @@
 # VS Code database
-### Extension for Visual Studio Code 
+Extension for Visual Studio Code 
 
 [![Build Status](https://travis-ci.com/Bajdzis/vscode-database.svg?branch=master)](https://travis-ci.com/Bajdzis/vscode-database)
 
-## Usage
+## Demo
 
 ![result](https://github.com/Bajdzis/vscode-database/raw/master/readme/v2.0-result.gif)
 
 ![connection](https://github.com/Bajdzis/vscode-database/raw/master/readme/v2.0-connection.gif)
 
-## Install
-* Press `Shift+Ctrl+P` 
-* Pick `Extensions: Install Extension`
-* Find `vscode-database`
+## Usage
+
+* Connection
+    * [Create many connection to database](https://github.com/Bajdzis/vscode-database/blob/master/doc/create-connection.md)
+    * [Save connection](https://github.com/Bajdzis/vscode-database/blob/master/doc/save-connection.md)
+    * [Edit/delete saved connection](https://github.com/Bajdzis/vscode-database/blob/master/doc/edit-connection.md)
  
 ## Changelog
 
@@ -78,6 +80,11 @@
 * 0.0.2 - Show error message, save config.
 
 * 0.0.1 - Add mysql database support.
+
+## Install
+* Press `Shift+Ctrl+P` 
+* Pick `Extensions: Install Extension`
+* Find `vscode-database`
 
 ## Authors
 
