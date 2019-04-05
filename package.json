@@ -130,6 +130,24 @@
 			}
 		],
 		"menus": {
+			"commandPalette": [
+				{
+					"command": "extension.queryFileSQL",
+					"when": "editorLangId == 'sql'"
+				},
+				{
+					"command": "extension.queryFileSQLToCSV",
+					"when": "editorLangId == 'sql'"
+				},
+				{
+					"command": "extension.querySelectedSQL",
+					"when": "editorHasSelection && editorLangId == 'sql'"
+				},
+				{
+					"command": "extension.querySelectedSQLToCSV",
+					"when": "editorHasSelection && editorLangId == 'sql'"
+				}
+			],
 			"editor/context": [
 				{
 					"command": "extension.querySelectedSQL",
