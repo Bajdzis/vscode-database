@@ -16,7 +16,7 @@ export class QuerySQL extends AbstractAction
             prompt: 'e.g SELECT * FROM table', 
             placeHolder: 'Query', 
             password: false
-        }).then(this.runQuery);
+        }).then((qry)=>this.runQuery(qry));
     }
 
     runQuery(query?: string) {
