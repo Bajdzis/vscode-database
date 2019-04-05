@@ -86,6 +86,11 @@
 				"category": "SQL"
 			},
 			{
+				"command": "extension.querySQLToCSV",
+				"title": "Query with CSV result",
+				"category": "SQL"
+			},
+			{
 				"command": "extension.queryFileSQL",
 				"title": "Run file as query",
 				"category": "SQL",

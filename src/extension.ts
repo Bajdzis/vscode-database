@@ -36,6 +36,8 @@ export function activate(context: vscode.ExtensionContext) {
     addCommand(context, 'extension.connectToSQLServer');
 
     addCommand(context, 'extension.querySQL');
+
+    addCommand(context, 'extension.querySQLToCSV');
     
     addCommand(context, 'extension.queryFileSQL');
 
