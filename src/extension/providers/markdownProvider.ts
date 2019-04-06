@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { AnyObject } from '../../typeing/common';
 
 const htmlEncode = (str: string) => {
-    return (str === null) ? "NULL" : str.toString().replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+    return (str === null) ? 'NULL' : str.toString().replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
         .replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/`/g, '&grave;');
 };
 
