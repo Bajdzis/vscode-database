@@ -18,6 +18,10 @@ Extension for Visual Studio Code
  
 ## Changelog
 
+* 2.1.5
+    * Fix Query command #85
+    * Fix Markdown preview with NULL value #86
+
 * 2.1.4
     * Fix sidebar provider #82
 
@@ -92,11 +96,11 @@ Extension for Visual Studio Code
 ## Authors
 
 * [Bajdzis](https://github.com/Bajdzis) - Extension
-* [k--kato](https://github.com/k--kato) - Postgres integration
+* [k--kato](https://github.com/kasecato) - Postgres integration
 * [serl](https://github.com/serl) - Execute selected query
 * [ArtemiusUA](https://github.com/ArtemiusUA) - Query result to csv
 * [brooksgarrett](https://github.com/brooksgarrett) - Add connection SSL with user and password authenticatio
-* [EPMatt](https://github.com/EPMatt) - Fix sidebar provider #82
+* [EPMatt](https://github.com/EPMatt) - Fix sidebar provider #82, Fix Query command #85, Fix Markdown preview with NULL value #86
 
 ## License
 MIT © [Bajdzis](https://github.com/Bajdzis)
