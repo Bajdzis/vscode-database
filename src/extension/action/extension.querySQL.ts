@@ -3,7 +3,7 @@ import { AbstractAction } from './AbstractAction';
 
 export class QuerySQL extends AbstractAction
 {
-    
+
     execution(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, query?: string) {
 
         if(typeof query === 'string'){
@@ -12,11 +12,11 @@ export class QuerySQL extends AbstractAction
         }
 
         vscode.window.showInputBox({
-            value:'', 
-            prompt: 'e.g SELECT * FROM table', 
-            placeHolder: 'Query', 
+            value:'',
+            prompt: 'e.g SELECT * FROM table',
+            placeHolder: 'Query',
             password: false
-        }).then(this.runQuery);
+        }).then((query?: string) => this.runQuery(query));
     }
 
     runQuery(query?: string) {
