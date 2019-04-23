@@ -130,7 +130,16 @@ export class AbstractServer
      * @return {string[]}
      */
     splitQueries(sqlMulti: string) {
-        return sqlMulti.split(';').filter((sql) => {
+        const quotes=/^((?:[^"`']*?(?:(?:"(?:[^"]|\\")*?(?<!\\)")|(?:'(?:[^']|\\')*?(?<!\\)')|(?:`(?:[^`]|\\`)*?(?<!\\)`)))*?[^"`']*?)/;
+        let queries=[],match:any=[],delimiter=';';
+        let splitRegex=new RegExp(quotes.source+delimiter);
+        while((match=sqlMulti.match(splitRegex))!==null){
+            queries.push(match[1]);     //push the split query into the queries array
+            sqlMulti=sqlMulti.slice(match[1].length+delimiter.length);  //remove split query from sql string
+        }
+        queries.push(sqlMulti);     //push last query which could have no delimiter
+        //remove empty queries
+        return queries.filter((sql) => {
             if (!sql) {
                 return false;
             }
