@@ -86,7 +86,7 @@ export class Manager {
             return;
         }
         const currentServer = this.currentServer;
-        
+        sqlMulti=currentServer.removeComments(sqlMulti);
         const queries = currentServer.splitQueries(sqlMulti)
             .map((sql) => currentServer.queryPromise(sql).then((data) => Promise.resolve({data, sql})));
 
@@ -107,6 +107,7 @@ export class Manager {
             return;
         }
         const currentServer = this.currentServer;
+        sqlMulti=currentServer.removeComments(sqlMulti);
         const queries = currentServer.splitQueries(sqlMulti)
             .map((sql) => (currentServer.queryPromise(sql).then((data) => {
                 return Promise.resolve({data, sql});
