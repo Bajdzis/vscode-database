@@ -120,13 +120,13 @@ export class MySQLType extends AbstractServer
      * @return {string} - the SQL string without comments
      */
     removeComments(sql: string) {
-        const quotes=/^((?:[^"`']*?(?:(?:"(?:[^"]|\\\")*?(?<!\\)")|(?:'(?:[^']|\\\')*?(?<!\\)')|(?:`(?:[^`]|\\\`)*?(?<!\\)`)))*?[^"`']*?)/;
-        const cStyleComments=new RegExp(quotes.source+`/\\*.*?\\*/`);
-        const doubleDashComments=new RegExp(quotes.source+`--[ \t]+.*(\r\n|\n|\r)?`);
-        const hashComments=new RegExp(quotes.source+`#.*(\r\n|\n|\r)?`);
-        while(sql.match(cStyleComments)) sql=sql.replace(cStyleComments,`$1`);
-        while(sql.match(doubleDashComments)) sql=sql.replace(doubleDashComments,`$1$2`);
-        while(sql.match(hashComments)) sql=sql.replace(hashComments,`$1$2`);
+        const quotes=/^((?:[^"`']*?(?:(?:"(?:[^"]|\\")*?(?<!\\)")|(?:'(?:[^']|\\')*?(?<!\\)')|(?:`(?:[^`]|\\`)*?(?<!\\)`)))*?[^"`']*?)/;
+        const cStyleComments=new RegExp(quotes.source+'/\\*.*?\\*/');
+        const doubleDashComments=new RegExp(quotes.source+'--[ \t]+.*(\r\n|\n|\r)?');
+        const hashComments=new RegExp(quotes.source+'#.*(\r\n|\n|\r)?');
+        while(sql.match(cStyleComments)) sql=sql.replace(cStyleComments,'$1');
+        while(sql.match(doubleDashComments)) sql=sql.replace(doubleDashComments,'$1$2');
+        while(sql.match(hashComments)) sql=sql.replace(hashComments,'$1$2');
         return sql;
     }
 
