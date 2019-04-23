@@ -131,7 +131,7 @@ export class AbstractServer
      */
     splitQueries(sqlMulti: string) {
         const quotes=/^((?:[^"`']*?(?:(?:"(?:[^"]|\\")*?(?<!\\)")|(?:'(?:[^']|\\')*?(?<!\\)')|(?:`(?:[^`]|\\`)*?(?<!\\)`)))*?[^"`']*?)/;
-        let queries=[],match:any=[],delimiter=';';
+        let queries=[],match: any=[],delimiter=';';
         let splitRegex=new RegExp(quotes.source+delimiter);
         while((match=sqlMulti.match(splitRegex))!==null){
             queries.push(match[1]);     //push the split query into the queries array
