@@ -115,7 +115,7 @@ export class MySQLType extends AbstractServer
         });
     }
 
-      /**
+    /**
      * @param {string} sql - a SQL string
      * @return {string} - the SQL string without comments
      */
