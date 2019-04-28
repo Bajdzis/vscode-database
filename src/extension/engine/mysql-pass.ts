@@ -127,7 +127,7 @@ export class MySQLType extends AbstractServer
         while(match!==null){
             let delimiterCommand=sqlMulti.match(delimiterRegex);
             if(delimiterCommand!==null){    //if to change delimiter
-                delimiter=delimiterCommand[1];  //change delimiter
+                delimiter=delimiterCommand[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');  //change delimiter
                 splitRegex=new RegExp(quotes.source+delimiter);
                 sqlMulti=sqlMulti.slice(delimiterCommand[0].length); //remove delimiter from sql string
             }else{
