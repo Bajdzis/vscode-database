@@ -9,14 +9,15 @@
 		"vscode:prepublish": "webpack --mode production",
 		"watch": "tsc -watch -p ./",
 		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "npm run test-compile && npm run lint",
+		"test:unit": "jest",
+		"test": "npm run test-compile && jest && npm run lint",
 		"webpack": "webpack --mode development",
 		"webpack-dev": "webpack --mode development --watch",
 		"test-compile": "tsc -p ./"
 	},
 	"icon": "icon.png",
 	"engines": {
-		"vscode": "^1.30.0"
+		"vscode": "^1.33.0"
 	},
 	"categories": [
 		"Other"
@@ -195,16 +196,20 @@
 		"pg": "^6.4.2"
 	},
 	"devDependencies": {
+		"@types/jest": "^24.0.12",
 		"@types/mocha": "^2.2.42",
 		"@types/mysql": "^2.15.5",
 		"@types/node": "^10.12.21",
 		"@types/pg": "^6.1.47",
+		"@types/vscode": "^1.33.0",
 		"@typescript-eslint/eslint-plugin": "^1.4.2",
 		"@typescript-eslint/parser": "^1.4.2",
 		"eslint": "^5.15.0",
+		"jest": "^24.7.1",
+		"ts-jest": "^24.0.2",
 		"ts-loader": "^4.4.2",
 		"typescript": "^3.3.1",
-		"vscode": "^1.1.30",
+		"vscode": "^1.1.33",
 		"webpack": "^4.29.6",
 		"webpack-cli": "^3.1.0"
 	}
