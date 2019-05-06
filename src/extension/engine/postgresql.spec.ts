@@ -5,23 +5,23 @@ import { PostgreSQLType } from './postgresql';
 describe('PostgreSQL type', () => {
 
     it('correct split many query', () => {
-        const serverInstacne = new PostgreSQLType();
+        const serverInstance = new PostgreSQLType();
 
-        const queries = serverInstacne.splitQueries("SELECT * FORM `table1`;SELECT * FORM `table2`;");
+        const queries = serverInstance.splitQueries('SELECT * FROM `table1`;SELECT * FROM `table2`;');
 
         expect(queries).toHaveLength(2);
-        expect(queries[0]).toEqual('SELECT * FORM `table1`');
-        expect(queries[1]).toEqual('SELECT * FORM `table2`');
+        expect(queries[0]).toEqual('SELECT * FROM `table1`');
+        expect(queries[1]).toEqual('SELECT * FROM `table2`');
     });
 
     it('delete empty query', () => {
-        const serverInstacne = new PostgreSQLType();
+        const serverInstance = new PostgreSQLType();
 
-        const queries = serverInstacne.splitQueries(";;;;;SELECT * FORM `table1`;;;;;SELECT * FORM `table2`;;;;;;");
+        const queries = serverInstance.splitQueries(';;;;;SELECT * FROM `table1`;;;;;SELECT * FROM `table2`;;;;;;');
 
         expect(queries).toHaveLength(2);
-        expect(queries[0]).toEqual('SELECT * FORM `table1`');
-        expect(queries[1]).toEqual('SELECT * FORM `table2`');
+        expect(queries[0]).toEqual('SELECT * FROM `table1`');
+        expect(queries[1]).toEqual('SELECT * FROM `table2`');
     });
     
-})
+});
