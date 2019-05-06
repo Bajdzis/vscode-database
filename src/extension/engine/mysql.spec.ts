@@ -3,6 +3,7 @@ import { MySQLType } from './mysql-pass';
 
 
 describe('Mysql type', () => {
+
     let serverInstance: any;
     beforeAll(() => {
         serverInstance = new MySQLType();
