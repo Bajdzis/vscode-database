@@ -217,7 +217,7 @@ export class PostgreSQLType extends AbstractServer{
      * @param {string} name - name Database or Database.schema
      * @return {Promise}
      */
-    changeDatabase (name: string) {
+    changeDatabase (name: string): Promise<{}> {
         var databaseAndSchema = name.split('.');
         var database = databaseAndSchema.splice(0, 1)[0];
         var schema = 'public';
@@ -226,6 +226,7 @@ export class PostgreSQLType extends AbstractServer{
         }
         return new Promise((resolve, reject) => {
             if(database === this.currentDatabase){
+                // @ts-ignore
                 this.changeSchema(schema).then(resolve).catch(reject);
             }else{
                 this.closeConnect().then(() => {
@@ -261,7 +262,7 @@ export class PostgreSQLType extends AbstractServer{
     /**
      * @return {Promise}
      */
-    refrestStructureDataBase () {
+    refrestStructureDataBase (): Promise<{}> {
         var currentStructure: any = {};
         var tablePromise: Promise<any>[] = [];
         const tableParams = [this.schema];

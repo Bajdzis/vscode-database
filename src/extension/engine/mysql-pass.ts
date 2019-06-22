@@ -103,7 +103,7 @@ export class MySQLType extends AbstractServer
      * @param {string} name - name Database
      * @return {Promise}
      */
-    changeDatabase (name: string){
+    changeDatabase (name: string): Promise<{}>{
         return new Promise((resolve, reject) => {
             this.queryPromise('USE `' + name + '`').then(() => {
                 this.currentDatabase = name;
@@ -167,7 +167,7 @@ export class MySQLType extends AbstractServer
     /**
      * @return {Promise}
      */
-    refrestStructureDataBase (){
+    refrestStructureDataBase (): Promise<{}>{
         var currentStructure: any = {};
         var tablePromise: Promise<{}>[] = [];
         return new Promise((resolve, reject) => {
@@ -182,7 +182,7 @@ export class MySQLType extends AbstractServer
                                 tableName : tableName
                             });
                         }).catch(reject);
-                    });
+                    }) as Promise<{}>;
                     tablePromise.push(promise);
                 }
                 Promise.all(tablePromise).then((data: AnyObject[]) => {
