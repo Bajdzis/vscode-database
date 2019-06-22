@@ -116,6 +116,40 @@ export class MySQLType extends AbstractServer
     }
 
     /**
+     * @param {string} sql - queries
+     * @return {string[]}
+     */
+    splitQueries(sqlMulti: string) {
+        const quotes=/^((?:[^"`']*?(?:(?:"(?:[^"]|\\")*?(?<!\\)")|(?:'(?:[^']|\\')*?(?<!\\)')|(?:`(?:[^`]|\\`)*?(?<!\\)`)))*?[^"`']*?)/;
+        const delimiterRegex=/^(?:\r\n|[ \t\r\n])*DELIMITER[\t ]*(.*?)(?:\r\n|\n|\r|$)/i;
+        let queries=[],match: any=[],delimiter=';';
+        let splitRegex=new RegExp(quotes.source+delimiter);
+        while(match!==null){
+            let delimiterCommand=sqlMulti.match(delimiterRegex);
+            if(delimiterCommand!==null){    //if to change delimiter
+                delimiter=delimiterCommand[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');  //change delimiter
+                splitRegex=new RegExp(quotes.source+delimiter);
+                sqlMulti=sqlMulti.slice(delimiterCommand[0].length); //remove delimiter from sql string
+            }else{
+                match=sqlMulti.match(splitRegex);   //split sql string
+                if(match!==null){
+                    queries.push(match[1]);     //push the split query into the queries array
+                    sqlMulti=sqlMulti.slice(match[1].length+delimiter.length);  //remove split query from sql string
+                }
+            }
+        }
+        queries.push(sqlMulti);     //push last query which could have no delimiter
+        //remove empty queries
+        return queries.filter((sql) => {
+            if (!sql) {
+                return false;
+            }
+            const notEmpty = (sql.trim().replace(/(\r\n|\n|\r)/gm, '') !== '');
+            return notEmpty ? true : false;
+        });
+    }
+
+    /**
      * @return {Promise}
      */
     refrestStructureDataBase (){

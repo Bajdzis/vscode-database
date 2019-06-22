@@ -108,10 +108,7 @@ export class Manager {
         }
         const currentServer = this.currentServer;
         const queries = currentServer.splitQueries(sqlMulti)
-            .map((sql) => (currentServer.queryPromise(sql).then((data) => {
-                return Promise.resolve({data, sql});
-            })
-            ));
+            .map((sql) => currentServer.queryPromise(sql).then((data) => Promise.resolve({data, sql})));
 
         Promise.all(queries).then(allResult => {
             allResult.forEach(result => {
