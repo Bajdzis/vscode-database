@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es6",
+		"outDir": "dist",
+		"lib": [
+			"es6"
+		],
+		"sourceMap": false,
+		"rootDir": "../src",
+		"strict": false,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUnusedParameters": false,
+		"typeRoots" : ["node_modules/@types", "src/typeing"]
+	},
+	"include": [
+		"../node_modules/@types/jest/index.d.ts",
+		"../src/extension/**/*.ts",
+		"../node_modules/@types/pg/index.d.ts",
+		"../node_modules/@types/mysql/index.d.ts",
+
+		"../node_modules/mysql/**/*",
+		"../node_modules/fast-csv/**/*",
+	]
+}
