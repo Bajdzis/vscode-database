@@ -46,10 +46,14 @@ export class Manager {
     }
 
     outputMsg (msg: string){
-        if(this.OutputChannel === null){
+        this.getOutputChannel().appendLine(msg);
+    }
+
+    getOutputChannel(): vscode.OutputChannel {
+        if (this.OutputChannel === null) {
             this.OutputChannel = vscode.window.createOutputChannel('database');
         }
-        this.OutputChannel.appendLine(msg);
+        return this.OutputChannel;
     }
 
     connectPromise (type: ServerTypeName, fields: AnyObject){
@@ -225,26 +229,21 @@ export class Manager {
     
     queryOutputAscii (data: AnyObject){
         if(typeof data.message !== 'undefined'){
-            let table = asciiTable([{
+            this.outputMsg(data.message);
+            asciiTable([{
                 fieldCount: data.fieldCount,
                 affectedRows: data.affectedRows,
                 insertId: data.insertId,
                 serverStatus: data.serverStatus,
                 warningCount: data.warningCount,
                 changedRows: data.changedRows
-            }]);
-            this.outputMsg(data.message);
-            this.outputMsg(table);
+            }], this.outputMsg);
         }else if(typeof data === 'object' && Array.isArray(data)){
             const noResult = data.length === 0;
             if (noResult) {
                 this.outputMsg('Query result 0 rows!');
             } else {
-                let table = asciiTable(data);
-                const lines = table.split('\n');
-                lines.forEach((line) => {
-                    this.outputMsg(line);
-                });
+                asciiTable(data, this.outputMsg);
             }
         }else{
             this.outputMsg('ok');
@@ -293,16 +292,15 @@ export class Manager {
 
     queryToCSV (data: any){
         if(typeof data.message !== 'undefined'){
-            var table = asciiTable([{
+            this.outputMsg(data.message);
+            asciiTable([{
                 fieldCount: data.fieldCount,
                 affectedRows: data.affectedRows,
                 insertId: data.insertId,
                 serverStatus: data.serverStatus,
                 warningCount: data.warningCount,
                 changedRows: data.changedRows
-            }]);
-            this.outputMsg(data.message);
-            this.outputMsg(table);
+            }], this.outputMsg);
         }else if(typeof data === 'object'){
             const noResult = data.length === 0;
             if (noResult) {

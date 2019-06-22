@@ -1,6 +1,6 @@
 import { AnyObject } from '../typeing/common';
 
-export const asciiTableBig = (json: AnyObject[]): string => {
+export const asciiTableBig = (json: AnyObject[], appendLine: (line: string) => void): void => {
     
     let widthKey = 0;
     let widthData = 0;
@@ -8,7 +8,7 @@ export const asciiTableBig = (json: AnyObject[]): string => {
     const keys = Object.keys(json[0]);
 
     const line = () => {
-        var line = '\n +';
+        let line = ' +';
 
         line +=  ( '-'.repeat(widthKey+2) ) + '+';
         line +=  ( '-'.repeat(widthData+2) ) + '+';
@@ -17,36 +17,35 @@ export const asciiTableBig = (json: AnyObject[]): string => {
     };
 
     const draw = () => {
-        var buffer = '';
 
-        for (var row in json) {
+        for (let row in json) {
 
-            buffer += '\n\n';
-            buffer += 'ROW : ' + row;
-            buffer += '\n';
+            appendLine('');
+            appendLine('');
+            appendLine('ROW : ' + row);
+            appendLine('');
 
-            for (var key in json[row]) {
+            for (let key in json[row]) {
 
-                buffer += line();
-                buffer += '\n | ';
+                appendLine(line());
 
-                var data = String(json[row][key]);
+                let data = String(json[row][key]);
                 
                 if(data.length > widthData){
                     data = data.substr(0, widthData-6);
                     data += '[...]';
                 }
 
-                buffer += key + ( ' '.repeat(widthKey - String(key).length) ) + ' | ';
-                buffer += data + ( ' '.repeat(widthData - data.length) ) + ' | ';
+                let bufferLine = ' | ';
+                bufferLine += (key + ( ' '.repeat(widthKey - String(key).length) ) + ' | ');
+                bufferLine += (data + ( ' '.repeat(widthData - data.length) ) + ' | ');
+                appendLine(bufferLine);
 
             }
 
-            buffer += line();
+            appendLine(line());
 
         }
-
-        return buffer;
     };
 
     for (var key in keys) {
@@ -54,5 +53,5 @@ export const asciiTableBig = (json: AnyObject[]): string => {
     }
     widthData = MAX_CHARACTERS_IN_LINE - widthKey;
 
-    return draw();
+    draw();
 };
