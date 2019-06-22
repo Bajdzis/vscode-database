@@ -343,7 +343,7 @@ PostgreSQLType.prototype.fieldsToConnect = [
     {
         type: 'text',
         defaultValue: 'root',
-        title: 'Userame',
+        title: 'Username',
         name: 'username',
         info: '(e.g root/user)'
     },
