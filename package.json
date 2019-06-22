@@ -2,7 +2,7 @@
 	"name": "vscode-database",
 	"displayName": "vscode-database",
 	"description": "Support mysql, postgres, SSL, socked - SQL database",
-	"version": "2.1.5",
+	"version": "2.2.0",
 	"publisher": "bajdzis",
 	"scripts": {
 		"lint": "eslint src --ext .ts",

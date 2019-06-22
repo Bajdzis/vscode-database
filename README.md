@@ -18,6 +18,12 @@ Extension for Visual Studio Code
  
 ## Changelog
 
+
+* 2.2.0
+    * Create SQL parser (thanks [EPMatt](https://github.com/EPMatt)) for fix : #58, #55, #51, #40
+    * Fix performance #100
+    * Fix spelling #103
+
 * 2.1.5
     * Fix Query command #85
     * Fix Markdown preview with NULL value #86
@@ -36,7 +42,7 @@ Extension for Visual Studio Code
 
 * 2.1.0
     * Migrate JavaScript to TypeScript
-    * Add connection SSL with user and password authentication (thanks @brooksgarrett)
+    * Add connection SSL with user and password authentication (thanks [brooksgarrett](https://github.com/brooksgarrett))
     * Start using webpack #75
 
 * 2.0.3

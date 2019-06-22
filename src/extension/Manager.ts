@@ -26,6 +26,7 @@ export class Manager {
         this.statusBar = new StatusBar();
         this.OutputChannel = null;
         this.currentStructure = null;
+        this.outputMsg = this.outputMsg.bind(this);
     }
 
     showStatus(){
