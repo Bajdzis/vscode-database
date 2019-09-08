@@ -23,7 +23,18 @@
 		"Other"
 	],
 	"activationEvents": [
-		"*"
+		"onLanguage:sql",
+		"onCommand:extension.connectToSQLServer",
+		"onCommand:extension.changeDB",
+		"onCommand:extension.changeServer",
+		"onCommand:extension.querySQL",
+		"onCommand:extension.queryFileSQL",
+		"onCommand:extension.queryFileSQLToCSV",
+		"onCommand:extension.querySelectedSQL",
+		"onCommand:extension.querySelectedSQLToCSV",
+		"onCommand:extension.queryBuild",
+		"onCommand:extension.runQueryBuild",
+		"onCommand:extension.saveConfig"
 	],
 	"repository": {
 		"type": "git",
