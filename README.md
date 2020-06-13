@@ -18,6 +18,8 @@ Extension for Visual Studio Code
  
 ## Changelog
 
+* 2.2.1
+    * Adopt 'asWebviewUri' API #210
 
 * 2.2.0
     * Create SQL parser (thanks [EPMatt](https://github.com/EPMatt)) for fix : #58, #55, #51, #40
