@@ -21,9 +21,9 @@ class ConnectionsProvider{
         return Promise.resolve(this.items);
     }
 	
-    refreshList(connections: AbstractServer[], activeConnection: AbstractServer | null){
+    refreshList(connections: AbstractServer[], activeConnection: AbstractServer | null): void{
 
-        this.items = connections.map(connection => {
+        this.items = connections.map((connection): vscode.TreeItem => {
             var databaseName = connection.currentDatabase || 'no DB selected';
             const item = new vscode.TreeItem(connection.getName() + ':' + databaseName + (connection === activeConnection ? ' - active' : '' ));
             item.contextValue = 'databaseItem';//for menus
@@ -38,7 +38,7 @@ class ConnectionsProvider{
 
         vscode.commands.executeCommand('setContext', 'MinimumOneConnectionIsOnline', this.items.length > 0);
 
-        this._onDidChangeTreeData.fire();
+        this._onDidChangeTreeData.fire(undefined);
     }
 }
 

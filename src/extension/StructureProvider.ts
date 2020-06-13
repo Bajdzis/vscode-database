@@ -37,7 +37,7 @@ class StructureProvider{
 
         vscode.commands.executeCommand('setContext', 'MinimumOneTableInStructure', tablesName.length > 0);
 
-        this._onDidChangeTreeData.fire();
+        this._onDidChangeTreeData.fire(undefined);
     }
 }
 

@@ -20,15 +20,14 @@ export const createWebviewPanel = (type: string, title: string): vscode.WebviewP
 
 export const showWebview = (viewName: string, title: string): Promise<vscode.WebviewPanel> => {
 
-    return new Promise((resolve, reject) => {
-        fs.readFile(getPath(['views', `${viewName}.html`]), 'utf8', (err, html) => {
+    return new Promise((resolve, reject): void => {
+        fs.readFile(getPath(['views', `${viewName}.html`]), 'utf8', (err, html): void => {
             if (err) {
                 reject(err);
             }
             const panel = createWebviewPanel(viewName, title);
-            panel.webview.html = html.replace(/\{\{basePath\}\}/gi,vscode.Uri.file(getPath()).with({
-                scheme: 'vscode-resource'
-            }).toString());
+            const cssUri = panel.webview.asWebviewUri(vscode.Uri.file(getPath(['style.css'])));
+            panel.webview.html = html.replace(/\{\{mainCssPath\}\}/gi, cssUri.toString());
 
             resolve(panel);
         });
