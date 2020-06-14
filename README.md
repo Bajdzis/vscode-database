@@ -15,6 +15,32 @@ Extension for Visual Studio Code
     * [Create many connection to database](https://github.com/Bajdzis/vscode-database/blob/master/doc/create-connection.md)
     * [Save connection](https://github.com/Bajdzis/vscode-database/blob/master/doc/save-connection.md)
     * [Edit/delete saved connection](https://github.com/Bajdzis/vscode-database/blob/master/doc/edit-connection.md)
+
+## Check my other extensions!
+
+<table>
+    <tbody>
+        <tr>
+            <td rowspan="2">
+                <a href="https://github.com/Bajdzis/vscode-awesome-tree" target="_blank">
+                    <img src="https://github.com/Bajdzis/vscode-awesome-tree/raw/master/readme/awesome-tree-icon.png" width="100px">
+                </a>
+            </td>
+            <td>
+                <strong>Awesome tree</strong>
+            </td>
+            <td><a href="https://github.com/Bajdzis/vscode-awesome-tree" target="_blank">Repo in GitHub</a></td>
+            <td><a href="https://marketplace.visualstudio.com/items?itemName=bajdzis.awesome-tree" target="_blank">VS Code Marketplace</a></td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                This extension create structure based on sibling directory. 
+                Stop creating folders, start creating structures!
+                <a href="https://marketplace.visualstudio.com/items?itemName=bajdzis.awesome-tree" target="_blank">Read more</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
  
 ## Changelog
 
