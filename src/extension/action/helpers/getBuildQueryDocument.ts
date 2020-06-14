@@ -12,8 +12,8 @@ export default function getBuildQueryDocument(): Promise<vscode.TextDocument>{
         fs.mkdirSync(root + '/.vscode/');
     }
 
-    var pathTempFile = vscode.workspace.rootPath + '/.vscode/temp.sql';
-    var pathLastSQLFile = vscode.workspace.rootPath + '/.vscode/last.sql';
+    const pathTempFile = vscode.workspace.rootPath + '/.vscode/temp.sql';
+    const pathLastSQLFile = vscode.workspace.rootPath + '/.vscode/last.sql';
 
     if(fs.existsSync(pathTempFile) === false){
         fs.writeFileSync(pathTempFile, '');

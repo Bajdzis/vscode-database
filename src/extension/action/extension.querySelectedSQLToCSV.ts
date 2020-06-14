@@ -8,7 +8,7 @@ export class QuerySelectedSQLToCSV extends AbstractAction {
             return;
         }
 
-        let selection = editor.document.getText(editor.selection);
+        const selection = editor.document.getText(editor.selection);
         if (selection) {
             this.sqlMenager.runAsQueryToCSV(selection);
         }

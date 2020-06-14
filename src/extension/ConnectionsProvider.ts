@@ -24,7 +24,7 @@ class ConnectionsProvider{
     refreshList(connections: AbstractServer[], activeConnection: AbstractServer | null): void{
 
         this.items = connections.map((connection): vscode.TreeItem => {
-            var databaseName = connection.currentDatabase || 'no DB selected';
+            const databaseName = connection.currentDatabase || 'no DB selected';
             const item = new vscode.TreeItem(connection.getName() + ':' + databaseName + (connection === activeConnection ? ' - active' : '' ));
             item.contextValue = 'databaseItem';//for menus
             item.command = {

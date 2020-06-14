@@ -16,7 +16,7 @@ export class ChangeServer extends AbstractAction
             placeHolder:'Choice connected server or create new connection'
         }).then((object) => {
             if(typeof object !== 'undefined'){
-                var index = object.number;
+                const index = object.number;
                 if (index !== undefined){
                     this.sqlMenager.changeServer(this.sqlMenager.server[index]);
                 }else{
@@ -28,14 +28,14 @@ export class ChangeServer extends AbstractAction
     }
 
     getAllServerName(){
-        var allServerName = [];
+        const allServerName = [];
 
         allServerName.push({
             label:'New connection',
             description:'create new connection'
         });
 
-        for (var i = 0; i < this.sqlMenager.server.length; i++) {
+        for (let i = 0; i < this.sqlMenager.server.length; i++) {
             const server = this.sqlMenager.server[i];
             allServerName.push({
                 number: i,

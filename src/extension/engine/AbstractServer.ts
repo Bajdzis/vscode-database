@@ -131,8 +131,9 @@ export class AbstractServer
      */
     splitQueries(sqlMulti: string) {
         const quotes=/^((?:[^"`']*?(?:(?:"(?:[^"]|\\")*?(?<!\\)")|(?:'(?:[^']|\\')*?(?<!\\)')|(?:`(?:[^`]|\\`)*?(?<!\\)`)))*?[^"`']*?)/;
-        let queries=[],match: any=[],delimiter=';';
-        let splitRegex=new RegExp(quotes.source+delimiter);
+        const queries=[],delimiter=';';
+        let match: any=[];
+        const splitRegex=new RegExp(quotes.source+delimiter);
         while((match=sqlMulti.match(splitRegex))!==null){
             queries.push(match[1]);     //push the split query into the queries array
             sqlMulti=sqlMulti.slice(match[1].length+delimiter.length);  //remove split query from sql string
@@ -188,7 +189,7 @@ export class AbstractServer
      * @param {string} tableName
      * @return {string} a SQL SELECT statement
      */
-    getSelectTableSql(tableName: string, limit: number = 50): string {
+    getSelectTableSql(tableName: string, limit = 50): string {
         return `SELECT * FROM ${this.getIdentifiedTableName(tableName)} LIMIT ${limit}`;
     }
 

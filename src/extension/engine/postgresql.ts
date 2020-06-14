@@ -218,9 +218,9 @@ export class PostgreSQLType extends AbstractServer{
      * @return {Promise}
      */
     changeDatabase (name: string): Promise<{}> {
-        var databaseAndSchema = name.split('.');
-        var database = databaseAndSchema.splice(0, 1)[0];
-        var schema = 'public';
+        const databaseAndSchema = name.split('.');
+        const database = databaseAndSchema.splice(0, 1)[0];
+        let schema = 'public';
         if(databaseAndSchema.length > 0){
             schema = databaseAndSchema.join('.');
         }
@@ -263,20 +263,20 @@ export class PostgreSQLType extends AbstractServer{
      * @return {Promise}
      */
     refrestStructureDataBase (): Promise<{}> {
-        var currentStructure: any = {};
-        var tablePromise: Promise<any>[] = [];
+        const currentStructure: any = {};
+        const tablePromise: Promise<any>[] = [];
         const tableParams = [this.schema];
         return new Promise((resolve, reject) => {
             this.queryPromise(SELECT_TABLE_SQL, tableParams).then((results: AnyObject[]) => {
                 for (let i = 0; i < results.length; i++) {
-                    let key = Object.keys(results[i])[0];
-                    let tableName =  results[i][key];
-                    let columnParams = [tableName,tableName];
-                    let promise = new Promise((resolve, reject) => {
+                    const key = Object.keys(results[i])[0];
+                    const tableName =  results[i][key];
+                    const columnParams = [tableName,tableName];
+                    const promise = new Promise((resolve, reject) => {
                         this.queryPromise(SELECT_COLUMNS_SQL, columnParams).then((column: AnyObject[]) => {
-                            var columns = [];
+                            const columns = [];
                             for (let i = 0; i < column.length; i++) {
-                                var element = column[i];
+                                const element = column[i];
                                 columns.push(element);
                             }
                             resolve({
@@ -288,9 +288,9 @@ export class PostgreSQLType extends AbstractServer{
                     tablePromise.push(promise);
                 }
                 Promise.all(tablePromise).then(data => {
-                    for (var i = 0; i < data.length; i++) {
-                        var columnStructure = data[i].column;
-                        var tableName = data[i].tableName;
+                    for (let i = 0; i < data.length; i++) {
+                        const columnStructure = data[i].column;
+                        const tableName = data[i].tableName;
                         currentStructure[tableName] = columnStructure;
                     }
                     resolve(currentStructure);

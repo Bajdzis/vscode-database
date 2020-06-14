@@ -8,7 +8,7 @@ export class QuerySelectedSQL extends AbstractAction {
             return;
         }
 
-        let selection = editor.document.getText(editor.selection);
+        const selection = editor.document.getText(editor.selection);
         if (selection) {
             this.sqlMenager.runAsQuery(selection);
         }

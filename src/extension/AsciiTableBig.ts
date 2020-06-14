@@ -18,14 +18,14 @@ export const asciiTableBig = (json: AnyObject[], appendLine: (line: string) => v
 
     const draw = () => {
 
-        for (let row in json) {
+        for (const row in json) {
 
             appendLine('');
             appendLine('');
             appendLine('ROW : ' + row);
             appendLine('');
 
-            for (let key in json[row]) {
+            for (const key in json[row]) {
 
                 appendLine(line());
 
@@ -48,7 +48,7 @@ export const asciiTableBig = (json: AnyObject[], appendLine: (line: string) => v
         }
     };
 
-    for (var key in keys) {
+    for (const key in keys) {
         widthKey = Math.max(widthKey, String(keys[key]).length);
     }
     widthData = MAX_CHARACTERS_IN_LINE - widthKey;

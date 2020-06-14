@@ -58,8 +58,8 @@ export class Manager {
     }
 
     connectPromise (type: ServerTypeName, fields: AnyObject){
-        var newServer = factoryServer(type);
-        var _this = this;
+        const newServer = factoryServer(type);
+        const _this = this;
         newServer.setOutput(this.OutputChannel);
         return new Promise((resolve, reject) => {
             newServer.connectPromise(fields).then(() => {
@@ -180,16 +180,16 @@ export class Manager {
             return completionItems;
         }
 
-        for( let tableName in databaseScructure ) {
+        for( const tableName in databaseScructure ) {
             const tableItem = new vscode.CompletionItem(tableName);
             tableItem.insertText = this.currentServer.getIdentifiedTableName(tableName);
             tableItem.kind = vscode.CompletionItemKind.Class;
             tableItem.detail = 'Table';
             tableItem.documentation = databaseScructure[tableName].length + ' columns :';
             
-            for( var columnName in databaseScructure[tableName] ) {
-                var element = databaseScructure[tableName][columnName];
-                var item = new vscode.CompletionItem(tableName + '.' + element.Field);
+            for( const columnName in databaseScructure[tableName] ) {
+                const element = databaseScructure[tableName][columnName];
+                const item = new vscode.CompletionItem(tableName + '.' + element.Field);
                 
                 item.kind = vscode.CompletionItemKind.Property;
                 item.detail = 'Column from ' + tableName;

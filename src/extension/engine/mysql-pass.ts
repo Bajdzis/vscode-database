@@ -90,8 +90,8 @@ export class MySQLType extends AbstractServer
     getDatabase(): Promise<string[]>{
         return new Promise((resolve, reject) => {
             this.queryPromise('SHOW DATABASES').then((results: AnyObject[]) => {
-                var allDatabase: string[] = [];
-                for (var i = 0; i < results.length; i++) {
+                const allDatabase: string[] = [];
+                for (let i = 0; i < results.length; i++) {
                     allDatabase.push(results[i].Database as string);
                 }
                 resolve(allDatabase);
@@ -122,10 +122,12 @@ export class MySQLType extends AbstractServer
     splitQueries(sqlMulti: string) {
         const quotes=/^((?:[^"`']*?(?:(?:"(?:[^"]|\\")*?(?<!\\)")|(?:'(?:[^']|\\')*?(?<!\\)')|(?:`(?:[^`]|\\`)*?(?<!\\)`)))*?[^"`']*?)/;
         const delimiterRegex=/^(?:\r\n|[ \t\r\n])*DELIMITER[\t ]*(.*?)(?:\r\n|\n|\r|$)/i;
-        let queries=[],match: any=[],delimiter=';';
+        const match: any = [];
+        const queries = [];
+        let delimiter = ';';
         let splitRegex=new RegExp(quotes.source+delimiter);
         while(match!==null){
-            let delimiterCommand=sqlMulti.match(delimiterRegex);
+            const delimiterCommand=sqlMulti.match(delimiterRegex);
             if(delimiterCommand!==null){    //if to change delimiter
                 delimiter=delimiterCommand[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');  //change delimiter
                 splitRegex=new RegExp(quotes.source+delimiter);
@@ -168,14 +170,14 @@ export class MySQLType extends AbstractServer
      * @return {Promise}
      */
     refrestStructureDataBase (): Promise<{}>{
-        var currentStructure: any = {};
-        var tablePromise: Promise<{}>[] = [];
+        const currentStructure: any = {};
+        const tablePromise: Promise<{}>[] = [];
         return new Promise((resolve, reject) => {
             this.queryPromise('SHOW tables').then(results => {
                 for (let i = 0; i < results.length; i++) {
-                    let key = Object.keys(results[i])[0];
-                    let tableName = results[i][key];
-                    let promise = new Promise((resolve, reject) => {
+                    const key = Object.keys(results[i])[0];
+                    const tableName = results[i][key];
+                    const promise = new Promise((resolve, reject) => {
                         this.queryPromise('SHOW COLUMNS FROM ' + tableName).then((column) => {
                             resolve({
                                 column : column,
@@ -186,9 +188,9 @@ export class MySQLType extends AbstractServer
                     tablePromise.push(promise);
                 }
                 Promise.all(tablePromise).then((data: AnyObject[]) => {
-                    for (var i = 0; i < data.length; i++) {
-                        var columnStructure = data[i].column;
-                        var tableName = data[i].tableName;
+                    for (let i = 0; i < data.length; i++) {
+                        const columnStructure = data[i].column;
+                        const tableName = data[i].tableName;
                         currentStructure[tableName] = columnStructure;
                     }
                     resolve(currentStructure);
