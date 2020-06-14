@@ -122,7 +122,7 @@ export class MySQLType extends AbstractServer
     splitQueries(sqlMulti: string) {
         const quotes=/^((?:[^"`']*?(?:(?:"(?:[^"]|\\")*?(?<!\\)")|(?:'(?:[^']|\\')*?(?<!\\)')|(?:`(?:[^`]|\\`)*?(?<!\\)`)))*?[^"`']*?)/;
         const delimiterRegex=/^(?:\r\n|[ \t\r\n])*DELIMITER[\t ]*(.*?)(?:\r\n|\n|\r|$)/i;
-        const match: any = [];
+        let match: any = [];
         const queries = [];
         let delimiter = ';';
         let splitRegex=new RegExp(quotes.source+delimiter);

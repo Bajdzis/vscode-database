@@ -44,6 +44,9 @@ Extension for Visual Studio Code
  
 ## Changelog
 
+* 2.2.2
+    * Update dependencies
+
 * 2.2.1
     * Adopt 'asWebviewUri' API #210
 
