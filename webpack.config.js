@@ -25,7 +25,7 @@ const config = {
         vscode: 'commonjs vscode' // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
     },
     resolve: { // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
-        extensions: ['.ts', '.js']
+        extensions: [ '.ts', '.js', '.json']
     },
     plugins: [
         new webpack.IgnorePlugin(/^pg-native$/)
@@ -33,13 +33,13 @@ const config = {
     module: {
         rules: [{
             test: /\.ts$/,
-            exclude: /node_modules/,
             use: [{
                 loader: 'ts-loader',
                 options: {
                     compilerOptions: {
                         'module': 'esnext' // override `tsconfig.json` so that TypeScript emits native JavaScript modules.
                     }
+              
                 }
             }]
         }]

@@ -5,6 +5,7 @@ export const allServerType: {
 } = {
     mysql: () => import('./engine/mysql-pass'),
     mysqlssl: () => import('./engine/mysql-ssl'),
+    mysqlxdev: () => import('./engine/mysql-xdev'),
     postgres: () => import('./engine/postgresql'),
     postgresSSL: () => import('./engine/postgresslsql'),
 };

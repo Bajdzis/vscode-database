@@ -1,0 +1,17 @@
+version: '3'
+services:
+  mysql8withNewAuthMethod:
+    image: mysql:8.0.12
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+    restart: always
+    ports:
+      - "13306:3306"
+  mysql8withOldAuthMethod:
+    image: mysql:8.0.12
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+    restart: always
+    ports:
+      - "13309:3306"

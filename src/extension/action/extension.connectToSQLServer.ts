@@ -49,6 +49,7 @@ export class ConnectToSQLServer extends AbstractAction{
                             panel.dispose();
                         })
                         .catch((error) => {
+                            console.log({ error });
                             panel.webview.postMessage({ 
                                 type: 'CONNECTION_ERROR', 
                                 payload : { error } 

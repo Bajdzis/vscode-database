@@ -12,6 +12,7 @@
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"noUnusedParameters": false,
+		"esModuleInterop": true,
 		"typeRoots" : ["node_modules/@types", "src/typeing"],
 	},
 	"include": [
@@ -19,9 +20,11 @@
 		"./node_modules/vscode/vscode.d.ts",
 		"./node_modules/@types/pg/index.d.ts",
 		"./node_modules/@types/mysql/index.d.ts",
+		"./node_modules/mysqlx/lib/mysqlx.d.ts",
 		"./node_modules/vscode/lib/*",
 
 		"./node_modules/mysql/**/*",
+		"./node_modules/mysqlx/**/*",
 		"./node_modules/fast-csv/**/*",
 	]
 }
