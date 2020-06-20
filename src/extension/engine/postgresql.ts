@@ -362,3 +362,5 @@ PostgreSQLType.prototype.fieldsToConnect = [
         info: ''
     }
 ];
+
+export default PostgreSQLType;

@@ -1,25 +1,22 @@
-import {MySQLType} from './engine/mysql-pass';
-import {MySQLSSLType} from './engine/mysql-ssl';
-import {PostgreSQLType} from './engine/postgresql';
-import {PostgreSSLSQLType} from './engine/postgresslsql';
 import { AbstractServer } from './engine/AbstractServer';
 
 export const allServerType: {
-    [key: string]: typeof AbstractServer;
+    [key: string]: () => Promise<{ default: typeof AbstractServer}>;
 } = {
-    mysql: MySQLType,
-    mysqlssl: MySQLSSLType,
-    postgres: PostgreSQLType,
-    postgresSSL: PostgreSSLSQLType,
+    mysql: () => import('./engine/mysql-pass'),
+    mysqlssl: () => import('./engine/mysql-ssl'),
+    postgres: () => import('./engine/postgresql'),
+    postgresSSL: () => import('./engine/postgresslsql'),
 };
 
 export type ServerTypeName = keyof typeof allServerType;
 
-export const factoryServer = (type: ServerTypeName): AbstractServer => {
+export const factoryServer = async (type: ServerTypeName): Promise<AbstractServer> => {
     if (allServerType[type]) {
-        const constructor = allServerType[type];
+        const serverModule = await allServerType[type]();
+        const constructor =  serverModule.default;
         return new constructor();
     } else {
-        throw new Error(`Unsuport type: ${type}`);
+        return Promise.reject(`Not support type: ${type}`);
     }
 };

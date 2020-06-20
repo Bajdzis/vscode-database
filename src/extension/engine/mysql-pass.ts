@@ -257,3 +257,5 @@ MySQLType.prototype.fieldsToConnect = [
         info: ''
     }
 ];
+
+export default MySQLType;

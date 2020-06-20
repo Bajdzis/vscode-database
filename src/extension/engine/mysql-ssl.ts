@@ -132,3 +132,5 @@ MySQLSSLType.prototype.fieldsToConnect = [
         info: '(Client certificates - path to `client.crt`)'
     }
 ];
+
+export default MySQLSSLType;

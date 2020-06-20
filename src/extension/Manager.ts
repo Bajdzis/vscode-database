@@ -57,8 +57,8 @@ export class Manager {
         return this.OutputChannel;
     }
 
-    connectPromise (type: ServerTypeName, fields: AnyObject){
-        const newServer = factoryServer(type);
+    async connectPromise (type: ServerTypeName, fields: AnyObject){
+        const newServer = await factoryServer(type);
         const _this = this;
         newServer.setOutput(this.OutputChannel);
         return new Promise((resolve, reject) => {
@@ -72,8 +72,8 @@ export class Manager {
     }
 
     restoreConnections(databases: AnyObject[]){
-        return databases.forEach((fields) => {
-            const newServer = factoryServer(fields.type);
+        return databases.forEach(async (fields) => {
+            const newServer = await factoryServer(fields.type);
             newServer.setOutput(this.OutputChannel);
             newServer.restoreConnection(fields).then(() => {
                 newServer.name = fields.name;

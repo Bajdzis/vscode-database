@@ -3,19 +3,43 @@ import { showWebview } from '../webViews/webViewsRunner';
 import {allServerType, ServerTypeName} from '../factoryServer';
 import { AnyObject } from '../../typeing/common';
 
-const dataForm = Object.keys(allServerType).map(key => ({
-    type: key,
-    name: allServerType[key].prototype.typeName,
-    fields: allServerType[key].prototype.fieldsToConnect
-}));
+interface DataForm {
+    type: string;
+    name?: string;
+    fields: any[];
+}
+
 export class ConnectToSQLServer extends AbstractAction{
+
+    private dataFormCache: null | DataForm[] = null;
+
+    async getDataForm() {
+        if (this.dataFormCache !== null) {
+            return this.dataFormCache;
+        }
+        // TODO move fieldsToConnect to other file without lazy loading
+        const loadAllType = Object.keys(allServerType).map(async (key) => {
+
+            const serverModule = await allServerType[key]();
+            return {
+                type: key,
+                name: serverModule.default.prototype.typeName,
+                fields: serverModule.default.prototype.fieldsToConnect
+            };
+        });
+
+        const dataForm = await Promise.all(loadAllType);
+        this.dataFormCache = dataForm;
+        return dataForm;
+    }
 
     execution(){
         showWebview('connect', 'Connect to SQL server').then((panel) => {
-
-            panel.webview.postMessage({ 
-                type: 'SHOW_FORM', 
-                payload : dataForm
+            this.getDataForm().then((dataForm) => {
+                panel.webview.postMessage({ 
+                    type: 'SHOW_FORM', 
+                    payload : dataForm
+                });
             });
 
             panel.webview.onDidReceiveMessage((action) => {

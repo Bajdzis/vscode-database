@@ -7,6 +7,7 @@
 	"scripts": {
 		"lint": "eslint src --ext .ts",
 		"vscode:prepublish": "webpack --mode production",
+		"webpack:profile": "webpack --mode production --profile --json > stats.json",
 		"watch": "tsc -watch -p ./",
 		"postinstall": "node ./node_modules/vscode/bin/install",
 		"test:unit": "jest",
