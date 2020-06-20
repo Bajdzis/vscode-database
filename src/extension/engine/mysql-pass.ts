@@ -22,17 +22,18 @@ export class MySQLType extends AbstractServer
      * @param {object} fields
      * @return {Promise}
      */
-    connectPromise({host, username, password, socket}: AnyObject): Promise<undefined> {
+    connectPromise({host, username, password, socket, insecureAuth}: AnyObject): Promise<undefined> {
         const [hostName, port = '3306'] = host.split(':');
         this.host = hostName;
         this.port = port;
         this.username = username;
         this.password = password;
         const setting: ConnectionConfig = {
-            'host': this.host,
-            'port': parseInt(port, 10),
-            'user': username,
-            'password': password
+            host: this.host,
+            port: parseInt(port, 10),
+            user: username,
+            password: password,
+            insecureAuth: insecureAuth
         };
         if(socket){
             this.socket = hostName;
@@ -233,6 +234,13 @@ MySQLType.prototype.fieldsToConnect = [
         name: 'socket',
         title: 'via socket',
         info: '(if you want to connect via socket, enter socketPath in the host field)'
+    },
+    {
+        type: 'checkbox',
+        defaultValue: false,
+        name: 'insecureAuth',
+        title: 'insecure auth',
+        info: '(Allow connecting to MySQL instances that ask for the old (insecure) authentication method)'
     },
     {
         type: 'text',
