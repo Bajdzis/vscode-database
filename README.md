@@ -44,6 +44,10 @@ Extension for Visual Studio Code
  
 ## Changelog
 
+* 2.2.3
+    * add insecureAuth connection for mysql #216
+    * speed up startup activation - lazy loading `mysql` and `pg` dependencies
+
 * 2.2.2
     * Update dependencies
 

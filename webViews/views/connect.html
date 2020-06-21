@@ -66,6 +66,8 @@
 
         const tryConnect = () => {
             const { fieldValue, type } = state;
+            const error = document.getElementById('error');
+            error.setAttribute('hidden', 'hidden');
             vscode.postMessage({
                 type: 'CONNECT_TO_SQL_SERVER',
                 payload: {
