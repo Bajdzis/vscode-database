@@ -11,6 +11,7 @@ import { QueryFileSQL } from './extension.queryFileSQL';
 import { QueryBuild } from './extension.queryBuild';
 import { ConnectToSQLServer } from './extension.connectToSQLServer';
 import { QuerySQL } from './extension.querySQL';
+import { QuerySQLToCSV } from './extension.querySQLToCSV';
 
 export interface ActionsList {
     [K: string]: typeof AbstractAction;
@@ -26,6 +27,7 @@ export const actionsList: ActionsList = {
     'extension.querySelectedSQL': QuerySelectedSQL,
     'extension.querySelectedSQLToCSV': QuerySelectedSQLToCSV,
     'extension.querySQL': QuerySQL,
+    'extension.querySQLToCSV': QuerySQLToCSV,
     'extension.runQueryBuild': RunQueryBuild,
     'extension.saveConfig': SaveConfig,
 };
